@@ -8,9 +8,9 @@ import PortalAccessCard from './portal-access-card';
 
 function InfoRow({ label, value }: { label: string; value: string | null }) {
   return (
-    <div className="flex justify-between gap-3 py-1.5">
-      <dt className="text-[#B0B0C8]">{label}</dt>
-      <dd className="text-[#E8E8F2]">{value || '—'}</dd>
+    <div className="flex justify-between gap-3 py-2 border-b border-white/5 last:border-0">
+      <dt className="text-violet-300/70 font-medium">{label}</dt>
+      <dd className="text-white font-semibold">{value || <span className="text-white/30 font-normal">—</span>}</dd>
     </div>
   );
 }
@@ -46,47 +46,70 @@ export default async function TenantDetailPage({
 
   return (
     <div className="mx-auto max-w-4xl">
+      {/* Back link */}
       <Link
         href="/dashboard/tenants"
-        className="text-sm text-[#E8E8F2] transition-colors hover:text-white"
+        className="inline-flex items-center gap-1.5 text-sm text-violet-400 transition-colors hover:text-violet-200"
       >
-        ← Back to Tenants
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Back to Tenants
       </Link>
 
-      <div className="mt-3 flex items-center justify-between gap-3">
-        <h1 className="text-2xl font-semibold tracking-tight text-white">
-          {tenant.name}
-        </h1>
+      {/* Header */}
+      <div className="mt-4 flex items-center justify-between gap-3">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-white">
+            {tenant.name}
+          </h1>
+          <p className="mt-1 text-sm text-violet-300/60">Tenant Profile</p>
+        </div>
         <div className="flex items-center gap-3">
           <Link
             href={`/dashboard/tenants/${tenant.id}/assign`}
-            className="rounded-full border border-[#5B4FE8]/40 bg-[#5B4FE8]/15 px-4 py-2 text-sm font-medium text-[#8B6FE8] transition-colors hover:bg-[#5B4FE8]/25"
+            className="rounded-full bg-gradient-to-r from-violet-600 to-indigo-600 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-violet-500/30 transition-all hover:shadow-violet-500/50 hover:scale-105 active:scale-95"
           >
             Assign to Unit
           </Link>
           <Link
             href={`/dashboard/tenants/${tenant.id}/edit`}
-            className="rounded-full border border-[rgba(139,111,232,0.4)] bg-[rgba(255,255,255,0.06)] px-4 py-2 text-sm font-medium text-[#E8E8F2] transition-colors hover:text-white"
+            className="rounded-full border border-violet-500/40 bg-violet-500/10 px-5 py-2 text-sm font-semibold text-violet-200 transition-all hover:bg-violet-500/20 hover:border-violet-400/60"
           >
             Edit
           </Link>
         </div>
       </div>
 
+      {/* Info cards */}
       <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <dl className="rounded-2xl border border-[#312D58] bg-[#17152F] p-6 text-sm">
-          <p className="mb-2 text-xs uppercase tracking-wide text-[#8B6FE8]">
-            Contact &amp; Location
-          </p>
+        <dl
+          className="rounded-2xl border border-violet-500/20 bg-gradient-to-br from-[#1a1535] to-[#12102a] p-6 text-sm shadow-xl shadow-violet-900/20"
+          style={{ backdropFilter: 'blur(12px)' }}
+        >
+          <div className="mb-4 flex items-center gap-2">
+            <span className="flex h-6 w-6 items-center justify-center rounded-md bg-violet-500/20">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.19 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.11 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.09a16 16 0 0 0 6 6l.46-.46a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16z"/></svg>
+            </span>
+            <p className="text-xs font-bold uppercase tracking-widest text-violet-400">
+              Contact &amp; Location
+            </p>
+          </div>
           <InfoRow label="Email" value={tenant.email} />
           <InfoRow label="Phone" value={tenant.phone} />
           <InfoRow label="Location" value={tenant.location} />
           <InfoRow label="National ID" value={tenant.nationalId} />
         </dl>
-        <dl className="rounded-2xl border border-[#312D58] bg-[#17152F] p-6 text-sm">
-          <p className="mb-2 text-xs uppercase tracking-wide text-[#8B6FE8]">
-            Emergency &amp; Bank
-          </p>
+        <dl
+          className="rounded-2xl border border-indigo-500/20 bg-gradient-to-br from-[#131428] to-[#0e0d22] p-6 text-sm shadow-xl shadow-indigo-900/20"
+          style={{ backdropFilter: 'blur(12px)' }}
+        >
+          <div className="mb-4 flex items-center gap-2">
+            <span className="flex h-6 w-6 items-center justify-center rounded-md bg-indigo-500/20">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#818cf8" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </span>
+            <p className="text-xs font-bold uppercase tracking-widest text-indigo-400">
+              Emergency &amp; Bank
+            </p>
+          </div>
           <InfoRow label="Emergency Contact" value={tenant.emergencyContactName} />
           <InfoRow label="Emergency Phone" value={tenant.emergencyContactPhone} />
           <InfoRow label="Bank" value={tenant.bankName} />
@@ -121,7 +144,8 @@ export default async function TenantDetailPage({
         })()}
       </div>
 
-      <h2 className="mb-3 mt-8 text-lg font-semibold tracking-tight text-white">
+      <h2 className="mb-3 mt-8 text-lg font-bold tracking-tight text-white flex items-center gap-2">
+        <span className="inline-block h-1 w-6 rounded-full bg-gradient-to-r from-violet-500 to-indigo-500"></span>
         Tenancy History
       </h2>
       <TenancyHistory rows={rows} />

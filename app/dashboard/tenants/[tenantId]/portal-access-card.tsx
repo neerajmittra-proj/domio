@@ -128,15 +128,23 @@ export default function PortalAccessCard({
   }
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 p-6 text-sm">
-      <div className="mb-4 flex items-center justify-between gap-3">
+    <div
+      className="rounded-2xl border border-violet-500/25 bg-gradient-to-br from-[#1c1840] to-[#110f2a] p-6 text-sm shadow-2xl shadow-violet-900/30"
+      style={{ backdropFilter: 'blur(12px)' }}
+    >
+      <div className="mb-5 flex items-center justify-between gap-3">
         <div>
-          <p className="text-xs uppercase tracking-wide text-zinc-400 font-semibold mb-0.5">
-            Tenant Portal Access
-          </p>
-          <p className="text-zinc-400 text-xs">
+          <div className="mb-1 flex items-center gap-2">
+            <span className="flex h-6 w-6 items-center justify-center rounded-md bg-violet-500/20">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </span>
+            <p className="text-xs font-bold uppercase tracking-widest text-violet-400">
+              Tenant Portal Access
+            </p>
+          </div>
+          <p className="text-violet-200/50 text-xs">
             Allow this tenant to log in at{' '}
-            <span className="font-mono text-zinc-300">/tenant-portal/login</span>{' '}
+            <span className="font-mono text-violet-300">/tenant-portal/login</span>{' '}
             using their phone number + OTP.
           </p>
         </div>
@@ -148,32 +156,35 @@ export default function PortalAccessCard({
           onClick={togglePortal}
           disabled={pending}
           aria-pressed={enabled}
-          className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-500/50 disabled:opacity-50 ${
-            enabled ? 'bg-zinc-800' : 'bg-zinc-700'
+          className={`relative inline-flex h-7 w-13 shrink-0 items-center rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-violet-500/50 disabled:opacity-50 ${
+            enabled
+              ? 'bg-gradient-to-r from-violet-600 to-indigo-600 shadow-lg shadow-violet-500/40'
+              : 'bg-white/10'
           }`}
+          style={{ width: '52px', height: '28px' }}
         >
           <span
-            className={`inline-block h-4 w-4 translate-x-1 transform rounded-full bg-white shadow transition-transform ${
-              enabled ? 'translate-x-6' : ''
+            className={`inline-block h-5 w-5 translate-x-1 transform rounded-full bg-white shadow-md transition-transform duration-300 ${
+              enabled ? 'translate-x-7' : ''
             }`}
           />
         </button>
       </div>
 
       {/* Status badge */}
-      <div className="mb-4 flex items-center gap-2">
+      <div className="mb-5 flex items-center gap-2">
         <span
-          className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium ${
+          className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold ${
             enabled
-              ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
-              : 'border-white/10 bg-white/[0.03] text-zinc-500'
+              ? 'border-emerald-400/40 bg-emerald-400/15 text-emerald-300 shadow-sm shadow-emerald-500/20'
+              : 'border-white/10 bg-white/[0.03] text-white/30'
           }`}
         >
-          <span className={`h-1.5 w-1.5 rounded-full ${enabled ? 'bg-emerald-400' : 'bg-zinc-600'}`} />
+          <span className={`h-1.5 w-1.5 rounded-full ${enabled ? 'bg-emerald-400 shadow-sm shadow-emerald-400' : 'bg-white/20'}`} />
           {enabled ? 'Portal Active' : 'Portal Disabled'}
         </span>
         {enabled && (
-          <span className="text-xs text-zinc-500">Phone: {phone}</span>
+          <span className="text-xs text-violet-300/50 font-mono">Phone: {phone}</span>
         )}
       </div>
 
@@ -185,7 +196,7 @@ export default function PortalAccessCard({
             type="button"
             onClick={generateOtp}
             disabled={otpPending}
-            className="rounded-lg border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-zinc-300 transition-colors hover:bg-white/10 disabled:opacity-50"
+            className="rounded-xl border border-violet-500/30 bg-violet-500/10 px-4 py-2.5 text-sm font-semibold text-violet-200 transition-all hover:bg-violet-500/20 hover:border-violet-400/50 hover:shadow-sm hover:shadow-violet-500/20 disabled:opacity-50"
           >
             {otpPending ? 'Generating…' : '📲 Generate OTP for Tenant'}
           </button>
@@ -196,7 +207,7 @@ export default function PortalAccessCard({
               href={buildWhatsAppUrl({ phone, tenantName, monthlyRent, propertyName, unitName })}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 text-sm font-medium text-emerald-300 transition-colors hover:bg-emerald-500/20 hover:border-emerald-400/60"
+              className="flex items-center justify-center gap-2 rounded-xl border border-emerald-400/40 bg-emerald-400/15 px-4 py-2.5 text-sm font-semibold text-emerald-300 shadow-sm shadow-emerald-500/10 transition-all hover:bg-emerald-400/25 hover:border-emerald-300/60 hover:shadow-emerald-500/20"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
@@ -208,14 +219,14 @@ export default function PortalAccessCard({
 
           {/* Dev OTP display */}
           {devOtp && !smsSent && (
-            <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-zinc-400">
+            <div className="rounded-xl border border-violet-500/30 bg-gradient-to-r from-violet-500/10 to-indigo-500/10 px-4 py-4">
+              <p className="text-xs font-bold uppercase tracking-widest text-violet-400">
                 OTP (Relay to Tenant)
               </p>
-              <p className="mt-1 font-mono text-2xl font-bold tracking-widest text-white">
+              <p className="mt-2 font-mono text-3xl font-bold tracking-[0.3em] text-white drop-shadow-[0_0_12px_rgba(167,139,250,0.6)]">
                 {devOtp}
               </p>
-              <p className="mt-0.5 text-xs text-zinc-500">
+              <p className="mt-1.5 text-xs text-violet-300/50">
                 Share this with the tenant via WhatsApp or call. Expires in 10 minutes.
               </p>
             </div>
@@ -227,12 +238,12 @@ export default function PortalAccessCard({
       )}
 
       {successMsg && (
-        <p className="mt-3 rounded-lg bg-emerald-500/10 px-3 py-2 text-sm text-emerald-400">
+        <p className="mt-3 rounded-xl border border-emerald-400/30 bg-emerald-400/10 px-4 py-2.5 text-sm font-medium text-emerald-300">
           {successMsg}
         </p>
       )}
       {error && (
-        <p role="alert" className="mt-3 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-400">
+        <p role="alert" className="mt-3 rounded-xl border border-red-400/30 bg-red-400/10 px-4 py-2.5 text-sm font-medium text-red-300">
           {error}
         </p>
       )}
