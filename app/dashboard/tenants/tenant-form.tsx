@@ -17,9 +17,9 @@ type Initial = {
 };
 
 const inputClass =
-  'rounded-lg border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-3 py-2 text-sm text-white outline-none transition placeholder:text-[#B0B0C8] focus:border-zinc-700 focus:ring-2 focus:ring-zinc-500/20';
-const labelClass = 'text-sm font-medium text-[#E8E8F2]';
-const optional = <span className="text-[#B0B0C8]">(optional)</span>;
+  'rounded-xl border border-zinc-300 bg-white px-3.5 py-2 text-sm font-semibold text-zinc-900 shadow-2xs outline-none transition placeholder:text-zinc-400 focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10';
+const labelClass = 'text-xs font-bold uppercase tracking-wider text-zinc-700';
+const optional = <span className="text-zinc-400 text-xs font-normal lowercase">(optional)</span>;
 
 function Field({
   id,
@@ -244,14 +244,14 @@ export default function TenantForm({
     <div className="flex flex-col gap-6">
       {/* Mode Switcher when creating new tenant */}
       {mode === 'create' && (
-        <div className="flex rounded-xl border border-[#312D58] bg-[#0E0C22] p-1">
+        <div className="flex rounded-xl border border-zinc-200 bg-zinc-100 p-1">
           <button
             type="button"
             onClick={() => { setAddMode('username'); setError(null); }}
-            className={`flex-1 rounded-lg py-2.5 text-xs font-semibold transition-all ${
+            className={`flex-1 rounded-lg py-2.5 text-xs font-bold transition-all ${
               addMode === 'username'
-                ? 'bg-zinc-900 text-white shadow-md'
-                : 'text-[#B0B0C8] hover:text-white'
+                ? 'bg-white text-zinc-900 shadow-xs'
+                : 'text-zinc-600 hover:text-zinc-900'
             }`}
           >
             ⚡ Add by Registered Username
@@ -259,10 +259,10 @@ export default function TenantForm({
           <button
             type="button"
             onClick={() => { setAddMode('manual'); setError(null); }}
-            className={`flex-1 rounded-lg py-2.5 text-xs font-semibold transition-all ${
+            className={`flex-1 rounded-lg py-2.5 text-xs font-bold transition-all ${
               addMode === 'manual'
-                ? 'bg-zinc-900 text-white shadow-md'
-                : 'text-[#B0B0C8] hover:text-white'
+                ? 'bg-white text-zinc-900 shadow-xs'
+                : 'text-zinc-600 hover:text-zinc-900'
             }`}
           >
             📝 Manual Details Entry
@@ -278,7 +278,7 @@ export default function TenantForm({
             </label>
             <div className="flex gap-2">
               <div className="relative flex-1 items-center">
-                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 font-mono text-zinc-500">@</span>
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 font-mono text-zinc-500 font-bold">@</span>
                 <input
                   id="lookup-username"
                   type="text"
@@ -292,38 +292,38 @@ export default function TenantForm({
               <button
                 type="submit"
                 disabled={lookingUp}
-                className="rounded-lg bg-zinc-900 px-4 py-2 text-xs font-semibold text-white transition-all hover:bg-zinc-800 disabled:opacity-60"
+                className="rounded-xl bg-zinc-900 px-5 py-2 text-xs font-bold text-white transition-all hover:bg-zinc-800 disabled:opacity-60 shadow-xs"
               >
                 {lookingUp ? 'Searching…' : 'Find Tenant'}
               </button>
             </div>
-            <p className="text-xs text-[#6A6A8A]">
+            <p className="text-xs text-zinc-500 font-medium">
               Ask your tenant for their self-registered username handle (e.g. @john_doe).
             </p>
           </form>
 
           {foundTenant && (
-            <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-5">
+            <div className="rounded-2xl border border-emerald-300 bg-emerald-50/70 p-5 shadow-xs">
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="rounded-full border border-emerald-500/40 bg-emerald-500/20 px-2.5 py-0.5 text-[10px] font-bold text-emerald-300">
+                  <span className="rounded-full border border-emerald-300 bg-emerald-100 px-2.5 py-0.5 text-[10px] font-bold text-emerald-800">
                     Registered Tenant Verified ✓
                   </span>
-                  <h3 className="mt-2 text-lg font-bold text-white">{foundTenant.name}</h3>
-                  <p className="font-mono text-xs text-zinc-500">@{foundTenant.username}</p>
+                  <h3 className="mt-2 text-lg font-bold text-zinc-900">{foundTenant.name}</h3>
+                  <p className="font-mono text-xs font-semibold text-zinc-600">@{foundTenant.username}</p>
                 </div>
               </div>
 
-              <div className="mt-4 grid grid-cols-2 gap-2 text-xs text-[#B0B0C8] border-t border-emerald-500/20 pt-3">
-                <div>Phone: <span className="font-medium text-white">{foundTenant.phone}</span></div>
-                <div>Email: <span className="font-medium text-white">{foundTenant.email ?? '—'}</span></div>
+              <div className="mt-4 grid grid-cols-2 gap-2 text-xs text-zinc-600 border-t border-emerald-200 pt-3">
+                <div>Phone: <span className="font-bold text-zinc-900">{foundTenant.phone}</span></div>
+                <div>Email: <span className="font-bold text-zinc-900">{foundTenant.email ?? '—'}</span></div>
               </div>
 
               <form onSubmit={handleAddByUsername} className="mt-4">
                 <button
                   type="submit"
                   disabled={pending}
-                  className="w-full rounded-full bg-zinc-900 py-2.5 text-xs font-semibold text-white shadow-lg transition-opacity hover:opacity-90 disabled:opacity-60"
+                  className="w-full rounded-xl bg-zinc-900 py-2.5 text-xs font-bold text-white shadow-sm transition-all hover:bg-zinc-800 disabled:opacity-60 active:scale-[0.99]"
                 >
                   {pending ? 'Linking Tenant…' : `Link @${foundTenant.username} to My Portfolio →`}
                 </button>
@@ -332,13 +332,13 @@ export default function TenantForm({
           )}
 
           {error && (
-            <p role="alert" className="rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-400">
+            <p role="alert" className="rounded-xl border border-red-300 bg-red-50 px-3 py-2 text-sm font-semibold text-red-800">
               {error}
             </p>
           )}
 
           {success && (
-            <p className="rounded-lg bg-green-500/10 px-3 py-2 text-sm text-green-400">
+            <p className="rounded-xl border border-emerald-300 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-800">
               ✓ Registered tenant linked successfully!
             </p>
           )}
@@ -363,18 +363,18 @@ export default function TenantForm({
 
           {/* Portal password — only shown when creating a new tenant */}
           {mode === 'create' && (
-            <div className="mt-2 border-t border-[#312D58] pt-4">
+            <div className="mt-2 border-t border-zinc-200 pt-4">
               <div className="mb-3 flex items-center gap-2">
-                <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">
+                <h2 className="text-sm font-bold uppercase tracking-wider text-zinc-800">
                   Tenant Portal Access
                 </h2>
-                <span className="rounded-full border border-zinc-700 bg-zinc-800/60 px-2 py-0.5 text-[10px] font-bold text-zinc-400">
+                <span className="rounded-full border border-zinc-200 bg-zinc-100 px-2 py-0.5 text-[10px] font-semibold text-zinc-600">
                   Optional
                 </span>
               </div>
-              <p className="mb-3 text-xs text-[#6A6A8A]">
+              <p className="mb-3 text-xs text-zinc-600 font-medium">
                 Set a password so this tenant can log in to the Tenant Portal immediately at{' '}
-                <span className="font-mono text-zinc-400">/tenant-portal/login</span>{' '}
+                <span className="font-mono text-zinc-800 font-semibold bg-zinc-100 px-1 py-0.5 rounded border border-zinc-200">/tenant-portal/login</span>{' '}
                 using their email address. If left blank, they can still log in via Phone OTP.
               </p>
               <div className="flex flex-col gap-3">
@@ -384,7 +384,7 @@ export default function TenantForm({
                     <button
                       type="button"
                       onClick={() => setShowPassword((v) => !v)}
-                      className="text-[10px] text-zinc-500 hover:text-zinc-300 transition"
+                      className="text-xs font-semibold text-zinc-600 hover:text-zinc-900 transition"
                     >
                       {showPassword ? 'Hide' : 'Show'}
                     </button>
@@ -410,23 +410,23 @@ export default function TenantForm({
                       className={
                         inputClass +
                         (confirmPassword && confirmPassword !== password
-                          ? ' border-red-500/60'
+                          ? ' border-red-500'
                           : '')
                       }
                     />
                     {confirmPassword && confirmPassword !== password && (
-                      <p className="text-xs text-red-400">Passwords do not match</p>
+                      <p className="text-xs font-semibold text-red-600">Passwords do not match</p>
                     )}
                     {confirmPassword && confirmPassword === password && (
-                      <p className="text-xs text-emerald-400">✓ Passwords match</p>
+                      <p className="text-xs font-semibold text-emerald-600">✓ Passwords match</p>
                     )}
                   </div>
                 )}
               </div>
               {password && (
-                <div className="mt-3 flex items-start gap-2 rounded-lg border border-blue-500/20 bg-blue-500/10 px-3 py-2.5">
+                <div className="mt-3 flex items-start gap-2 rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2.5">
                   <span className="text-sm">🔑</span>
-                  <p className="text-xs text-blue-300">
+                  <p className="text-xs font-medium text-indigo-900">
                     Tenant will be able to log in at{' '}
                     <span className="font-mono font-bold">/tenant-portal/login</span>{' '}
                     using their email and this password immediately.
@@ -437,8 +437,8 @@ export default function TenantForm({
           )}
 
           {mode === 'edit' && (
-            <div className="mt-2 border-t border-[#312D58] pt-4" data-testid="tenancy-details">
-              <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">
+            <div className="mt-2 border-t border-zinc-200 pt-4" data-testid="tenancy-details">
+              <h2 className="mb-3 text-sm font-bold uppercase tracking-wider text-zinc-800">
                 Tenancy Details
               </h2>
               {activeTenancy ? (
@@ -453,9 +453,9 @@ export default function TenantForm({
                   </div>
                 </div>
               ) : (
-                <p className="text-sm text-[#6A6A8A]" data-testid="no-active-tenancy">
+                <p className="text-sm text-zinc-500 font-medium" data-testid="no-active-tenancy">
                   No active tenancy — use{' '}
-                  <span className="font-medium text-zinc-500">Assign to Unit</span> to
+                  <span className="font-bold text-zinc-800">Assign to Unit</span> to
                   create one.
                 </p>
               )}
@@ -463,13 +463,13 @@ export default function TenantForm({
           )}
 
           {error && (
-            <p role="alert" className="rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-400">
+            <p role="alert" className="rounded-xl border border-red-300 bg-red-50 px-3 py-2 text-sm font-semibold text-red-800">
               {error}
             </p>
           )}
 
           {success && (
-            <p className="rounded-lg bg-green-500/10 px-3 py-2 text-sm text-green-400">
+            <p className="rounded-xl border border-emerald-300 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-800">
               ✓ Tenant saved successfully
             </p>
           )}
@@ -477,7 +477,7 @@ export default function TenantForm({
           <button
             type="submit"
             disabled={pending}
-            className="mt-2 rounded-full bg-zinc-900 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90 disabled:opacity-60"
+            className="mt-2 rounded-xl bg-zinc-900 px-6 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-zinc-800 active:scale-95 disabled:opacity-50"
           >
             {pending ? 'Saving…' : mode === 'edit' ? 'Save Changes' : 'Create Tenant'}
           </button>

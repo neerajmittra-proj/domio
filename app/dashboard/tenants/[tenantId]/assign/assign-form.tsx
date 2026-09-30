@@ -7,8 +7,8 @@ import { CURRENCIES, DEFAULT_CURRENCY } from '@/lib/currencies';
 import DatePicker from '@/components/ui/date-picker';
 
 const inputClass =
-  'rounded-lg border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-3 py-2 text-sm text-white outline-none transition placeholder:text-[#B0B0C8] focus:border-[#5B4FE8] focus:ring-2 focus:ring-[#5B4FE8]/20';
-const labelClass = 'text-sm font-medium text-[#E8E8F2]';
+  'rounded-xl border border-zinc-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-zinc-900 shadow-2xs outline-none transition placeholder:text-zinc-400 focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10';
+const labelClass = 'text-xs font-bold uppercase tracking-wider text-zinc-700';
 
 function todayISO() {
   return new Date().toISOString().slice(0, 10);
@@ -126,9 +126,9 @@ export default function AssignForm({
 
   if (available.length === 0) {
     return (
-      <div className="rounded-xl border border-[#312D58] bg-[rgba(255,255,255,0.04)] p-6 text-center">
-        <p className="text-base font-semibold text-white">No Vacant Units Available</p>
-        <p className="mt-1 text-sm text-[#B0B0C8]">
+      <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-6 text-center shadow-xs">
+        <p className="text-base font-bold text-zinc-900">No Vacant Units Available</p>
+        <p className="mt-1 text-sm text-zinc-600">
           All units across your properties are currently occupied. Add a new unit or terminate an existing lease to make a unit vacant.
         </p>
       </div>
@@ -148,7 +148,7 @@ export default function AssignForm({
           className={inputClass}
         >
           {available.map((p) => (
-            <option key={p.id} value={p.id} className="bg-[#17152F] text-white">
+            <option key={p.id} value={p.id} className="bg-white text-zinc-900">
               {p.name} ({p.vacantUnits.length} vacant {p.vacantUnits.length === 1 ? 'unit' : 'units'})
             </option>
           ))}
@@ -157,7 +157,7 @@ export default function AssignForm({
 
       <div className="flex flex-col gap-1.5">
         <label htmlFor="unit" className={labelClass}>
-          Unit <span className="text-[#B0B0C8] font-normal">(vacant only)</span>
+          Unit <span className="text-zinc-500 font-normal lowercase">(vacant only)</span>
         </label>
         <select
           id="unit"
@@ -166,7 +166,7 @@ export default function AssignForm({
           className={inputClass}
         >
           {units.map((u) => (
-            <option key={u.id} value={u.id} className="bg-[#17152F] text-white">
+            <option key={u.id} value={u.id} className="bg-white text-zinc-900">
               {u.unitNumber} — {u.name} (Listed: ₹{u.rentAmount.toLocaleString()}/mo)
             </option>
           ))}
@@ -176,7 +176,7 @@ export default function AssignForm({
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
           <label htmlFor="startDate" className={labelClass}>
-            Lease Start Date <span className="text-[11px] text-[#B0B0C8] font-normal">(MM/DD/YYYY)</span>
+            Lease Start Date <span className="text-[11px] text-zinc-500 font-normal">(MM/DD/YYYY)</span>
           </label>
           <DatePicker
             id="startDate"
@@ -185,12 +185,12 @@ export default function AssignForm({
             onChange={(iso) => setStartDate(iso)}
             placeholder="MM/DD/YYYY"
             ariaLabel="Lease Start Date"
-            className="border-[#312D58] bg-[rgba(255,255,255,0.06)] text-white"
+            className="border-zinc-300 bg-white text-zinc-900"
           />
         </div>
         <div className="flex flex-col gap-1.5">
           <label htmlFor="endDate" className={labelClass}>
-            Lease End Date <span className="text-[11px] text-[#B0B0C8] font-normal">(MM/DD/YYYY)</span>
+            Lease End Date <span className="text-[11px] text-zinc-500 font-normal">(MM/DD/YYYY)</span>
           </label>
           <DatePicker
             id="endDate"
@@ -200,7 +200,7 @@ export default function AssignForm({
             onChange={(iso) => setEndDate(iso)}
             placeholder="MM/DD/YYYY"
             ariaLabel="Lease End Date"
-            className="border-[#312D58] bg-[rgba(255,255,255,0.06)] text-white"
+            className="border-zinc-300 bg-white text-zinc-900"
           />
         </div>
       </div>
@@ -210,17 +210,17 @@ export default function AssignForm({
           <label htmlFor="monthlyRent" className={labelClass}>
             Monthly Rent
           </label>
-          <div className="flex overflow-hidden rounded-lg border border-[#312D58] bg-[rgba(255,255,255,0.06)] focus-within:border-[#5B4FE8] focus-within:ring-2 focus-within:ring-[#5B4FE8]/20 transition">
+          <div className="flex overflow-hidden rounded-xl border border-zinc-300 bg-white focus-within:border-zinc-900 focus-within:ring-2 focus-within:ring-zinc-900/10 transition shadow-2xs">
             <select
               id="currency"
               value={currency}
               onChange={(e) => setCurrency(e.target.value)}
-              className="shrink-0 border-r border-[#312D58] bg-transparent px-2.5 py-2 text-xs font-bold text-[#E8E8F2] outline-none cursor-pointer"
+              className="shrink-0 border-r border-zinc-300 bg-zinc-50 px-2.5 py-2 text-xs font-bold text-zinc-800 outline-none cursor-pointer"
               style={{ width: '4.5rem' }}
               aria-label="Currency"
             >
               {CURRENCIES.map((c) => (
-                <option key={c.code} value={c.code} className="bg-[#17152F] text-white">
+                <option key={c.code} value={c.code} className="bg-white text-zinc-900">
                   {c.symbol} {c.code}
                 </option>
               ))}
@@ -233,7 +233,7 @@ export default function AssignForm({
               required
               value={rent}
               onChange={(e) => setRent(e.target.value)}
-              className="min-w-0 flex-1 bg-transparent px-3 py-2 text-base font-semibold text-white outline-none placeholder:text-[#B0B0C8] placeholder:font-normal"
+              className="min-w-0 flex-1 bg-transparent px-3 py-2 text-base font-bold text-zinc-900 outline-none placeholder:text-zinc-400 placeholder:font-normal"
               placeholder="0.00"
             />
           </div>
@@ -272,7 +272,7 @@ export default function AssignForm({
       </div>
 
       {error && (
-        <div role="alert" className="rounded-xl border border-red-500/30 bg-red-500/10 p-3.5 text-xs font-medium text-red-300">
+        <div role="alert" className="rounded-xl border border-red-300 bg-red-50 p-3.5 text-xs font-semibold text-red-800">
           ⚠️ {error}
         </div>
       )}
@@ -280,7 +280,7 @@ export default function AssignForm({
       <button
         type="submit"
         disabled={pending || !unitId}
-        className="mt-2 rounded-xl bg-gradient-to-r from-[#5B4FE8] to-[#8B6FE8] py-3 text-sm font-semibold text-white shadow-[0_0_24px_rgba(91,79,232,0.3)] transition-all hover:opacity-90 active:scale-98 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
+        className="mt-2 rounded-xl bg-zinc-900 py-3 text-sm font-bold text-white shadow-sm transition-all hover:bg-zinc-800 active:scale-98 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
       >
         {pending ? 'Assigning Unit & Creating Lease…' : '✓ Assign Unit & Activate Lease'}
       </button>

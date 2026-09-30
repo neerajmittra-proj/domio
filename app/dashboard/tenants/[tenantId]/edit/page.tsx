@@ -17,18 +17,20 @@ export default async function EditTenantPage({
   if (!tenant) notFound();
 
   return (
-    <div className="mx-auto max-w-lg">
-      <Link
-        href="/dashboard/tenants"
-        className="text-sm text-[#E8E8F2] transition-colors hover:text-white"
-      >
-        ← Back to Tenants
-      </Link>
+    <div className="min-h-full bg-[#fafaf9] px-4 py-8 sm:px-6">
+      <div className="mx-auto max-w-2xl">
+        <Link
+          href={`/dashboard/tenants/${tenant.id}`}
+          className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-zinc-700 transition-colors hover:bg-zinc-100 hover:text-zinc-900 shadow-xs"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          Back to {tenant.name}
+        </Link>
 
-      <div className="mt-4 rounded-2xl border border-[#312D58] bg-[#17152F] p-8 shadow-[0_10px_30px_-12px_rgba(0,0,0,0.9)]">
-        <h1 className="mb-6 text-2xl font-semibold tracking-tight text-white">
-          Edit Tenant
-        </h1>
+        <div className="mt-4 rounded-2xl border border-zinc-200 bg-white p-6 sm:p-8 shadow-sm">
+          <h1 className="mb-6 text-2xl font-bold tracking-tight text-zinc-900">
+            Edit Tenant
+          </h1>
         <TenantForm
           mode="edit"
           tenant={{
@@ -54,6 +56,7 @@ export default async function EditTenantPage({
               : null
           }
         />
+        </div>
       </div>
     </div>
   );

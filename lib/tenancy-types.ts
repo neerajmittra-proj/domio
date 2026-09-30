@@ -13,12 +13,11 @@ const STATUS_LABELS: Record<TenancyStatus, string> = {
   TERMINATED: 'Terminated',
 };
 
-// AverIQ brand badges — ACTIVE lavender, EXPIRED muted, TERMINATED red.
+// AverIQ / Domio status badges — high contrast for human readability.
 const STATUS_BADGE: Record<TenancyStatus, string> = {
-  ACTIVE: 'border border-[#5B4FE8]/30 bg-[#5B4FE8]/15 text-[#8B6FE8]',
-  EXPIRED:
-    'border border-[#312D58] bg-[rgba(255,255,255,0.06)] text-[#B0B0C8]',
-  TERMINATED: 'border border-red-500/30 bg-red-500/10 text-red-400',
+  ACTIVE: 'border border-emerald-300 bg-emerald-50 text-emerald-800 font-bold',
+  EXPIRED: 'border border-zinc-300 bg-zinc-100 text-zinc-700 font-semibold',
+  TERMINATED: 'border border-red-200 bg-red-50 text-red-700 font-semibold',
 };
 
 export function tenancyStatusLabel(status: TenancyStatus): string {

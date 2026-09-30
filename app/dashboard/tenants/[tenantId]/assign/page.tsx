@@ -24,22 +24,25 @@ export default async function AssignTenantPage({
   const properties = await listVacantUnitsByProperty(ds.ownerId, session.user.role);
 
   return (
-    <div className="mx-auto max-w-xl">
-      <Link
-        href={`/dashboard/tenants/${tenantId}`}
-        className="text-sm text-[#E8E8F2] transition-colors hover:text-white"
-      >
-        ← Back to {tenant.name}
-      </Link>
+    <div className="min-h-full bg-[#fafaf9] px-4 py-8 sm:px-6">
+      <div className="mx-auto max-w-2xl">
+        <Link
+          href={`/dashboard/tenants/${tenantId}`}
+          className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-zinc-700 transition-colors hover:bg-zinc-100 hover:text-zinc-900 shadow-xs"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          Back to {tenant.name}
+        </Link>
 
-      <div className="mt-4 rounded-2xl border border-[#312D58] bg-[#17152F] p-8 shadow-[0_10px_30px_-12px_rgba(0,0,0,0.9)]">
-        <h1 className="text-2xl font-semibold tracking-tight text-white">
-          Assign to Unit
-        </h1>
-        <p className="mt-1 mb-6 text-sm text-[#B0B0C8]">
-          Create a tenancy for {tenant.name}.
-        </p>
-        <AssignForm tenantId={tenantId} properties={properties} />
+        <div className="mt-4 rounded-2xl border border-zinc-200 bg-white p-6 sm:p-8 shadow-sm">
+          <h1 className="text-2xl font-bold tracking-tight text-zinc-900">
+            Assign to Unit
+          </h1>
+          <p className="mt-1 mb-6 text-sm text-zinc-600">
+            Create a tenancy for {tenant.name}.
+          </p>
+          <AssignForm tenantId={tenantId} properties={properties} />
+        </div>
       </div>
     </div>
   );
