@@ -9,6 +9,7 @@ import type {
 } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { markOverdueBills } from '@/lib/utilities';
+import { markOverdueRent } from '@/lib/rent-ledger';
 
 export type UnitDetail = {
   unit: {
@@ -82,7 +83,7 @@ export async function getUnitDetail(
   ownerId: string,
 ): Promise<UnitDetail | null> {
   // Keep utility bill statuses fresh before we read them.
-  await markOverdueBills(ownerId);
+  await Promise.all([markOverdueBills(ownerId), markOverdueRent(ownerId)]);
 
   const [unit, billAgg] = await Promise.all([
     prisma.subProperty.findUnique({

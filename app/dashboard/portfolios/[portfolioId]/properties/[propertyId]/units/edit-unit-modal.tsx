@@ -108,7 +108,7 @@ export default function EditUnitModal({
       name: name.trim(),
       code: code.trim() || undefined,
       unitNumber: code.trim() || undefined,
-      status,
+      ...(unit.hasChildren ? {} : { status }),
       rentAmount: rentNum,
       areaSqft: areaSqft.trim() ? parseFloat(areaSqft) : null,
       notes: notes.trim() || null,
@@ -140,7 +140,7 @@ export default function EditUnitModal({
         ...unit,
         name: payload.name,
         code: payload.code || unit.code,
-        status: payload.status,
+        status: unit.hasChildren ? unit.status : status,
         rentAmount: payload.rentAmount,
         areaSqft: payload.areaSqft,
         notes: payload.notes,
@@ -163,17 +163,17 @@ export default function EditUnitModal({
       role="dialog"
       aria-modal="true"
       onClick={onClose}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 overflow-y-auto animate-in fade-in duration-150"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-navy/50 backdrop-blur-xs p-4 overflow-y-auto animate-in fade-in duration-150"
     >
       <div
         ref={trapRef}
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-lg rounded-3xl border border-zinc-200 bg-white shadow-2xl overflow-hidden my-8 animate-in zoom-in-95 duration-150"
+        className="w-full max-w-lg rounded-3xl border border-zinc-200 bg-card shadow-2xl overflow-hidden my-8 animate-in zoom-in-95 duration-150"
       >
         {/* Modal Header */}
         <div className="flex items-center justify-between border-b border-zinc-100 bg-zinc-50/80 px-6 py-4">
           <div className="flex items-center gap-2.5">
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white border border-zinc-200 text-lg shadow-2xs">
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-card border border-zinc-200 text-lg shadow-2xs">
               {icon}
             </span>
             <div>
@@ -209,7 +209,16 @@ export default function EditUnitModal({
             </div>
           )}
 
-          {/* Status Selection */}
+          {/* Status Selection — only leaf units (no sub-units) carry a status */}
+          {unit.hasChildren ? (
+            <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-3 text-xs text-zinc-600">
+              <span className="font-bold uppercase tracking-wider text-zinc-700">Status</span>
+              <p className="mt-1">
+                This unit has sub-units, so it has no status of its own. Occupied, vacant and
+                maintenance are set on each sub-unit; this unit only shows a roll-up of them.
+              </p>
+            </div>
+          ) : (
           <div className="space-y-1.5">
             <label className="text-xs font-bold uppercase tracking-wider text-zinc-700 flex items-center justify-between">
               <span>Status <span className="text-red-500 font-bold ml-0.5">*</span></span>
@@ -226,7 +235,7 @@ export default function EditUnitModal({
                 className={`flex flex-col items-center justify-center rounded-2xl border p-2.5 text-center transition cursor-pointer ${
                   status === 'VACANT'
                     ? 'border-emerald-500 bg-emerald-50/80 text-emerald-900 ring-2 ring-emerald-500/20 shadow-xs'
-                    : 'border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50'
+                    : 'border-zinc-200 bg-card text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50'
                 }`}
               >
                 <span className="text-sm">🟢</span>
@@ -240,7 +249,7 @@ export default function EditUnitModal({
                 className={`flex flex-col items-center justify-center rounded-2xl border p-2.5 text-center transition cursor-pointer ${
                   status === 'OCCUPIED'
                     ? 'border-blue-500 bg-blue-50/80 text-blue-900 ring-2 ring-blue-500/20 shadow-xs'
-                    : 'border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50'
+                    : 'border-zinc-200 bg-card text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50'
                 }`}
               >
                 <span className="text-sm">🔵</span>
@@ -254,7 +263,7 @@ export default function EditUnitModal({
                 className={`flex flex-col items-center justify-center rounded-2xl border p-2.5 text-center transition cursor-pointer ${
                   status === 'MAINTENANCE'
                     ? 'border-amber-500 bg-amber-50/80 text-amber-900 ring-2 ring-amber-500/20 shadow-xs'
-                    : 'border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50'
+                    : 'border-zinc-200 bg-card text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50'
                 }`}
               >
                 <span className="text-sm">🟡</span>
@@ -268,13 +277,14 @@ export default function EditUnitModal({
               </p>
             )}
           </div>
+          )}
 
           {/* Price / Rent Amount */}
           <div className="space-y-1.5">
             <label htmlFor="edit-rent" className="text-xs font-bold uppercase tracking-wider text-zinc-700">
               Price / Rent Amount (Monthly) <span className="text-red-500 font-bold ml-0.5">*</span>
             </label>
-            <div className="flex overflow-hidden rounded-xl border border-zinc-300 bg-white shadow-xs focus-within:border-zinc-900 focus-within:ring-2 focus-within:ring-zinc-900/10 transition">
+            <div className="flex overflow-hidden rounded-xl border border-zinc-300 bg-card shadow-xs focus-within:border-zinc-900 focus-within:ring-2 focus-within:ring-zinc-900/10 transition">
               <select
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value)}
@@ -297,7 +307,7 @@ export default function EditUnitModal({
                 value={rentAmount}
                 onChange={(e) => setRentAmount(e.target.value)}
                 placeholder="0.00"
-                className="min-w-0 flex-1 bg-white px-3.5 py-2.5 text-base font-semibold text-zinc-900 outline-none placeholder:text-zinc-400"
+                className="min-w-0 flex-1 bg-card px-3.5 py-2.5 text-base font-semibold text-zinc-900 outline-none placeholder:text-zinc-400"
               />
             </div>
             {unit.hasChildren && (
@@ -319,7 +329,7 @@ export default function EditUnitModal({
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 shadow-xs outline-none transition focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10"
+                className="w-full rounded-xl border border-zinc-300 bg-card px-3 py-2 text-sm text-zinc-900 shadow-xs outline-none transition focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10"
               />
             </div>
 
@@ -333,7 +343,7 @@ export default function EditUnitModal({
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
                 placeholder="e.g. 101, F1, BED-A"
-                className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 shadow-xs outline-none transition focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10"
+                className="w-full rounded-xl border border-zinc-300 bg-card px-3 py-2 text-sm text-zinc-900 shadow-xs outline-none transition focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10"
               />
             </div>
           </div>
@@ -351,7 +361,7 @@ export default function EditUnitModal({
               value={areaSqft}
               onChange={(e) => setAreaSqft(e.target.value)}
               placeholder="e.g. 350"
-              className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 shadow-xs outline-none transition focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10"
+              className="w-full rounded-xl border border-zinc-300 bg-card px-3 py-2 text-sm text-zinc-900 shadow-xs outline-none transition focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10"
             />
           </div>
 
@@ -366,7 +376,7 @@ export default function EditUnitModal({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Notes, amenities, or features..."
-              className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 shadow-xs outline-none transition focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10 resize-y"
+              className="w-full rounded-xl border border-zinc-300 bg-card px-3 py-2 text-sm text-zinc-900 shadow-xs outline-none transition focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10 resize-y"
             />
           </div>
 
@@ -376,14 +386,14 @@ export default function EditUnitModal({
               type="button"
               onClick={onClose}
               disabled={pending}
-              className="rounded-full border border-zinc-200 bg-white px-4 py-2 text-xs font-semibold text-zinc-700 transition hover:bg-zinc-100 hover:text-zinc-900 disabled:opacity-60 cursor-pointer"
+              className="rounded-full border border-zinc-200 bg-card px-4 py-2 text-xs font-semibold text-zinc-700 transition hover:bg-zinc-100 hover:text-zinc-900 disabled:opacity-60 cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={pending}
-              className="inline-flex items-center gap-1.5 rounded-full bg-zinc-900 px-5 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-zinc-800 disabled:opacity-60 cursor-pointer"
+              className="inline-flex items-center gap-1.5 rounded-full bg-brand-grad px-5 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-grad-hover disabled:opacity-60 cursor-pointer"
             >
               {pending ? (
                 <>

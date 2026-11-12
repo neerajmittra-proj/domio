@@ -2,7 +2,7 @@ import type Anthropic from '@anthropic-ai/sdk';
 import { prisma } from '@/lib/prisma';
 import { recordAudit, type AuditActor } from '@/lib/audit';
 import { normalizeLedgerAmount } from '@/lib/ledger';
-import { resolveRentLedgerAccess } from '@/lib/manager-access';
+import { getManagerScope, resolveRentLedgerAccess } from '@/lib/manager-access';
 
 // ── Tool definitions (sent to Claude) ───────────────────────────────────────
 export const TOOLS: Anthropic.Tool[] = [
@@ -118,6 +118,49 @@ async function findTenancyFuzzy(
     tenancies.find((t) => q.includes(t.tenant.name.toLowerCase().split(' ')[0])) ??
     null
   );
+}
+
+// Strict resolver for WRITE tools. Unlike the read-side fuzzy match it never
+// guesses: an ambiguous name is rejected so money is never booked against the
+// wrong tenant. `subPropertyIds` limits the candidates (manager write scope).
+async function findTenancyForWrite(
+  ownerId: string,
+  tenantName: string,
+  subPropertyIds?: string[],
+) {
+  const q = tenantName.trim().toLowerCase();
+  if (!q) return { error: 'A tenant name is required.' } as const;
+  const tenancies = await prisma.tenancy.findMany({
+    where: {
+      ownerId,
+      status: 'ACTIVE',
+      ...(subPropertyIds ? { subPropertyId: { in: subPropertyIds } } : {}),
+    },
+    select: {
+      id: true,
+      monthlyRent: true,
+      subPropertyId: true,
+      rentableEntityId: true,
+      tenant: { select: { name: true } },
+      subProperty: { select: { name: true } },
+      rentableEntity: { select: { name: true } },
+      ledgerEntries: { select: { type: true, amount: true, date: true } },
+    },
+  });
+  const exact = tenancies.filter((t) => t.tenant.name.trim().toLowerCase() === q);
+  const partial = tenancies.filter((t) => t.tenant.name.toLowerCase().includes(q));
+  const hits = exact.length ? exact : partial;
+  if (hits.length === 1) return { tenancy: hits[0] } as const;
+  if (hits.length > 1) {
+    const names = hits
+      .map((t) => `${t.tenant.name} (${t.subProperty?.name ?? t.rentableEntity?.name ?? 'Unit'})`)
+      .slice(0, 8)
+      .join(', ');
+    return {
+      error: `More than one active tenancy matches "${tenantName}": ${names}. Ask the user which one, using the full name.`,
+    } as const;
+  }
+  return { error: `No active tenant found matching "${tenantName}".` } as const;
 }
 
 // ── Tool runner ─────────────────────────────────────────────────────────────
@@ -270,15 +313,28 @@ export async function runTool(
 
     case 'create_payment':
     case 'create_charge': {
-      const t = await findTenancyFuzzy(ownerId, String(input.tenantName ?? ''));
-      if (!t) return { error: `No active tenant found matching "${input.tenantName}".` };
-
       // Ask Domi is not a permission bypass: enforce the same per-unit
       // rent-ledger rights as the UI and the API. Owners pass; a manager must
       // have canEditRentLedger on this unit.
       if (!actor) {
         return { error: 'This action requires an authenticated user.' };
       }
+      // Managers can only target units they hold rent-ledger edit rights on, so
+      // a same-named tenant elsewhere in the portfolio is never picked up.
+      let writeUnits: string[] | undefined;
+      if (actor.role === 'MANAGER') {
+        const scope = await getManagerScope(actor.id);
+        writeUnits = [...scope.rentEditSubPropertyIds];
+      } else if (actor.role !== 'OWNER') {
+        return { error: 'You do not have permission to record rent entries.' };
+      }
+      const found = await findTenancyForWrite(
+        ownerId,
+        String(input.tenantName ?? ''),
+        writeUnits,
+      );
+      if ('error' in found) return { error: found.error };
+      const t = found.tenancy;
       const acc = await resolveRentLedgerAccess(actor, {
         subPropertyId: t.subPropertyId ?? undefined,
       });
@@ -289,8 +345,8 @@ export async function runTool(
       }
 
       const magnitude = Math.round(Math.abs(Number(input.amount)));
-      if (!Number.isFinite(magnitude) || magnitude <= 0) {
-        return { error: 'A positive amount is required.' };
+      if (!Number.isFinite(magnitude) || magnitude <= 0 || magnitude > 1_000_000_000) {
+        return { error: 'A positive amount (up to 1,000,000,000) is required.' };
       }
       const when = new Date(String(input.date));
       if (Number.isNaN(when.getTime())) return { error: 'A valid date (YYYY-MM-DD) is required.' };

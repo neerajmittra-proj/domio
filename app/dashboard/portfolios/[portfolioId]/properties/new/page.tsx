@@ -15,6 +15,7 @@ export default async function NewPropertyPage({
 
   const { portfolioId } = await params;
   const ds = await resolveDataScope(session.user);
+  if (ds.isManager) notFound(); // managers cannot create properties
   const portfolio = await getOwnedPortfolio(portfolioId, ds.ownerId);
   if (!portfolio) notFound();
 
@@ -34,7 +35,7 @@ export default async function NewPropertyPage({
         ]}
       />
 
-      <div className="mt-4 rounded-2xl border border-zinc-200/90 bg-white p-6 sm:p-8 shadow-xs">
+      <div className="mt-4 rounded-2xl border border-zinc-200/90 bg-card p-6 sm:p-8 shadow-xs">
         <h1 className="mb-6 text-xl sm:text-2xl font-bold tracking-tight text-zinc-900">
           Add Property
         </h1>

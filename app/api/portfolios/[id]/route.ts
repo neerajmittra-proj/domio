@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { resolveDataScope } from '@/lib/manager-access';
+import { deletePropertiesCascade, deleteUtilityAccountsCascade } from '@/lib/cascade-delete';
 import type { PortfolioType } from '@prisma/client';
 
 const VALID_PORTFOLIO_TYPES: PortfolioType[] = [
@@ -24,7 +25,13 @@ export async function GET(
   const ds = await resolveDataScope(session.user);
 
   const portfolio = await prisma.portfolio.findFirst({
-    where: { id, ownerId: ds.ownerId },
+    where: {
+      id,
+      ownerId: ds.ownerId,
+      ...(ds.isManager
+        ? { properties: { some: { id: { in: ds.scope.propertyIds } } } }
+        : {}),
+    },
     select: {
       id: true,
       displayId: true,
@@ -33,6 +40,7 @@ export async function GET(
       description: true,
       createdAt: true,
       properties: {
+        where: ds.isManager ? { id: { in: ds.scope.propertyIds } } : undefined,
         select: { id: true, name: true, displayId: true },
       },
     },
@@ -158,9 +166,22 @@ export async function DELETE(
   }
 
   try {
-    await prisma.portfolio.delete({
-      where: { id },
-    });
+    // The schema has no ON DELETE CASCADE, so remove everything under the
+    // portfolio (properties, units, tenancies + ledgers, utilities, expenses)
+    // first, atomically. The confirm dialog promises this.
+    await prisma.$transaction(
+      async (tx) => {
+        const props = await tx.property.findMany({
+          where: { portfolioId: id },
+          select: { id: true },
+        });
+        await deletePropertiesCascade(tx, props.map((p) => p.id));
+        await deleteUtilityAccountsCascade(tx, { portfolioId: id });
+        await tx.expense.deleteMany({ where: { portfolioId: id } });
+        await tx.portfolio.delete({ where: { id } });
+      },
+      { timeout: 60000, maxWait: 10000 },
+    );
 
     return NextResponse.json({ success: true });
   } catch (error: any) {

@@ -114,7 +114,7 @@ export default function ExportButton({
         aria-haspopup="menu"
         aria-expanded={open}
         data-testid="export-button"
-        className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 text-xs font-semibold text-zinc-700 shadow-sm transition-colors hover:bg-zinc-50 hover:text-zinc-900 disabled:cursor-not-allowed disabled:opacity-50"
+        className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-zinc-200 bg-card px-3 text-xs font-semibold text-zinc-700 shadow-sm transition-colors hover:bg-zinc-50 hover:text-zinc-900 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {label}
         <span aria-hidden className="text-[10px] text-zinc-400">
@@ -126,7 +126,7 @@ export default function ExportButton({
         <div
           role="menu"
           className={
-            'absolute z-50 mt-1 w-52 overflow-hidden rounded-xl border border-zinc-200 bg-white py-1 shadow-lg ' +
+            'absolute z-50 mt-1 w-52 overflow-hidden rounded-xl border border-zinc-200 bg-card py-1 shadow-lg ' +
             (align === 'right' ? 'right-0' : 'left-0')
           }
         >

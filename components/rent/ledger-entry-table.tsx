@@ -27,8 +27,8 @@ const dmyFmt = new Intl.DateTimeFormat('en-GB', {
 });
 
 const inputClass =
-  'rounded-lg border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-3 py-2 text-sm text-white outline-none transition placeholder:text-[#B0B0C8] focus:border-zinc-700 focus:ring-2 focus:ring-zinc-500/20';
-const labelClass = 'text-sm font-medium text-[#E8E8F2]';
+  'rounded-lg border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-3 py-2 text-sm text-[#223144] outline-none transition placeholder:text-[#7A929C] focus:border-zinc-700 focus:ring-2 focus:ring-zinc-500/20';
+const labelClass = 'text-sm font-medium text-[#223144]';
 
 function today() {
   return new Date().toISOString().slice(0, 10);
@@ -37,11 +37,11 @@ function today() {
 const TYPE_BADGE: Record<LedgerEntryType, { label: string; cls: string }> = {
   RENT_CHARGE: {
     label: 'Charge',
-    cls: 'bg-[rgba(232,160,32,0.12)] text-[#E8A020] border-[rgba(232,160,32,0.3)]',
+    cls: 'bg-[rgba(232,160,32,0.12)] text-[#B26A0B] border-[rgba(232,160,32,0.3)]',
   },
   PAYMENT: {
     label: 'Payment',
-    cls: 'bg-[rgba(34,197,94,0.12)] text-green-400 border-[rgba(34,197,94,0.3)]',
+    cls: 'bg-[rgba(34,197,94,0.12)] text-green-700 border-[rgba(34,197,94,0.3)]',
   },
   ADJUSTMENT: {
     label: 'Adjustment',
@@ -211,14 +211,14 @@ export default function LedgerEntryTable({
             <button
               type="button"
               onClick={() => openAdd('PAYMENT')}
-              className="rounded-full border border-[rgba(34,197,94,0.4)] bg-[rgba(34,197,94,0.12)] px-3 py-1 text-xs font-medium text-green-400 transition-colors hover:bg-[rgba(34,197,94,0.2)]"
+              className="rounded-full border border-[rgba(34,197,94,0.4)] bg-[rgba(34,197,94,0.12)] px-3 py-1 text-xs font-medium text-green-700 transition-colors hover:bg-[rgba(34,197,94,0.2)]"
             >
               + Add Payment
             </button>
             <button
               type="button"
               onClick={() => openAdd('RENT_CHARGE')}
-              className="rounded-full border border-zinc-300 bg-zinc-900 px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-zinc-800"
+              className="rounded-full border border-zinc-300 bg-brand-grad px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-brand-grad-hover"
             >
               + Add Charge
             </button>
@@ -237,14 +237,14 @@ export default function LedgerEntryTable({
         onClick={() => {
           if (!pending) setModal(null);
         }}
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+        className="fixed inset-0 z-50 flex items-center justify-center bg-navy/60 p-4"
       >
         <form
           onClick={(e) => e.stopPropagation()}
           onSubmit={submitAdd}
-          className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-[rgba(14,12,34,0.9)] p-6 shadow-2xl backdrop-blur-xl"
+          className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-[rgba(255,255,255,0.95)] p-6 shadow-2xl backdrop-blur-xl"
         >
-          <h2 className="text-lg font-semibold tracking-tight text-white">
+          <h2 className="text-lg font-semibold tracking-tight text-[#223144]">
             {modal.type === 'PAYMENT' ? 'Add Payment' : 'Add Charge'}
           </h2>
           <div className="mt-4 flex flex-col gap-4">
@@ -264,7 +264,7 @@ export default function LedgerEntryTable({
             <div className="flex flex-col gap-1.5">
               <label htmlFor="le-rentfor" className={labelClass}>
                 Rent For{' '}
-                <span className="text-xs text-[#6A6A8A]">
+                <span className="text-xs text-[#3E5560]">
                   (which period this covers)
                 </span>
               </label>
@@ -308,7 +308,7 @@ export default function LedgerEntryTable({
             </div>
           </div>
           {formError && (
-            <p role="alert" className="mt-4 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-400">
+            <p role="alert" className="mt-4 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-700">
               {formError}
             </p>
           )}
@@ -319,14 +319,14 @@ export default function LedgerEntryTable({
                 if (!pending) setModal(null);
               }}
               disabled={pending}
-              className="rounded-full border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-4 py-2 text-sm font-medium text-[#E8E8F2] transition-colors hover:text-white disabled:opacity-60"
+              className="rounded-full border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-4 py-2 text-sm font-medium text-[#223144] transition-colors hover:text-[#223144] disabled:opacity-60"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={pending}
-              className="rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90 disabled:opacity-60"
+              className="rounded-full bg-brand-grad px-4 py-2 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90 disabled:opacity-60"
             >
               {pending ? 'Saving…' : 'Save'}
             </button>
@@ -345,14 +345,14 @@ export default function LedgerEntryTable({
         onClick={() => {
           if (!pending) setModal(null);
         }}
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+        className="fixed inset-0 z-50 flex items-center justify-center bg-navy/60 p-4"
       >
         <form
           onClick={(e) => e.stopPropagation()}
           onSubmit={submitEdit}
-          className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-[rgba(14,12,34,0.9)] p-6 shadow-2xl backdrop-blur-xl"
+          className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-[rgba(255,255,255,0.95)] p-6 shadow-2xl backdrop-blur-xl"
         >
-          <h2 className="text-lg font-semibold tracking-tight text-white">
+          <h2 className="text-lg font-semibold tracking-tight text-[#223144]">
             Edit Entry
           </h2>
           <div className="mt-4 flex flex-col gap-4">
@@ -388,7 +388,7 @@ export default function LedgerEntryTable({
             <div className="flex flex-col gap-1.5">
               <label htmlFor="le-rentfor" className={labelClass}>
                 Rent For{' '}
-                <span className="text-xs text-[#6A6A8A]">
+                <span className="text-xs text-[#3E5560]">
                   (which period this covers)
                 </span>
               </label>
@@ -406,7 +406,7 @@ export default function LedgerEntryTable({
               <label htmlFor="le-amt" className={labelClass}>
                 Amount (₹)
                 {isAdjustment && (
-                  <span className="ml-1 text-xs text-[#6A6A8A]">
+                  <span className="ml-1 text-xs text-[#3E5560]">
                     (negative = increases what tenant owes)
                   </span>
                 )}
@@ -440,7 +440,7 @@ export default function LedgerEntryTable({
             <div className="flex flex-col gap-1.5">
               <label htmlFor="le-reason" className={labelClass}>
                 Reason for change{' '}
-                <span className="text-xs text-[#6A6A8A]">(optional)</span>
+                <span className="text-xs text-[#3E5560]">(optional)</span>
               </label>
               <input
                 id="le-reason"
@@ -452,7 +452,7 @@ export default function LedgerEntryTable({
             </div>
           </div>
           {formError && (
-            <p role="alert" className="mt-4 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-400">
+            <p role="alert" className="mt-4 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-700">
               {formError}
             </p>
           )}
@@ -463,14 +463,14 @@ export default function LedgerEntryTable({
                 if (!pending) setModal(null);
               }}
               disabled={pending}
-              className="rounded-full border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-4 py-2 text-sm font-medium text-[#E8E8F2] transition-colors hover:text-white disabled:opacity-60"
+              className="rounded-full border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-4 py-2 text-sm font-medium text-[#223144] transition-colors hover:text-[#223144] disabled:opacity-60"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={pending}
-              className="rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90 disabled:opacity-60"
+              className="rounded-full bg-brand-grad px-4 py-2 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90 disabled:opacity-60"
             >
               {pending ? 'Saving…' : 'Save changes'}
             </button>
@@ -490,7 +490,7 @@ export default function LedgerEntryTable({
     return (
       <>
         {renderHeader()}
-        <p className="px-1 py-3 text-sm text-[#B0B0C8]">Loading ledger…</p>
+        <p className="px-1 py-3 text-sm text-[#3E5560]">Loading ledger…</p>
         {modalEl}
       </>
     );
@@ -500,7 +500,7 @@ export default function LedgerEntryTable({
     return (
       <>
         {renderHeader()}
-        <p className="px-1 py-3 text-sm text-red-400">{loadError}</p>
+        <p className="px-1 py-3 text-sm text-red-700">{loadError}</p>
         {modalEl}
       </>
     );
@@ -539,41 +539,41 @@ export default function LedgerEntryTable({
 
       {/* Summary cards */}
       <div className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <div className="rounded-xl border border-zinc-200 bg-[#100d24] p-4">
+        <div className="rounded-xl border border-zinc-200 bg-[#F6FAFB] p-4">
           <p className="text-xs uppercase tracking-wide text-zinc-500">
             Current Balance
           </p>
           <p
             className={
-              'mt-1 text-xl font-bold ' + (owes ? 'text-red-400' : 'text-green-400')
+              'mt-1 text-xl font-bold ' + (owes ? 'text-red-700' : 'text-green-700')
             }
           >
             {formatMoney(Math.abs(currentBalance))}
           </p>
-          <p className="mt-0.5 text-xs text-[#6A6A8A]">
+          <p className="mt-0.5 text-xs text-[#3E5560]">
             {owes ? 'Outstanding (tenant owes)' : 'Settled / in credit'}
           </p>
         </div>
-        <div className="rounded-xl border border-zinc-200 bg-[#100d24] p-4">
+        <div className="rounded-xl border border-zinc-200 bg-[#F6FAFB] p-4">
           <p className="text-xs uppercase tracking-wide text-zinc-500">
             Total Charged
           </p>
-          <p className="mt-1 text-xl font-bold text-[#E8A020]">
+          <p className="mt-1 text-xl font-bold text-[#B26A0B]">
             {formatMoney(totalCharged)}
           </p>
         </div>
-        <div className="rounded-xl border border-zinc-200 bg-[#100d24] p-4">
+        <div className="rounded-xl border border-zinc-200 bg-[#F6FAFB] p-4">
           <p className="text-xs uppercase tracking-wide text-zinc-500">
             Total Paid
           </p>
-          <p className="mt-1 text-xl font-bold text-green-400">
+          <p className="mt-1 text-xl font-bold text-green-700">
             {formatMoney(totalPaid)}
           </p>
         </div>
       </div>
 
       {rows.length === 0 ? (
-        <p className="px-1 py-3 text-sm text-[#B0B0C8]">
+        <p className="px-1 py-3 text-sm text-[#3E5560]">
           No ledger entries yet. Add a charge or payment to get started.
         </p>
       ) : (
@@ -602,7 +602,7 @@ export default function LedgerEntryTable({
                     key={e.id}
                     className="transition-colors hover:bg-zinc-50"
                   >
-                    <td className="whitespace-nowrap px-3 py-2 text-white">
+                    <td className="whitespace-nowrap px-3 py-2 text-[#223144]">
                       {dmyFmt.format(new Date(e.date))}
                     </td>
                     <td className="whitespace-nowrap px-3 py-2 text-zinc-500">
@@ -622,7 +622,7 @@ export default function LedgerEntryTable({
                     <td
                       className={
                         'whitespace-nowrap px-3 py-2 text-right font-medium ' +
-                        (isCredit ? 'text-green-400' : 'text-red-400')
+                        (isCredit ? 'text-green-700' : 'text-red-700')
                       }
                     >
                       {isCredit ? '+' : '−'}
@@ -631,7 +631,7 @@ export default function LedgerEntryTable({
                     <td
                       className={
                         'whitespace-nowrap px-3 py-2 text-right font-medium ' +
-                        (e.running < 0 ? 'text-red-400' : 'text-white')
+                        (e.running < 0 ? 'text-red-700' : 'text-[#223144]')
                       }
                     >
                       {e.running < 0 ? '−' : ''}
@@ -647,7 +647,7 @@ export default function LedgerEntryTable({
                             type="button"
                             onClick={() => openEdit(e)}
                             disabled={pending}
-                            className="rounded-full border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-2.5 py-1 text-xs text-[#B0B0C8] transition-colors hover:text-white disabled:opacity-50"
+                            className="rounded-full border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-2.5 py-1 text-xs text-[#3E5560] transition-colors hover:text-[#223144] disabled:opacity-50"
                           >
                             Edit
                           </button>
@@ -655,7 +655,7 @@ export default function LedgerEntryTable({
                             type="button"
                             onClick={() => deleteEntry(e)}
                             disabled={pending}
-                            className="rounded-full border border-[rgba(239,68,68,0.3)] bg-[rgba(239,68,68,0.1)] px-2.5 py-1 text-xs text-red-400 transition-colors hover:bg-[rgba(239,68,68,0.2)] disabled:opacity-50"
+                            className="rounded-full border border-[rgba(239,68,68,0.3)] bg-[rgba(239,68,68,0.1)] px-2.5 py-1 text-xs text-red-700 transition-colors hover:bg-[rgba(239,68,68,0.2)] disabled:opacity-50"
                           >
                             Delete
                           </button>

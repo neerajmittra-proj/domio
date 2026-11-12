@@ -28,11 +28,11 @@ export default function DomioFeatures() {
   ];
 
   return (
-    <section className="bg-[#fafaf9] py-16 sm:py-20 border-b border-[#e1e2e3]">
+    <section className="bg-[#FFFFFF] py-16 sm:py-20 border-b border-[#DCE9EC]">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section Heading */}
         <div className="text-center">
-          <h2 className="text-3xl font-extrabold tracking-tight text-black sm:text-4xl">
+          <h2 className="text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">
             Why landlords choose Domio?
           </h2>
           <p className="mt-2 text-sm sm:text-base text-zinc-600">
@@ -45,10 +45,10 @@ export default function DomioFeatures() {
           {features.map((f) => (
             <div
               key={f.title}
-              className="flex flex-col justify-between rounded-2xl border border-[#e1e2e3] bg-white p-7 shadow-xs transition-all hover:shadow-md hover:border-zinc-300"
+              className="flex flex-col justify-between rounded-2xl border border-[#DCE9EC] bg-card p-7 shadow-xs transition-all hover:shadow-md hover:border-zinc-300"
             >
               <div>
-                <h3 className="text-xl font-bold text-black">{f.title}</h3>
+                <h3 className="text-xl font-bold text-ink">{f.title}</h3>
                 <p className="mt-3 text-sm text-zinc-600 leading-relaxed">
                   {f.description}
                 </p>
@@ -57,7 +57,7 @@ export default function DomioFeatures() {
               <div className="mt-6 pt-4 border-t border-zinc-100">
                 <Link
                   href={f.link}
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-black transition-colors hover:text-zinc-700"
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-ink transition-colors hover:text-zinc-700"
                 >
                   {f.action} →
                 </Link>

@@ -1,7 +1,9 @@
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { auth } from '@/auth';
-import { getOwnedTenantDetail } from '@/lib/tenants';
+import { getOwnedTenantDetail, managerTenantWhere } from '@/lib/tenants';
+import { resolveDataScope } from '@/lib/manager-access';
+import { prisma } from '@/lib/prisma';
 import TenancyHistory, { type HistoryRow } from './tenancy-history';
 
 import PortalAccessCard from './portal-access-card';
@@ -26,8 +28,16 @@ export default async function TenantDetailPage({
   if (!session?.user) redirect('/login');
 
   const { tenantId } = await params;
-  const tenant = await getOwnedTenantDetail(tenantId, session.user.id, session.user.role);
+  // Managers act on their owner's data (session.user.id is the manager's own id).
+  const ds = await resolveDataScope(session.user);
+  const tenant = await getOwnedTenantDetail(tenantId, ds.ownerId, session.user.role);
   if (!tenant) notFound();
+  if (ds.isManager) {
+    const visible = await prisma.tenant.count({
+      where: { id: tenantId, AND: [managerTenantWhere(ds.scope)] },
+    });
+    if (!visible) notFound();
+  }
 
   const rows: HistoryRow[] = tenant.tenancies.map((t) => {
     const unitName = t.subProperty?.name ?? t.rentableEntity?.name ?? 'Unit';
@@ -47,12 +57,12 @@ export default async function TenantDetailPage({
   });
 
   return (
-    <div className="min-h-full bg-[#fafaf9] px-4 py-8 sm:px-6 lg:px-8">
+    <div className="min-h-full px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-5xl">
         {/* Back link */}
         <Link
           href="/dashboard/tenants"
-          className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-zinc-700 transition-colors hover:bg-zinc-100 hover:text-zinc-900 shadow-xs"
+          className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-card px-3.5 py-1.5 text-xs font-semibold text-zinc-700 transition-colors hover:bg-zinc-100 hover:text-zinc-900 shadow-xs"
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
           Back to Tenants
@@ -74,13 +84,13 @@ export default async function TenantDetailPage({
           <div className="flex items-center gap-3">
             <Link
               href={`/dashboard/tenants/${tenant.id}/assign`}
-              className="rounded-xl bg-zinc-900 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-zinc-800 active:scale-95"
+              className="rounded-xl bg-brand-grad px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-brand-grad-hover active:scale-95"
             >
               Assign to Unit
             </Link>
             <Link
               href={`/dashboard/tenants/${tenant.id}/edit`}
-              className="rounded-xl border border-zinc-300 bg-white px-5 py-2.5 text-sm font-bold text-zinc-700 shadow-xs transition hover:bg-zinc-50 hover:text-zinc-900 active:scale-95"
+              className="rounded-xl border border-zinc-300 bg-card px-5 py-2.5 text-sm font-bold text-zinc-700 shadow-xs transition hover:bg-zinc-50 hover:text-zinc-900 active:scale-95"
             >
               Edit
             </Link>
@@ -90,7 +100,7 @@ export default async function TenantDetailPage({
         {/* Info cards */}
         <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
           <dl
-            className="rounded-2xl border border-zinc-200 bg-white p-6 text-sm shadow-sm"
+            className="rounded-2xl border border-zinc-200 bg-card p-6 text-sm shadow-sm"
           >
             <div className="mb-4 flex items-center gap-2">
               <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
@@ -106,7 +116,7 @@ export default async function TenantDetailPage({
             <InfoRow label="National ID" value={tenant.nationalId} />
           </dl>
           <dl
-            className="rounded-2xl border border-zinc-200 bg-white p-6 text-sm shadow-sm"
+            className="rounded-2xl border border-zinc-200 bg-card p-6 text-sm shadow-sm"
           >
             <div className="mb-4 flex items-center gap-2">
               <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
@@ -136,6 +146,8 @@ export default async function TenantDetailPage({
               activeTenancy?.subProperty?.name ??
               activeTenancy?.rentableEntity?.name ??
               'Unit';
+            // Portal access changes are owner-only (the API rejects managers).
+            if (ds.isManager) return null;
             return (
               <PortalAccessCard
                 tenantId={tenant.id}

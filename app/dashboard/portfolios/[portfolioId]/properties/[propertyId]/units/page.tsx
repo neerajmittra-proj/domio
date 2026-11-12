@@ -4,7 +4,7 @@ import { getOwnedPortfolio } from '@/lib/portfolios';
 import { getOwnedProperty } from '@/lib/properties';
 import { listSubPropertiesForProperty } from '@/lib/sub-properties';
 import { listRentableEntitiesForProperty } from '@/lib/rentable-entities';
-import { resolveDataScope } from '@/lib/manager-access';
+import { resolveDataScope, getManagerPropertyIds } from '@/lib/manager-access';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import UnitsGrid from './units-grid';
 import TenantBalanceSummary from '@/components/dashboard/tenant-balance-summary';
@@ -25,10 +25,24 @@ export default async function UnitsPage({
   const portfolio = await getOwnedPortfolio(portfolioId, ds.ownerId);
   if (!portfolio) notFound();
 
-  const [units, rentableEntities] = await Promise.all([
+  // Managers: property must be in their scope; unit list is limited to the
+  // units they were granted, and the entity hierarchy (not unit-scopable) is
+  // only shown when the whole property was granted.
+  let managerUnitIds: string[] | null = null;
+  let showEntities = true;
+  if (ds.isManager) {
+    if (!ds.scope.propertyIds.includes(propertyId)) notFound();
+    managerUnitIds = ds.scope.subPropertyIds;
+    showEntities = (await getManagerPropertyIds(session.user.id)).propertyIds.includes(propertyId);
+  }
+
+  const [allUnits, rentableEntities] = await Promise.all([
     listSubPropertiesForProperty(propertyId, ds.ownerId),
-    listRentableEntitiesForProperty(propertyId, ds.ownerId),
+    showEntities ? listRentableEntitiesForProperty(propertyId, ds.ownerId) : Promise.resolve([]),
   ]);
+  const units = managerUnitIds
+    ? allUnits.filter((u) => managerUnitIds.includes(u.id))
+    : allUnits;
 
   const propsHref = `/dashboard/portfolios/${portfolioId}/properties`;
 

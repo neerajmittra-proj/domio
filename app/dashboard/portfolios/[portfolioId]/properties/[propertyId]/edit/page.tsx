@@ -17,6 +17,7 @@ export default async function EditPropertyPage({
   const ds = await resolveDataScope(session.user);
   const property = await getOwnedProperty(propertyId, ds.ownerId);
   if (!property || property.portfolioId !== portfolioId) notFound();
+  if (ds.isManager && !ds.scope.editPropertyIds.has(propertyId)) notFound();
 
   const listHref = `/dashboard/portfolios/${portfolioId}/properties`;
 
@@ -29,7 +30,7 @@ export default async function EditPropertyPage({
         ← Back to properties
       </Link>
 
-      <div className="rounded-2xl border border-zinc-200/90 bg-white p-6 sm:p-8 shadow-xs">
+      <div className="rounded-2xl border border-zinc-200/90 bg-card p-6 sm:p-8 shadow-xs">
         <h1 className="mb-6 text-xl sm:text-2xl font-bold tracking-tight text-zinc-900">
           Edit Property
         </h1>

@@ -22,10 +22,10 @@ type JobRow = {
 
 const toneClass: Record<string, string> = {
   violet: 'border-zinc-700/30 bg-zinc-900/15 text-zinc-500',
-  gold: 'border-[rgba(232,160,32,0.3)] bg-[rgba(232,160,32,0.12)] text-[#E8A020]',
-  green: 'border-green-500/30 bg-green-500/10 text-green-400',
-  red: 'border-red-500/30 bg-red-500/10 text-red-400',
-  muted: 'border-[#312D58] bg-[rgba(255,255,255,0.06)] text-[#B0B0C8]',
+  gold: 'border-[rgba(232,160,32,0.3)] bg-[rgba(232,160,32,0.12)] text-[#B26A0B]',
+  green: 'border-green-500/30 bg-green-500/10 text-green-700',
+  red: 'border-red-500/30 bg-red-500/10 text-red-700',
+  muted: 'border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] text-[#3E5560]',
 };
 
 const fmtDate = (iso: string) =>
@@ -77,9 +77,9 @@ export default function HistoryClient({
 
   if (jobs.length === 0) {
     return (
-      <div className="rounded-2xl border border-[#312D58] bg-[rgba(23,21,47,0.6)] p-10 text-center">
+      <div className="rounded-2xl border border-[#C2D9E0] bg-[rgba(255,255,255,0.88)] p-10 text-center">
         <div className="text-3xl">📥</div>
-        <p className="mt-3 text-sm text-[#B0B0C8]">
+        <p className="mt-3 text-sm text-[#3E5560]">
           No imports yet. Run your first one from the New Import button.
         </p>
       </div>
@@ -88,7 +88,7 @@ export default function HistoryClient({
 
   return (
     <>
-      <div className="overflow-hidden rounded-2xl border border-[#312D58]">
+      <div className="overflow-hidden rounded-2xl border border-[#C2D9E0]">
         <table className="w-full text-left text-sm">
           <thead className="bg-zinc-50 text-xs uppercase tracking-wide text-zinc-500">
             <tr>
@@ -107,14 +107,14 @@ export default function HistoryClient({
             {jobs.map((j) => {
               const meta = IMPORT_STATUS_META[j.status];
               return (
-                <tr key={j.id} className="border-t border-[#312D58]">
-                  <td className="px-4 py-3 font-mono text-xs text-[#B0B0C8]">
+                <tr key={j.id} className="border-t border-[#C2D9E0]">
+                  <td className="px-4 py-3 font-mono text-xs text-[#3E5560]">
                     {j.displayId ?? '—'}
                   </td>
-                  <td className="max-w-[180px] truncate px-4 py-3 text-[#E8E8F2]">
+                  <td className="max-w-[180px] truncate px-4 py-3 text-[#223144]">
                     {j.originalFileName}
                   </td>
-                  <td className="hidden px-4 py-3 text-[#B0B0C8] sm:table-cell">
+                  <td className="hidden px-4 py-3 text-[#3E5560] sm:table-cell">
                     {importTypeLabel(j.importType)}
                   </td>
                   <td className="px-4 py-3">
@@ -124,10 +124,10 @@ export default function HistoryClient({
                       {meta.label}
                     </span>
                   </td>
-                  <td className="hidden px-4 py-3 text-right text-[#E8E8F2] md:table-cell">
+                  <td className="hidden px-4 py-3 text-right text-[#223144] md:table-cell">
                     {j.recordsCreated}
                   </td>
-                  <td className="hidden px-4 py-3 text-[#B0B0C8] sm:table-cell">
+                  <td className="hidden px-4 py-3 text-[#3E5560] sm:table-cell">
                     {fmtDate(j.createdAt)}
                   </td>
                   <td className="px-4 py-3 text-right">
@@ -138,12 +138,12 @@ export default function HistoryClient({
                           setError(null);
                           setTarget(j);
                         }}
-                        className="rounded-full border border-red-500/40 bg-red-500/10 px-3 py-1 text-xs font-medium text-red-400 transition-colors hover:bg-red-500/20"
+                        className="rounded-full border border-red-500/40 bg-red-500/10 px-3 py-1 text-xs font-medium text-red-700 transition-colors hover:bg-red-500/20"
                       >
                         Rollback
                       </button>
                     ) : (
-                      <span className="text-xs text-[#4A4A6A]">—</span>
+                      <span className="text-xs text-[#5B7280]">—</span>
                     )}
                   </td>
                 </tr>
@@ -154,7 +154,7 @@ export default function HistoryClient({
       </div>
 
       {error && !target && (
-        <p className="mt-3 text-sm text-red-400">{error}</p>
+        <p className="mt-3 text-sm text-red-700">{error}</p>
       )}
 
       {target && (
@@ -162,27 +162,27 @@ export default function HistoryClient({
           role="dialog"
           aria-modal="true"
           onClick={() => !rollingBack && setTarget(null)}
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4"
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-navy/60 p-4"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-sm rounded-2xl border border-red-500/30 bg-[rgba(14,12,34,0.95)] p-6 shadow-2xl backdrop-blur-xl"
+            className="w-full max-w-sm rounded-2xl border border-red-500/30 bg-[rgba(255,255,255,0.97)] p-6 shadow-2xl backdrop-blur-xl"
           >
-            <h2 className="text-lg font-semibold text-white">Roll back import?</h2>
-            <p className="mt-2 text-sm text-[#B0B0C8]">
+            <h2 className="text-lg font-semibold text-[#223144]">Roll back import?</h2>
+            <p className="mt-2 text-sm text-[#3E5560]">
               This will permanently delete the{' '}
-              <span className="font-semibold text-white">
+              <span className="font-semibold text-[#223144]">
                 {target.recordsCreated}
               </span>{' '}
               records created by{' '}
-              <span className="font-mono text-xs text-[#E8E8F2]">
+              <span className="font-mono text-xs text-[#223144]">
                 {target.displayId ?? target.originalFileName}
               </span>
               , including the property, units, tenants and rent ledger entries.
               This cannot be undone.
             </p>
             {error && (
-              <p role="alert" className="mt-3 text-sm text-red-400">
+              <p role="alert" className="mt-3 text-sm text-red-700">
                 {error}
               </p>
             )}
@@ -191,7 +191,7 @@ export default function HistoryClient({
                 type="button"
                 onClick={() => !rollingBack && setTarget(null)}
                 disabled={rollingBack}
-                className="rounded-full border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-4 py-2 text-sm font-medium text-[#E8E8F2] hover:text-white disabled:opacity-60"
+                className="rounded-full border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-4 py-2 text-sm font-medium text-[#223144] hover:text-[#223144] disabled:opacity-60"
               >
                 Cancel
               </button>

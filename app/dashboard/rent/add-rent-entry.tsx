@@ -6,7 +6,7 @@ import { useScrollLock } from '@/hooks/use-scroll-lock';
 import type { ActiveTenancyOption } from '@/lib/rent-ledger';
 
 const inputClass =
-  'w-full rounded-xl border border-zinc-300 bg-white px-3.5 py-2.5 text-sm text-zinc-900 shadow-xs outline-none transition placeholder:text-zinc-400 focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10';
+  'w-full rounded-xl border border-zinc-300 bg-card px-3.5 py-2.5 text-sm text-zinc-900 shadow-xs outline-none transition placeholder:text-zinc-400 focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10';
 const labelClass = 'text-xs font-bold uppercase tracking-wider text-zinc-700';
 
 function thisMonth() {
@@ -96,7 +96,7 @@ export default function AddRentEntry({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="rounded-full border border-zinc-300 bg-zinc-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-zinc-800"
+        className="rounded-full border border-zinc-300 bg-brand-grad px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-brand-grad-hover"
       >
         Add Rent Entry
       </button>
@@ -106,12 +106,12 @@ export default function AddRentEntry({
           role="dialog"
           aria-modal="true"
           onClick={close}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-navy/60 p-4 backdrop-blur-xs"
         >
           <form
             onClick={(e) => e.stopPropagation()}
             onSubmit={onSubmit}
-            className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-white p-6 shadow-2xl"
+            className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-card p-6 shadow-2xl"
           >
             <h2 className="text-lg font-bold tracking-tight text-zinc-900">
               Add Rent Entry
@@ -205,14 +205,14 @@ export default function AddRentEntry({
                 type="button"
                 onClick={close}
                 disabled={pending}
-                className="rounded-full border border-zinc-300 bg-white px-4 py-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-100 disabled:opacity-50"
+                className="rounded-full border border-zinc-300 bg-card px-4 py-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-100 disabled:opacity-50"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={pending || tenancies.length === 0}
-                className="rounded-full bg-zinc-900 px-5 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-zinc-800 disabled:opacity-60"
+                className="rounded-full bg-brand-grad px-5 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-grad-hover disabled:opacity-60"
               >
                 {pending ? 'Saving…' : 'Add Entry'}
               </button>

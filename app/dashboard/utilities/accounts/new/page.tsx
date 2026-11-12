@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { auth } from '@/auth';
+import { resolveDataScope } from '@/lib/manager-access';
 import { getOwnerStructure } from '@/lib/expenses';
 import AccountForm, { type AccountFormInitial } from '../account-form';
 
@@ -12,7 +13,11 @@ export default async function NewUtilityAccountPage({
   const session = await auth();
   if (!session?.user) redirect('/login');
 
-  const structure = await getOwnerStructure(session.user.id);
+  const ds = await resolveDataScope(session.user);
+  const structure = await getOwnerStructure(
+    ds.ownerId,
+    ds.isManager ? ds.scope : undefined,
+  );
   const sp = await searchParams;
 
   // Pre-fill level + cascading selection from query params (e.g. from a unit card).
@@ -35,13 +40,13 @@ export default async function NewUtilityAccountPage({
     <div className="mx-auto max-w-lg">
       <Link
         href="/dashboard/utilities"
-        className="text-sm text-[#E8E8F2] transition-colors hover:text-white"
+        className="text-sm text-[#223144] transition-colors hover:text-[#223144]"
       >
         ← Back to Utilities
       </Link>
 
-      <div className="mt-4 rounded-2xl border border-[#312D58] bg-[#17152F] p-8 shadow-[0_10px_30px_-12px_rgba(0,0,0,0.9)]">
-        <h1 className="mb-6 text-2xl font-semibold tracking-tight text-white">
+      <div className="mt-4 rounded-2xl border border-[#C2D9E0] bg-[#FFFFFF] p-8 shadow-[0_10px_30px_-12px_rgba(34,49,68,0.30)]">
+        <h1 className="mb-6 text-2xl font-semibold tracking-tight text-[#223144]">
           Add Utility Account
         </h1>
         <AccountForm structure={structure} initial={initial} />

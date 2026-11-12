@@ -25,6 +25,7 @@ export async function GET() {
         phone: true,
         email: true,
         location: true,
+        portalEnabled: true,
         tenancies: {
           orderBy: { startDate: 'desc' },
           include: {
@@ -47,6 +48,12 @@ export async function GET() {
 
     if (!tenant) {
       return NextResponse.json({ error: 'Tenant not found' }, { status: 404 });
+    }
+    if (!tenant.portalEnabled) {
+      return NextResponse.json(
+        { error: 'Portal access is disabled. Please contact your landlord.' },
+        { status: 403 },
+      );
     }
 
     // Build rich tenancy data for every lease (active AND past)
@@ -132,9 +139,6 @@ export async function GET() {
     });
   } catch (error: any) {
     console.error('Tenant me error:', error);
-    return NextResponse.json(
-      { error: error?.message || 'Server error' },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: 'Server error' }, { status: 500 });
   }
 }

@@ -20,6 +20,7 @@ export default async function NewUnitPage({
   const sp = searchParams ? await searchParams : {};
   const parentId = sp?.parentId;
   const ds = await resolveDataScope(session.user);
+  if (ds.isManager) notFound(); // managers cannot create units
   const property = await getOwnedProperty(propertyId, ds.ownerId);
   if (!property || property.portfolioId !== portfolioId) notFound();
   const portfolio = await getOwnedPortfolio(portfolioId, ds.ownerId);
@@ -27,7 +28,7 @@ export default async function NewUnitPage({
   const portfolioProperties = await listPropertiesForPortfolio(
     portfolioId,
     ds.ownerId,
-    ds.isManager ? ds.scope : undefined,
+    undefined,
   );
 
   const listHref = `/dashboard/portfolios/${portfolioId}/properties/${propertyId}/units`;
@@ -50,7 +51,7 @@ export default async function NewUnitPage({
         ]}
       />
 
-      <div className="rounded-2xl border border-zinc-200/90 bg-white p-6 sm:p-8 shadow-xs">
+      <div className="rounded-2xl border border-zinc-200/90 bg-card p-6 sm:p-8 shadow-xs">
         <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-900">
           Add Rental Level / Entity
         </h1>

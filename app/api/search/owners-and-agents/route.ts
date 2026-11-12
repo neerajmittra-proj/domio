@@ -10,15 +10,17 @@ export async function GET(request: Request) {
       // Return top available agents and active properties/owners
       const [agents, properties] = await Promise.all([
         prisma.agent.findMany({
+          where: { user: { active: true } },
           take: 6,
           orderBy: { rating: 'desc' },
           include: {
             user: {
-              select: { id: true, name: true, phone: true, email: true },
+              select: { id: true, name: true },
             },
           },
         }),
         prisma.property.findMany({
+          where: { status: { in: ['ACTIVE', 'VACANT'] }, owner: { active: true } },
           take: 6,
           orderBy: { createdAt: 'desc' },
           select: {
@@ -66,6 +68,8 @@ export async function GET(request: Request) {
     // Keyword & location filtering
     const [allAgents, allProperties] = await Promise.all([
       prisma.agent.findMany({
+        where: { user: { active: true } },
+        take: 1000,
         include: {
           user: {
             select: { id: true, name: true },
@@ -73,6 +77,8 @@ export async function GET(request: Request) {
         },
       }),
       prisma.property.findMany({
+        where: { status: { in: ['ACTIVE', 'VACANT'] }, owner: { active: true } },
+        take: 1000,
         select: {
           id: true,
           name: true,
@@ -109,7 +115,7 @@ export async function GET(request: Request) {
     });
 
     return NextResponse.json({
-      agents: matchedAgents.map((a) => ({
+      agents: matchedAgents.slice(0, 50).map((a) => ({
         id: a.id,
         userId: a.userId,
         name: a.user.name,
@@ -120,7 +126,7 @@ export async function GET(request: Request) {
         rating: a.rating,
         reviewCount: a.reviewCount,
       })),
-      owners: matchedProperties.map((p) => ({
+      owners: matchedProperties.slice(0, 50).map((p) => ({
         id: p.ownerId,
         userId: p.owner.id,
         name: p.ownerName || p.owner.name,

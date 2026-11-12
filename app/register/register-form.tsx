@@ -6,10 +6,10 @@ import Link from 'next/link';
 import { authenticateWithGoogle } from '@/app/login/actions';
 
 const inputClass =
-  'w-full rounded-xl border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-3.5 py-2.5 text-sm text-white outline-none transition placeholder:text-[#8E8EA8] focus:border-[#E8A020] focus:ring-2 focus:ring-[#E8A020]/20';
+  'w-full rounded-xl border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-3.5 py-2.5 text-sm text-[#223144] outline-none transition placeholder:text-[#7A929C] focus:border-[#A4473D] focus:ring-2 focus:ring-[#A4473D]/20';
 const labelClass = 'text-xs font-semibold uppercase tracking-wider text-zinc-400';
 const submitClass =
-  'mt-3 w-full rounded-xl bg-gradient-to-r from-[#E8A020] to-[#FFC453] px-5 py-3 text-sm font-bold text-zinc-950 shadow-lg shadow-[#E8A020]/20 transition-all hover:brightness-110 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed';
+  'mt-3 w-full rounded-xl bg-brand-grad px-5 py-3 text-sm font-bold text-white shadow-lg shadow-[#8D3B32]/25 transition-all hover:brightness-110 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed';
 
 type RoleOption = 'OWNER' | 'RENTER' | 'BOTH';
 
@@ -89,10 +89,17 @@ export default function RegisterForm() {
     const password = form.get('password') as string;
     const confirmPassword = form.get('confirmPassword') as string;
 
+    if (password.length < 8) {
+      setErrorMessage('Password must be at least 8 characters long.');
+      return;
+    }
     if (password !== confirmPassword) {
       setErrorMessage('Passwords do not match.');
       return;
     }
+
+    // Agent invite links look like /register?ref=AGT-XXXX1234.
+    const ref = new URLSearchParams(window.location.search).get('ref') || undefined;
 
     setIsPending(true);
 
@@ -107,6 +114,7 @@ export default function RegisterForm() {
           location: loc || location,
           password,
           role,
+          ref,
         }),
       });
 
@@ -130,7 +138,7 @@ export default function RegisterForm() {
     <form onSubmit={handleSubmit} className="flex flex-col gap-4" data-testid="register-form">
       {/* Header */}
       <div className="flex flex-col gap-1 text-center">
-        <h1 className="text-2xl font-bold tracking-tight text-white">Create Account</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-[#223144]">Create Account</h1>
         <p className="text-xs text-zinc-400">
           Sign up to manage properties, units, or track your tenancy
         </p>
@@ -146,8 +154,8 @@ export default function RegisterForm() {
             onClick={() => setRole('OWNER')}
             className={`flex flex-col items-center justify-center gap-1.5 rounded-xl border p-2.5 text-center transition-all ${
               role === 'OWNER'
-                ? 'border-[#E8A020] bg-[#E8A020]/15 text-white shadow-md'
-                : 'border-[#312D58] bg-white/[0.03] text-zinc-400 hover:border-zinc-500 hover:text-zinc-200'
+                ? 'border-[#A4473D] bg-[#A4473D]/15 text-[#223144] shadow-md'
+                : 'border-[#C2D9E0] bg-[#223144]/[0.05] text-zinc-400 hover:border-zinc-500 hover:text-[#3E5560]'
             }`}
           >
             <span className="text-xl">🏢</span>
@@ -161,8 +169,8 @@ export default function RegisterForm() {
             onClick={() => setRole('RENTER')}
             className={`flex flex-col items-center justify-center gap-1.5 rounded-xl border p-2.5 text-center transition-all ${
               role === 'RENTER'
-                ? 'border-[#E8A020] bg-[#E8A020]/15 text-white shadow-md'
-                : 'border-[#312D58] bg-white/[0.03] text-zinc-400 hover:border-zinc-500 hover:text-zinc-200'
+                ? 'border-[#A4473D] bg-[#A4473D]/15 text-[#223144] shadow-md'
+                : 'border-[#C2D9E0] bg-[#223144]/[0.05] text-zinc-400 hover:border-zinc-500 hover:text-[#3E5560]'
             }`}
           >
             <span className="text-xl">🏠</span>
@@ -176,8 +184,8 @@ export default function RegisterForm() {
             onClick={() => setRole('BOTH')}
             className={`flex flex-col items-center justify-center gap-1.5 rounded-xl border p-2.5 text-center transition-all ${
               role === 'BOTH'
-                ? 'border-[#E8A020] bg-[#E8A020]/15 text-white shadow-md'
-                : 'border-[#312D58] bg-white/[0.03] text-zinc-400 hover:border-zinc-500 hover:text-zinc-200'
+                ? 'border-[#A4473D] bg-[#A4473D]/15 text-[#223144] shadow-md'
+                : 'border-[#C2D9E0] bg-[#223144]/[0.05] text-zinc-400 hover:border-zinc-500 hover:text-[#3E5560]'
             }`}
           >
             <span className="text-xl">🔄</span>
@@ -246,7 +254,7 @@ export default function RegisterForm() {
             type="button"
             onClick={handleAutoDetectLocation}
             disabled={detectingLocation}
-            className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#E8A020] transition-colors hover:text-amber-300 disabled:opacity-50"
+            className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#8D3B32] transition-colors hover:text-amber-800 disabled:opacity-50"
           >
             <span>{detectingLocation ? '⏳ Detecting...' : '📍 Auto-Detect GPS'}</span>
           </button>
@@ -265,7 +273,7 @@ export default function RegisterForm() {
             className={`${inputClass} pr-8`}
           />
           {locationSuccess && (
-            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-emerald-400">
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-emerald-700">
               ✓
             </span>
           )}
@@ -284,8 +292,8 @@ export default function RegisterForm() {
             type="password"
             autoComplete="new-password"
             required
-            minLength={6}
-            placeholder="Min 6 chars"
+            minLength={8}
+            placeholder="Min 8 chars"
             className={inputClass}
           />
         </div>
@@ -300,7 +308,7 @@ export default function RegisterForm() {
             type="password"
             autoComplete="new-password"
             required
-            minLength={6}
+            minLength={8}
             placeholder="Repeat password"
             className={inputClass}
           />
@@ -311,7 +319,7 @@ export default function RegisterForm() {
       {errorMessage && (
         <p
           role="alert"
-          className="rounded-xl border border-red-500/30 bg-red-500/10 px-3.5 py-2.5 text-xs text-red-400 font-medium"
+          className="rounded-xl border border-red-500/30 bg-red-500/10 px-3.5 py-2.5 text-xs text-red-700 font-medium"
         >
           {errorMessage}
         </p>
@@ -320,7 +328,7 @@ export default function RegisterForm() {
       {successMessage && (
         <p
           role="status"
-          className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-2.5 text-xs text-emerald-400 font-medium"
+          className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-2.5 text-xs text-emerald-700 font-medium"
         >
           {successMessage}
         </p>
@@ -334,9 +342,9 @@ export default function RegisterForm() {
       {/* Social Divider */}
       <div className="relative my-2 flex items-center justify-center">
         <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-[#312D58]" />
+          <div className="w-full border-t border-[#C2D9E0]" />
         </div>
-        <div className="relative bg-[#17152F] px-3 text-[11px] font-semibold uppercase tracking-wider text-[#8E8EA8]">
+        <div className="relative bg-[#FFFFFF] px-3 text-[11px] font-semibold uppercase tracking-wider text-[#5B7280]">
           Or continue with
         </div>
       </div>
@@ -345,7 +353,7 @@ export default function RegisterForm() {
       <button
         type="button"
         onClick={() => authenticateWithGoogle()}
-        className="flex w-full items-center justify-center gap-3 rounded-xl border border-zinc-300 bg-white px-4 py-2.5 text-sm font-semibold text-zinc-900 shadow-sm transition-all hover:bg-zinc-100 active:scale-[0.99] cursor-pointer"
+        className="flex w-full items-center justify-center gap-3 rounded-xl border border-zinc-300 bg-card px-4 py-2.5 text-sm font-semibold text-zinc-900 shadow-sm transition-all hover:bg-zinc-100 active:scale-[0.99] cursor-pointer"
       >
         <svg width="18" height="18" viewBox="0 0 24 24">
           <path
@@ -373,7 +381,7 @@ export default function RegisterForm() {
         Already have an account?{' '}
         <Link
           href="/login"
-          className="font-bold text-[#E8A020] transition-colors hover:text-amber-300 underline underline-offset-2"
+          className="font-bold text-[#8D3B32] transition-colors hover:text-amber-800 underline underline-offset-2"
         >
           Sign in here
         </Link>

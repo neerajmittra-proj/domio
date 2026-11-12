@@ -100,7 +100,7 @@ const mdComponents = {
     <li className="my-0.5" {...props} />
   ),
   strong: (props: React.HTMLAttributes<HTMLElement>) => (
-    <strong className="font-semibold text-white" {...props} />
+    <strong className="font-semibold text-[#223144]" {...props} />
   ),
   a: (props: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
     <a
@@ -112,13 +112,13 @@ const mdComponents = {
   ),
   code: (props: React.HTMLAttributes<HTMLElement>) => (
     <code
-      className="rounded bg-[rgba(255,255,255,0.08)] px-1 py-0.5 font-mono text-[0.85em]"
+      className="rounded bg-[rgba(34,49,68,0.12)] px-1 py-0.5 font-mono text-[0.85em]"
       {...props}
     />
   ),
   pre: (props: React.HTMLAttributes<HTMLPreElement>) => (
     <pre
-      className="my-2 overflow-x-auto rounded-lg bg-[rgba(0,0,0,0.35)] p-3 text-xs"
+      className="my-2 overflow-x-auto rounded-lg bg-[rgba(34,49,68,0.08)] p-3 text-xs"
       {...props}
     />
   ),
@@ -137,13 +137,13 @@ const mdComponents = {
     <td className="border border-zinc-200 px-2 py-1" {...props} />
   ),
   h1: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-    <h1 className="mb-1 mt-2 text-base font-semibold text-white" {...props} />
+    <h1 className="mb-1 mt-2 text-base font-semibold text-[#223144]" {...props} />
   ),
   h2: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-    <h2 className="mb-1 mt-2 text-sm font-semibold text-white" {...props} />
+    <h2 className="mb-1 mt-2 text-sm font-semibold text-[#223144]" {...props} />
   ),
   h3: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-    <h3 className="mb-1 mt-2 text-sm font-semibold text-white" {...props} />
+    <h3 className="mb-1 mt-2 text-sm font-semibold text-[#223144]" {...props} />
   ),
 };
 
@@ -562,7 +562,7 @@ export default function AssistantChat({
         {empty && !loading && (
           <div className="mt-2 flex flex-col items-center text-center">
             <Domi mood="happy" size={80} />
-            <p className="mt-3 text-sm text-[#E8E8F2]">
+            <p className="mt-3 text-sm text-[#223144]">
               Hi! I&apos;m Domi, your property assistant. Ask me anything about
               your portfolio!
             </p>
@@ -572,7 +572,7 @@ export default function AssistantChat({
                   key={s}
                   type="button"
                   onClick={() => send(s)}
-                  className="rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-xs font-medium text-zinc-500 transition-colors hover:bg-zinc-50 hover:text-white"
+                  className="rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-xs font-medium text-zinc-500 transition-colors hover:bg-zinc-50 hover:text-[#223144]"
                 >
                   {s}
                 </button>
@@ -603,7 +603,7 @@ export default function AssistantChat({
                     {b.files.map((name, idx) => (
                       <span
                         key={idx}
-                        className="inline-flex items-center gap-1 rounded-lg border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-2 py-1 text-xs text-zinc-500"
+                        className="inline-flex items-center gap-1 rounded-lg border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-2 py-1 text-xs text-zinc-500"
                       >
                         📄 {name}
                       </span>
@@ -611,7 +611,7 @@ export default function AssistantChat({
                   </div>
                 )}
                 {b.text && (
-                  <div className="whitespace-pre-wrap rounded-2xl bg-zinc-900 px-3.5 py-2 text-sm text-white">
+                  <div className="whitespace-pre-wrap rounded-2xl bg-brand-grad px-3.5 py-2 text-sm text-white">
                     {b.text}
                   </div>
                 )}
@@ -621,7 +621,7 @@ export default function AssistantChat({
             <div key={b.key} className="flex items-end justify-start gap-2">
               <Domi mood="default" size={24} className="mb-1 shrink-0" />
               <div className="group max-w-[85%]">
-                <div className="rounded-2xl border border-zinc-200 bg-[#0E0C22] px-3.5 py-2 text-sm text-[#E8E8F2]">
+                <div className="rounded-2xl border border-zinc-200 bg-[#FFFFFF] px-3.5 py-2 text-sm text-[#223144]">
                   <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
                     {b.text}
                   </ReactMarkdown>
@@ -631,7 +631,7 @@ export default function AssistantChat({
                   <button
                     type="button"
                     onClick={() => copy(b.key, b.text)}
-                    className="text-[11px] text-[#6A6A8A] transition-colors hover:text-zinc-500"
+                    className="text-[11px] text-[#3E5560] transition-colors hover:text-zinc-500"
                   >
                     {copiedKey === b.key ? 'Copied' : 'Copy'}
                   </button>
@@ -639,7 +639,7 @@ export default function AssistantChat({
                     <button
                       type="button"
                       onClick={() => speak(b.key, b.text)}
-                      className="text-[11px] text-[#6A6A8A] transition-colors hover:text-zinc-500"
+                      className="text-[11px] text-[#3E5560] transition-colors hover:text-zinc-500"
                     >
                       {speakingKey === b.key ? 'Stop' : 'Read aloud'}
                     </button>
@@ -649,7 +649,7 @@ export default function AssistantChat({
                       type="button"
                       onClick={regenerate}
                       disabled={loading}
-                      className="text-[11px] text-[#6A6A8A] transition-colors hover:text-zinc-500 disabled:opacity-50"
+                      className="text-[11px] text-[#3E5560] transition-colors hover:text-zinc-500 disabled:opacity-50"
                     >
                       Regenerate
                     </button>
@@ -663,26 +663,26 @@ export default function AssistantChat({
         {/* Confirmation card */}
         {pending && (
           <div className="rounded-2xl border border-[rgba(232,160,32,0.4)] bg-[rgba(232,160,32,0.06)] p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-[#E8A020]">
+            <p className="text-xs font-semibold uppercase tracking-wide text-[#B26A0B]">
               {pending.name === 'create_payment' ? 'Confirm Payment' : 'Confirm Charge'}
             </p>
-            <dl className="mt-2 space-y-1 text-sm text-[#E8E8F2]">
+            <dl className="mt-2 space-y-1 text-sm text-[#223144]">
               <div className="flex justify-between gap-3">
-                <dt className="text-[#6A6A8A]">Tenant</dt>
+                <dt className="text-[#3E5560]">Tenant</dt>
                 <dd className="font-medium">{String(pending.input.tenantName ?? '')}</dd>
               </div>
               <div className="flex justify-between gap-3">
-                <dt className="text-[#6A6A8A]">Amount</dt>
+                <dt className="text-[#3E5560]">Amount</dt>
                 <dd className="font-semibold">
                   {formatMoney(Math.abs(Number(pending.input.amount) || 0))}
                 </dd>
               </div>
               <div className="flex justify-between gap-3">
-                <dt className="text-[#6A6A8A]">Date</dt>
+                <dt className="text-[#3E5560]">Date</dt>
                 <dd>{String(pending.input.date ?? '')}</dd>
               </div>
               <div className="flex justify-between gap-3">
-                <dt className="text-[#6A6A8A]">Description</dt>
+                <dt className="text-[#3E5560]">Description</dt>
                 <dd className="text-right">{String(pending.input.description ?? '')}</dd>
               </div>
             </dl>
@@ -691,7 +691,7 @@ export default function AssistantChat({
                 type="button"
                 onClick={() => decide(false)}
                 disabled={loading}
-                className="rounded-full border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-4 py-1.5 text-sm font-medium text-[#E8E8F2] transition-colors hover:text-white disabled:opacity-60"
+                className="rounded-full border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-4 py-1.5 text-sm font-medium text-[#223144] transition-colors hover:text-[#223144] disabled:opacity-60"
               >
                 Cancel
               </button>
@@ -699,7 +699,7 @@ export default function AssistantChat({
                 type="button"
                 onClick={() => decide(true)}
                 disabled={loading}
-                className="rounded-full bg-zinc-900 px-4 py-1.5 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90 disabled:opacity-60"
+                className="rounded-full bg-brand-grad px-4 py-1.5 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90 disabled:opacity-60"
               >
                 Confirm
               </button>
@@ -711,7 +711,7 @@ export default function AssistantChat({
         {loading && (
           <div className="flex items-end justify-start gap-2">
             <Domi mood="thinking" size={24} className="domi-bob mb-1 shrink-0" />
-            <div className="flex gap-1 rounded-2xl border border-zinc-200 bg-[#0E0C22] px-4 py-3">
+            <div className="flex gap-1 rounded-2xl border border-zinc-200 bg-[#FFFFFF] px-4 py-3">
               {[0, 1, 2].map((i) => (
                 <span
                   key={i}
@@ -724,7 +724,7 @@ export default function AssistantChat({
         )}
 
         {error && (
-          <p role="alert" className="rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-400">
+          <p role="alert" className="rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-700">
             {error}
           </p>
         )}
@@ -736,7 +736,7 @@ export default function AssistantChat({
           <button
             type="button"
             onClick={clear}
-            className="mb-2 text-xs text-[#6A6A8A] transition-colors hover:text-zinc-500"
+            className="mb-2 text-xs text-[#3E5560] transition-colors hover:text-zinc-500"
           >
             Clear chat
           </button>
@@ -748,7 +748,7 @@ export default function AssistantChat({
             {attachments.map((a) => (
               <div
                 key={a.id}
-                className="group/att relative flex items-center gap-1.5 rounded-lg border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-2 py-1 text-xs text-zinc-500"
+                className="group/att relative flex items-center gap-1.5 rounded-lg border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-2 py-1 text-xs text-zinc-500"
               >
                 {a.kind === 'image' && a.dataUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -761,7 +761,7 @@ export default function AssistantChat({
                   type="button"
                   onClick={() => removeAttachment(a.id)}
                   aria-label={`Remove ${a.name}`}
-                  className="text-[#6A6A8A] hover:text-red-400"
+                  className="text-[#3E5560] hover:text-red-700"
                 >
                   ✕
                 </button>
@@ -770,7 +770,7 @@ export default function AssistantChat({
           </div>
         )}
         {attachError && (
-          <p className="mb-2 text-xs text-red-400">{attachError}</p>
+          <p className="mb-2 text-xs text-red-700">{attachError}</p>
         )}
 
         <input
@@ -796,7 +796,7 @@ export default function AssistantChat({
             onClick={() => fileInputRef.current?.click()}
             aria-label="Attach a file or image"
             title="Attach an image, PDF, or CSV"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[#312D58] bg-[rgba(255,255,255,0.06)] text-[#B0B0C8] transition-colors hover:text-white"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] text-[#3E5560] transition-colors hover:text-[#223144]"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
@@ -811,8 +811,8 @@ export default function AssistantChat({
               className={
                 'flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border transition-colors ' +
                 (listening
-                  ? 'animate-pulse border-red-500/50 bg-red-500/15 text-red-400'
-                  : 'border-[#312D58] bg-[rgba(255,255,255,0.06)] text-[#B0B0C8] hover:text-white')
+                  ? 'animate-pulse border-red-500/50 bg-red-500/15 text-red-700'
+                  : 'border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] text-[#3E5560] hover:text-[#223144]')
               }
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -840,13 +840,13 @@ export default function AssistantChat({
             }}
             rows={variant === 'page' ? 2 : 1}
             placeholder={listening ? 'Listening…' : 'Ask about rent, balances, payments…'}
-            className="max-h-32 flex-1 resize-none rounded-xl border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-3 py-2 text-sm text-white outline-none transition placeholder:text-[#6A6A8A] focus:border-zinc-700 focus:ring-2 focus:ring-zinc-500/20"
+            className="max-h-32 flex-1 resize-none rounded-xl border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-3 py-2 text-sm text-[#223144] outline-none transition placeholder:text-[#7A929C] focus:border-zinc-700 focus:ring-2 focus:ring-zinc-500/20"
           />
           <button
             type="submit"
             disabled={loading || (!draft.trim() && attachments.length === 0)}
             aria-label="Send"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-zinc-900 text-white transition-colors hover:bg-zinc-800 disabled:opacity-50"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-grad text-white transition-colors hover:bg-brand-grad-hover disabled:opacity-50"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M22 2L11 13" />

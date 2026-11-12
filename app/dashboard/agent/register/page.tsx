@@ -100,11 +100,11 @@ export default function AgentRegisterPage() {
   }
 
   const inputClass =
-    'w-full rounded-xl border border-zinc-300 bg-white px-3.5 py-2.5 text-sm text-zinc-900 shadow-xs outline-none transition placeholder:text-zinc-400 focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10';
+    'w-full rounded-xl border border-zinc-300 bg-card px-3.5 py-2.5 text-sm text-zinc-900 shadow-xs outline-none transition placeholder:text-zinc-400 focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10';
   const labelClass = 'text-xs font-bold uppercase tracking-wider text-zinc-700';
 
   return (
-    <div className="min-h-full bg-[#fafaf9] py-8 sm:py-12">
+    <div className="min-h-full py-8 sm:py-12">
       <div className="mx-auto max-w-3xl px-4 sm:px-6">
         <Link
           href="/dashboard"
@@ -113,7 +113,7 @@ export default function AgentRegisterPage() {
           ← Back to Dashboard
         </Link>
 
-        <div className="mt-4 rounded-3xl border border-zinc-200 bg-white p-6 sm:p-10 shadow-sm">
+        <div className="mt-4 rounded-3xl border border-zinc-200 bg-card p-6 sm:p-10 shadow-sm">
           {/* Header */}
           <div className="flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-500/15 text-2xl">
@@ -195,7 +195,7 @@ export default function AgentRegisterPage() {
                       onClick={() => toggleSkill(skill)}
                       className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-all ${
                         isSelected
-                          ? 'bg-zinc-900 text-white shadow-sm'
+                          ? 'bg-brand-grad text-white shadow-sm'
                           : 'border border-zinc-200 bg-zinc-50 text-zinc-700 hover:bg-zinc-100'
                       }`}
                     >
@@ -294,7 +294,7 @@ export default function AgentRegisterPage() {
             <button
               type="submit"
               disabled={pending}
-              className="mt-2 w-full rounded-2xl bg-zinc-900 py-3.5 text-sm font-bold text-white shadow-lg shadow-zinc-900/10 transition-all hover:bg-zinc-800 disabled:opacity-50"
+              className="mt-2 w-full rounded-2xl bg-brand-grad py-3.5 text-sm font-bold text-white shadow-lg shadow-zinc-900/10 transition-all hover:bg-brand-grad-hover disabled:opacity-50"
             >
               {pending ? 'Activating Agent Profile…' : 'Activate My Agent Profile & Generate Invite Link →'}
             </button>

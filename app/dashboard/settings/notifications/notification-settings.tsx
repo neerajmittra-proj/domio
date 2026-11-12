@@ -6,11 +6,11 @@ import { useRouter } from 'next/navigation';
 import type { NotificationConfigData } from '@/lib/notification-config';
 
 const glassCard =
-  'rounded-2xl border border-zinc-200 bg-[rgba(14,12,34,0.6)] p-5 backdrop-blur-md shadow-[0_4px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.05)]';
+  'rounded-2xl border border-zinc-200 bg-[rgba(255,255,255,0.88)] p-5 backdrop-blur-md shadow-[0_4px_20px_rgba(34,49,68,0.10)]';
 const sectionLabel =
   'text-[11px] font-semibold uppercase tracking-[0.12em] text-zinc-500';
 const inputClass =
-  'w-20 rounded-lg border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-3 py-1.5 text-sm text-white outline-none focus:border-zinc-700 focus:ring-2 focus:ring-zinc-500/20';
+  'w-20 rounded-lg border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-3 py-1.5 text-sm text-[#223144] outline-none focus:border-zinc-700 focus:ring-2 focus:ring-zinc-500/20';
 
 function Toggle({
   checked,
@@ -29,16 +29,16 @@ function Toggle({
       onClick={() => onChange(!checked)}
       className="flex w-full items-center justify-between gap-3 py-1.5 text-left"
     >
-      <span className="text-sm text-[#E8E8F2]">{label}</span>
+      <span className="text-sm text-[#223144]">{label}</span>
       <span
         className={
           'relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors ' +
-          (checked ? 'bg-zinc-900' : 'bg-[#312D58]')
+          (checked ? 'bg-zinc-900' : 'bg-[#C2D9E0]')
         }
       >
         <span
           className={
-            'inline-block h-5 w-5 transform rounded-full bg-white transition-transform ' +
+            'inline-block h-5 w-5 transform rounded-full bg-card transition-transform ' +
             (checked ? 'translate-x-5' : 'translate-x-0.5')
           }
         />
@@ -96,12 +96,12 @@ export default function NotificationSettings({
   return (
     <div className="mx-auto max-w-2xl">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-semibold tracking-tight text-white">
+        <h1 className="text-2xl font-semibold tracking-tight text-[#223144]">
           Notification Settings
         </h1>
         <Link
           href="/dashboard/settings/email-history"
-          className="text-sm font-medium text-zinc-500 transition-colors hover:text-white"
+          className="text-sm font-medium text-zinc-500 transition-colors hover:text-[#223144]"
         >
           View Email History →
         </Link>
@@ -117,7 +117,7 @@ export default function NotificationSettings({
               onChange={(v) => set('emailEnabled', v)}
               label="Enable email notifications"
             />
-            <p className="mt-1 text-xs text-[#6A6A8A]">
+            <p className="mt-1 text-xs text-[#3E5560]">
               Master switch — when off, no emails are sent regardless of the
               settings below.
             </p>
@@ -133,7 +133,7 @@ export default function NotificationSettings({
               onChange={(v) => set('rentReminderEnabled', v)}
               label="Send overdue rent reminders"
             />
-            <div className="mt-2 flex items-center gap-2 text-sm text-[#E8E8F2]">
+            <div className="mt-2 flex items-center gap-2 text-sm text-[#223144]">
               <span>Send reminder every</span>
               <input
                 type="number"
@@ -159,7 +159,7 @@ export default function NotificationSettings({
               onChange={(v) => set('leaseExpiryEnabled', v)}
               label="Send lease expiry warnings"
             />
-            <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-[#E8E8F2]">
+            <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-[#223144]">
               <span>Warn at</span>
               <input
                 value={daysText}
@@ -168,7 +168,7 @@ export default function NotificationSettings({
                   setSaved(false);
                 }}
                 placeholder="60, 30, 14"
-                className="w-40 rounded-lg border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-3 py-1.5 text-sm text-white outline-none focus:border-zinc-700 focus:ring-2 focus:ring-zinc-500/20"
+                className="w-40 rounded-lg border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-3 py-1.5 text-sm text-[#223144] outline-none focus:border-zinc-700 focus:ring-2 focus:ring-zinc-500/20"
               />
               <span>days before expiry</span>
             </div>
@@ -215,7 +215,7 @@ export default function NotificationSettings({
       {error && (
         <p
           role="alert"
-          className="mt-4 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-400"
+          className="mt-4 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-700"
         >
           {error}
         </p>
@@ -226,11 +226,11 @@ export default function NotificationSettings({
           type="button"
           onClick={saveAll}
           disabled={saving}
-          className="rounded-full bg-zinc-900 px-5 py-2 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90 disabled:opacity-60"
+          className="rounded-full bg-brand-grad px-5 py-2 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90 disabled:opacity-60"
         >
           {saving ? 'Saving…' : 'Save All Settings'}
         </button>
-        {saved && <span className="text-sm text-emerald-400">✓ Saved</span>}
+        {saved && <span className="text-sm text-emerald-700">✓ Saved</span>}
       </div>
     </div>
   );

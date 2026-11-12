@@ -17,10 +17,22 @@ export async function GET(
 
   const doc = await prisma.document.findUnique({
     where: { id },
-    select: { id: true, ownerId: true, fileKey: true },
+    select: { id: true, ownerId: true, fileKey: true, entityType: true, entityId: true },
   });
   if (!doc || doc.ownerId !== ds.ownerId) {
     return NextResponse.json({ error: 'Document not found.' }, { status: 404 });
+  }
+  // Managers may only open documents linked to properties/units/tenants in
+  // their scope (the vault list is filtered the same way).
+  if (ds.isManager) {
+    const s = ds.scope;
+    const visible =
+      (doc.entityType === 'PROPERTY' && s.propertyIds.includes(doc.entityId)) ||
+      (doc.entityType === 'SUB_PROPERTY' && s.subPropertyIds.includes(doc.entityId)) ||
+      (doc.entityType === 'TENANT' && s.tenantIds.includes(doc.entityId));
+    if (!visible) {
+      return NextResponse.json({ error: 'Document not found.' }, { status: 404 });
+    }
   }
 
   try {

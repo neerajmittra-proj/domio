@@ -8,11 +8,13 @@ export async function GET(request: Request) {
     const typeQuery = (searchParams.get('type') ?? '').trim();
     const locationQuery = (searchParams.get('location') ?? '').trim();
 
-    // Fetch all active properties with their units
+    // Fetch active listings of active owners (bounded) with their units.
     const properties = await prisma.property.findMany({
       where: {
         status: { in: ['ACTIVE', 'VACANT'] },
+        owner: { active: true },
       },
+      take: 1000,
       select: {
         id: true,
         displayId: true,
@@ -24,8 +26,6 @@ export async function GET(request: Request) {
         customType: true,
         ownerId: true,
         ownerName: true,
-        ownerEmail: true,
-        ownerPhone: true,
         images: true,
         listingStatus: true,
         status: true,
@@ -70,7 +70,8 @@ export async function GET(request: Request) {
     }
 
     // Filter properties based on general query, type query, and location query
-    const results = properties.filter((p) => {
+    const results = properties
+      .filter((p) => {
       let matches = true;
 
       // 1. General search query (can match type, customType, name, location, notes)
@@ -105,7 +106,8 @@ export async function GET(request: Request) {
       }
 
       return matches;
-    });
+      })
+      .slice(0, 100);
 
     // Format output
     const formatted = results.map((p) => {
@@ -158,8 +160,10 @@ export async function GET(request: Request) {
         customType: p.customType,
         ownerId: p.ownerId,
         ownerName: p.ownerName,
-        ownerEmail: p.ownerEmail,
-        ownerPhone: p.ownerPhone,
+        // Owner contact details are never exposed on the public endpoint; they
+        // are only shared through an ACCEPTED privacy request.
+        ownerEmail: null,
+        ownerPhone: null,
         images: propertyImages,
         listingStatus: p.listingStatus || 'Available now',
         notes: p.notes,

@@ -8,7 +8,7 @@ import { Button, ButtonLink } from '@/components/ui/button';
 import type { ManagerListItem } from '@/lib/managers';
 
 const glassCard =
-  'rounded-2xl border border-zinc-200 bg-[rgba(14,12,34,0.6)] p-5 backdrop-blur-md shadow-[0_4px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.05)]';
+  'rounded-2xl border border-zinc-200 bg-[rgba(255,255,255,0.88)] p-5 backdrop-blur-md shadow-[0_4px_20px_rgba(34,49,68,0.10)]';
 const sectionLabel =
   'text-[11px] font-semibold uppercase tracking-[0.12em] text-zinc-500';
 
@@ -71,7 +71,20 @@ export default function ManagersGrid({
     setError(null);
     const res = await fetch(`/api/managers/${target.id}`, { method: 'DELETE' });
     if (res.ok) {
-      setItems((xs) => xs.filter((x) => x.id !== target.id));
+      const data = await res.json().catch(() => null);
+      if (data?.deactivated) {
+        // Referenced by other records: kept but deactivated with access removed.
+        setItems((xs) =>
+          xs.map((x) =>
+            x.id === target.id ? { ...x, active: false, accessCount: 0 } : x,
+          ),
+        );
+        alert(
+          `${target.name} is referenced by existing records, so the account was deactivated and all property access removed instead of deleted.`,
+        );
+      } else {
+        setItems((xs) => xs.filter((x) => x.id !== target.id));
+      }
       setTarget(null);
       router.refresh();
     } else {
@@ -84,12 +97,12 @@ export default function ManagersGrid({
   return (
     <div className="mx-auto max-w-5xl">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-semibold tracking-tight text-white">
+        <h1 className="text-2xl font-semibold tracking-tight text-[#223144]">
           Property Managers
         </h1>
         <Link
           href="/dashboard/managers/new"
-          className="rounded-full border border-zinc-300 bg-zinc-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-zinc-800"
+          className="rounded-full border border-zinc-300 bg-brand-grad px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-brand-grad-hover"
         >
           + Add Manager
         </Link>
@@ -99,7 +112,7 @@ export default function ManagersGrid({
       <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className={glassCard}>
           <p className={sectionLabel}>Total Managers</p>
-          <p className="mt-2 text-2xl font-bold text-white">{items.length}</p>
+          <p className="mt-2 text-2xl font-bold text-[#223144]">{items.length}</p>
         </div>
         <div className={glassCard}>
           <p className={sectionLabel}>Active Managers</p>
@@ -107,20 +120,20 @@ export default function ManagersGrid({
         </div>
         <div className={glassCard}>
           <p className={sectionLabel}>Properties Assigned</p>
-          <p className="mt-2 text-2xl font-bold text-[#E8A020]">{assignedTotal}</p>
+          <p className="mt-2 text-2xl font-bold text-[#B26A0B]">{assignedTotal}</p>
         </div>
       </div>
 
       {items.length === 0 ? (
-        <div className="mt-10 rounded-2xl border border-dashed border-[#312D58] bg-[#17152F] p-12 text-center">
+        <div className="mt-10 rounded-2xl border border-dashed border-[#C2D9E0] bg-[#FFFFFF] p-12 text-center">
           <div className="text-5xl">👥</div>
-          <p className="mt-4 text-lg font-semibold text-white">No managers yet</p>
-          <p className="mt-1 text-sm text-[#6A6A8A]">
+          <p className="mt-4 text-lg font-semibold text-[#223144]">No managers yet</p>
+          <p className="mt-1 text-sm text-[#3E5560]">
             Add a property manager and assign them properties to manage.
           </p>
           <Link
             href="/dashboard/managers/new"
-            className="mt-5 inline-flex rounded-full border border-zinc-300 bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-800"
+            className="mt-5 inline-flex rounded-full border border-zinc-300 bg-brand-grad px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-grad-hover"
           >
             + Add Manager
           </Link>
@@ -135,9 +148,9 @@ export default function ManagersGrid({
                 </span>
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-semibold text-white">{m.name}</span>
+                    <span className="font-semibold text-[#223144]">{m.name}</span>
                     {m.displayId && (
-                      <span className="font-mono text-[11px] text-[#4A4A6A]">
+                      <span className="font-mono text-[11px] text-[#5B7280]">
                         {m.displayId}
                       </span>
                     )}
@@ -146,17 +159,17 @@ export default function ManagersGrid({
                         'inline-flex rounded-full px-2 py-0.5 text-[10px] font-medium ' +
                         (m.active
                           ? 'border border-zinc-700/30 bg-zinc-900/15 text-zinc-500'
-                          : 'border border-red-500/20 bg-red-500/10 text-red-400')
+                          : 'border border-red-500/20 bg-red-500/10 text-red-700')
                       }
                     >
                       {m.active ? 'Active' : 'Inactive'}
                     </span>
                   </div>
-                  <p className="mt-0.5 truncate text-xs text-[#6A6A8A]">
+                  <p className="mt-0.5 truncate text-xs text-[#3E5560]">
                     {m.email}
                     {m.phone ? ` · ${m.phone}` : ''}
                   </p>
-                  <p className="mt-0.5 text-xs text-[#6A6A8A]">
+                  <p className="mt-0.5 text-xs text-[#3E5560]">
                     {m.accessCount}{' '}
                     {m.accessCount === 1 ? 'property' : 'properties'} assigned
                   </p>
@@ -211,23 +224,23 @@ export default function ManagersGrid({
           role="dialog"
           aria-modal="true"
           onClick={() => !busy && setTarget(null)}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-navy/60 p-4"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-sm rounded-2xl border border-[#312D58] bg-[#17152F] p-6 shadow-xl"
+            className="w-full max-w-sm rounded-2xl border border-[#C2D9E0] bg-[#FFFFFF] p-6 shadow-xl"
           >
-            <h2 className="text-lg font-semibold tracking-tight text-white">
+            <h2 className="text-lg font-semibold tracking-tight text-[#223144]">
               Delete manager
             </h2>
-            <p className="mt-2 text-sm text-[#E8E8F2]">
+            <p className="mt-2 text-sm text-[#223144]">
               Delete {target.name}? This removes their account and all property
               access. This cannot be undone.
             </p>
             {error && (
               <p
                 role="alert"
-                className="mt-4 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-400"
+                className="mt-4 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-700"
               >
                 {error}
               </p>
@@ -237,7 +250,7 @@ export default function ManagersGrid({
                 type="button"
                 onClick={() => !busy && setTarget(null)}
                 disabled={busy}
-                className="rounded-full border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-4 py-2 text-sm font-medium text-[#E8E8F2] transition-colors hover:text-white disabled:opacity-60"
+                className="rounded-full border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-4 py-2 text-sm font-medium text-[#223144] transition-colors hover:text-[#223144] disabled:opacity-60"
               >
                 Cancel
               </button>

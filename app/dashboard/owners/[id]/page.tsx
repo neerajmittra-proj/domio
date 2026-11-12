@@ -9,15 +9,15 @@ const dateFmt = new Intl.DateTimeFormat('en-US', {
 });
 
 const glassCard =
-  'rounded-2xl border border-[rgba(91,79,232,0.15)] bg-[rgba(14,12,34,0.6)] p-5 backdrop-blur-md shadow-[0_4px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.05)]';
+  'rounded-2xl border border-[rgba(164,71,61,0.15)] bg-[rgba(255,255,255,0.88)] p-5 backdrop-blur-md shadow-[0_4px_20px_rgba(34,49,68,0.10)]';
 const sectionLabel =
-  'text-[11px] font-semibold uppercase tracking-[0.12em] text-[#8B6FE8]';
+  'text-[11px] font-semibold uppercase tracking-[0.12em] text-[#8D3B32]';
 
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between gap-4 py-1.5 text-sm">
-      <dt className="text-[#6A6A8A]">{label}</dt>
-      <dd className="text-white">{value}</dd>
+      <dt className="text-[#3E5560]">{label}</dt>
+      <dd className="text-[#223144]">{value}</dd>
     </div>
   );
 }
@@ -43,27 +43,27 @@ export default async function OwnerDetailPage({
     <div className="mx-auto max-w-3xl">
       <Link
         href="/dashboard/owners"
-        className="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm text-[#6A6A8A] transition-colors hover:bg-white/5 hover:text-white"
+        className="inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm text-[#3E5560] transition-colors hover:bg-[#223144]/5 hover:text-[#223144]"
       >
         ← Back to Property Owners
       </Link>
 
       <div className="mt-2 flex flex-wrap items-center gap-3">
-        <h1 className="text-2xl font-semibold tracking-tight text-white">
+        <h1 className="text-2xl font-semibold tracking-tight text-[#223144]">
           {owner.name}
         </h1>
         <span
           className={
             'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ' +
             (owner.active
-              ? 'border border-[#5B4FE8]/30 bg-[#5B4FE8]/15 text-[#8B6FE8]'
-              : 'border border-red-500/20 bg-red-500/10 text-red-400')
+              ? 'border border-[#A4473D]/30 bg-[#A4473D]/15 text-[#8D3B32]'
+              : 'border border-red-500/20 bg-red-500/10 text-red-700')
           }
         >
           {owner.active ? 'Active' : 'Inactive'}
         </span>
         {owner.accountId && (
-          <span className="font-mono text-sm text-[#8B6FE8]">
+          <span className="font-mono text-sm text-[#8D3B32]">
             {owner.accountId}
           </span>
         )}
@@ -91,10 +91,10 @@ export default async function OwnerDetailPage({
             {stats.map(([label, value]) => (
               <div
                 key={label}
-                className="rounded-xl border border-[#312D58] bg-[rgba(255,255,255,0.04)] p-3"
+                className="rounded-xl border border-[#C2D9E0] bg-[rgba(255,255,255,0.5)] p-3"
               >
-                <p className="text-2xl font-semibold text-white">{value}</p>
-                <p className="text-[10px] uppercase tracking-wide text-[#8B6FE8]">
+                <p className="text-2xl font-semibold text-[#223144]">{value}</p>
+                <p className="text-[10px] uppercase tracking-wide text-[#8D3B32]">
                   {label}
                 </p>
               </div>

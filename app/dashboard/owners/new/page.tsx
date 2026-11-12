@@ -6,16 +6,16 @@ export default function NewOwnerPage() {
     <div className="mx-auto max-w-lg">
       <Link
         href="/dashboard/owners"
-        className="text-sm text-[#E8E8F2] transition-colors hover:text-white"
+        className="text-sm text-[#223144] transition-colors hover:text-[#223144]"
       >
         ← Back to Property Owners
       </Link>
 
-      <div className="mt-4 rounded-2xl border border-[#312D58] bg-[#17152F] p-8">
-        <h1 className="text-2xl font-semibold tracking-tight text-white">
+      <div className="mt-4 rounded-2xl border border-[#C2D9E0] bg-[#FFFFFF] p-8">
+        <h1 className="text-2xl font-semibold tracking-tight text-[#223144]">
           Add Property Owner
         </h1>
-        <p className="mt-1 mb-6 text-sm text-[#E8E8F2]">
+        <p className="mt-1 mb-6 text-sm text-[#223144]">
           Creates a new user with the OWNER role.
         </p>
         <NewOwnerForm />

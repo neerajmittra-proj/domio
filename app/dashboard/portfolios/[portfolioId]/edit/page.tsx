@@ -15,6 +15,7 @@ export default async function EditPortfolioPage({
 
   const { portfolioId } = await params;
   const ds = await resolveDataScope(session.user);
+  if (ds.isManager) notFound(); // managers cannot edit portfolios
   const portfolio = await getOwnedPortfolio(portfolioId, ds.ownerId);
   if (!portfolio) notFound();
 
@@ -27,7 +28,7 @@ export default async function EditPortfolioPage({
         ← Back to Portfolios
       </Link>
 
-      <div className="rounded-2xl border border-zinc-200/90 bg-white p-6 sm:p-8 shadow-xs">
+      <div className="rounded-2xl border border-zinc-200/90 bg-card p-6 sm:p-8 shadow-xs">
         <h1 className="mb-6 text-xl sm:text-2xl font-bold tracking-tight text-zinc-900">
           Edit Portfolio
         </h1>

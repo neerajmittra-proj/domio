@@ -3,8 +3,8 @@
 import { useState } from 'react';
 
 const inputClass =
-  'w-full rounded-lg border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-3 py-2 pr-10 text-sm text-white outline-none transition placeholder:text-[#6A6A8A] focus:border-zinc-700 focus:ring-2 focus:ring-zinc-500/20';
-const labelClass = 'text-sm font-medium text-[#E8E8F2]';
+  'w-full rounded-lg border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-3 py-2 pr-10 text-sm text-[#223144] outline-none transition placeholder:text-[#7A929C] focus:border-zinc-700 focus:ring-2 focus:ring-zinc-500/20';
+const labelClass = 'text-sm font-medium text-[#223144]';
 
 function EyeIcon({ open }: { open: boolean }) {
   return (
@@ -55,7 +55,7 @@ function PasswordField({
           type="button"
           onClick={() => setShow((s) => !s)}
           aria-label={show ? 'Hide password' : 'Show password'}
-          className="absolute right-2 top-1/2 -translate-y-1/2 text-[#6A6A8A] transition-colors hover:text-zinc-500"
+          className="absolute right-2 top-1/2 -translate-y-1/2 text-[#3E5560] transition-colors hover:text-zinc-500"
         >
           <EyeIcon open={show} />
         </button>
@@ -119,7 +119,7 @@ export default function ChangePasswordForm() {
       <h2 className="text-xs font-semibold uppercase tracking-[0.12em] text-zinc-500">
         Password
       </h2>
-      <p className="mt-1 text-sm text-[#6A6A8A]">
+      <p className="mt-1 text-sm text-[#3E5560]">
         Update the password you use to sign in to Domio.
       </p>
 
@@ -129,12 +129,12 @@ export default function ChangePasswordForm() {
         <PasswordField id="confirmPassword" label="Confirm New Password" value={confirm} onChange={setConfirm} />
 
         {error && (
-          <p role="alert" data-testid="password-error" className="rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-400">
+          <p role="alert" data-testid="password-error" className="rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-700">
             {error}
           </p>
         )}
         {success && (
-          <p role="status" data-testid="password-success" className="rounded-lg bg-emerald-500/10 px-3 py-2 text-sm text-emerald-400">
+          <p role="status" data-testid="password-success" className="rounded-lg bg-emerald-500/10 px-3 py-2 text-sm text-emerald-700">
             {success}
           </p>
         )}
@@ -142,7 +142,7 @@ export default function ChangePasswordForm() {
         <button
           type="submit"
           disabled={pending}
-          className="self-start rounded-full bg-zinc-900 px-5 py-2 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90 disabled:opacity-60"
+          className="self-start rounded-full bg-brand-grad px-5 py-2 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90 disabled:opacity-60"
         >
           {pending ? 'Updating…' : 'Update Password'}
         </button>

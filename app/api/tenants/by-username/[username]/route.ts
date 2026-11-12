@@ -11,6 +11,11 @@ export async function GET(
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
+  // Looking up other users' personal details is an owner-only action.
+  if (session.user.role !== 'OWNER') {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
+
   const { username } = await params;
   const clean = username.trim().toLowerCase().replace(/^@/, '');
 
@@ -24,7 +29,7 @@ export async function GET(
         phone: true,
         email: true,
         location: true,
-        nationalId: true,
+        ownerId: true,
       },
     });
 
@@ -35,7 +40,15 @@ export async function GET(
       );
     }
 
-    return NextResponse.json({ tenant });
+    if (tenant.ownerId && tenant.ownerId !== session.user.id) {
+      return NextResponse.json(
+        { error: `@${clean} is already linked to another owner.` },
+        { status: 409 },
+      );
+    }
+
+    const { ownerId: _ownerId, ...safe } = tenant;
+    return NextResponse.json({ tenant: safe });
   } catch (error: any) {
     return NextResponse.json(
       { error: error?.message || 'Failed to find tenant' },

@@ -3,6 +3,7 @@ import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { resolveDataScope } from '@/lib/manager-access';
 import { handleMaintenanceStatusCascade } from '@/lib/rentable-entities';
+import { deleteTenanciesCascade, deleteUtilityAccountsCascade } from '@/lib/cascade-delete';
 
 export async function DELETE(
   request: Request,
@@ -15,6 +16,13 @@ export async function DELETE(
 
   const { id } = await params;
   const ds = await resolveDataScope(session.user);
+
+  if (ds.isManager) {
+    return NextResponse.json(
+      { error: 'Managers cannot delete units.' },
+      { status: 403 },
+    );
+  }
 
   try {
     // 1. Check if it is a SubProperty
@@ -29,25 +37,12 @@ export async function DELETE(
       const tenancyIds = subProperty.tenancies.map((t) => t.id);
 
       await prisma.$transaction(async (tx) => {
-        if (tenancyIds.length > 0) {
-          // Delete ledger entries and rent ledger for all tenancies of this unit
-          await tx.ledgerEntry.deleteMany({
-            where: { tenancyId: { in: tenancyIds } },
-          });
-          await tx.rentLedger.deleteMany({
-            where: { tenancyId: { in: tenancyIds } },
-          });
-          await tx.auditLog.deleteMany({
-            where: { tenancyId: { in: tenancyIds } },
-          });
-          await tx.tenancy.deleteMany({
-            where: { id: { in: tenancyIds } },
-          });
-        }
+        // Delete ledger entries, rent ledger and tenancies of this unit
+        await deleteTenanciesCascade(tx, tenancyIds);
 
-        // Clean up any direct unit associations
+        // Clean up any direct unit associations (utility bills first: FK)
         await tx.propertyAccess.deleteMany({ where: { subPropertyId: id } });
-        await tx.utilityAccount.deleteMany({ where: { subPropertyId: id } });
+        await deleteUtilityAccountsCascade(tx, { subPropertyId: id });
         await tx.expense.deleteMany({ where: { subPropertyId: id } });
         await tx.auditLog.deleteMany({ where: { subPropertyId: id } });
 
@@ -90,20 +85,7 @@ export async function DELETE(
         });
         const tenancyIds = allTenancies.map((t) => t.id);
 
-        if (tenancyIds.length > 0) {
-          await tx.ledgerEntry.deleteMany({
-            where: { tenancyId: { in: tenancyIds } },
-          });
-          await tx.rentLedger.deleteMany({
-            where: { tenancyId: { in: tenancyIds } },
-          });
-          await tx.auditLog.deleteMany({
-            where: { tenancyId: { in: tenancyIds } },
-          });
-          await tx.tenancy.deleteMany({
-            where: { id: { in: tenancyIds } },
-          });
-        }
+        await deleteTenanciesCascade(tx, tenancyIds);
 
         // Single statement for the whole subtree. Postgres checks
         // (non-deferred) foreign-key constraints at end-of-statement, so
@@ -152,6 +134,14 @@ export async function PATCH(
     });
 
     if (subProperty) {
+      if (ds.isManager) {
+        if (!ds.scope.subPropertyIds.includes(id)) {
+          return NextResponse.json({ error: 'Unit not found or unauthorized' }, { status: 404 });
+        }
+        if (!ds.scope.editSubPropertyIds.has(id)) {
+          return NextResponse.json({ error: 'You have view-only access to this unit.' }, { status: 403 });
+        }
+      }
       const updates: {
         name?: string;
         unitNumber?: string;
@@ -261,6 +251,14 @@ export async function PATCH(
     });
 
     if (rentableEntity) {
+      if (ds.isManager) {
+        if (!ds.scope.propertyIds.includes(rentableEntity.propertyId)) {
+          return NextResponse.json({ error: 'Unit not found or unauthorized' }, { status: 404 });
+        }
+        if (!ds.scope.editPropertyIds.has(rentableEntity.propertyId)) {
+          return NextResponse.json({ error: 'You have view-only access to this unit.' }, { status: 403 });
+        }
+      }
       const updates: {
         name?: string;
         code?: string;

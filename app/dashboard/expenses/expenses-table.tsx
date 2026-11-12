@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useScrollLock } from '@/hooks/use-scroll-lock';
 import { useFocusTrap } from '@/hooks/use-focus-trap';
@@ -22,6 +23,7 @@ export default function ExpensesTable({
 }: {
   expenses: ExpenseListItem[];
 }) {
+  const router = useRouter();
   const [items, setItems] = useState(expenses);
   const [target, setTarget] = useState<ExpenseListItem | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -57,6 +59,8 @@ export default function ExpensesTable({
     if (res.ok) {
       setItems((xs) => xs.filter((x) => x.id !== target.id));
       setTarget(null);
+      // Re-run the server page so the month/year totals and category cards update.
+      router.refresh();
     } else {
       const data = await res.json().catch(() => null);
       setError(data?.error ?? 'Failed to delete. Please try again.');
@@ -66,17 +70,17 @@ export default function ExpensesTable({
 
   if (items.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-[#312D58] bg-[#17152F] p-12 text-center">
-        <p className="text-sm text-[#E8E8F2]">No expenses found</p>
+      <div className="rounded-2xl border border-dashed border-[#C2D9E0] bg-[#FFFFFF] p-12 text-center">
+        <p className="text-sm text-[#223144]">No expenses found</p>
       </div>
     );
   }
 
   return (
     <>
-      <div className="overflow-x-auto rounded-2xl border border-[#1A1A2A]">
+      <div className="overflow-x-auto rounded-2xl border border-[#DCE9EC]">
         <table className="w-full min-w-[640px] text-left text-sm">
-          <thead className="bg-[#1A1A2A] text-xs uppercase tracking-wide text-zinc-500">
+          <thead className="bg-[#EAF2F4] text-xs uppercase tracking-wide text-zinc-500">
             <tr>
               <th className="px-4 py-3 font-medium">Date</th>
               <th className="px-4 py-3 font-medium">Category</th>
@@ -87,15 +91,15 @@ export default function ExpensesTable({
               <th className="px-4 py-3 text-right font-medium">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#1A1A2A]">
+          <tbody className="divide-y divide-[#DCE9EC]">
             {items.map((e, i) => (
               <tr
                 key={e.id}
                 className={
-                  i % 2 === 0 ? 'bg-[#0E0C22]' : 'bg-[rgba(255,255,255,0.02)]'
+                  i % 2 === 0 ? 'bg-[#FFFFFF]' : 'bg-[rgba(34,49,68,0.035)]'
                 }
               >
-                <td className="px-4 py-3 text-[#6A6A8A]">
+                <td className="px-4 py-3 text-[#3E5560]">
                   {formatDate(e.date)}
                 </td>
                 <td className="px-4 py-3">
@@ -108,21 +112,21 @@ export default function ExpensesTable({
                     {expenseCategoryLabel(e.category)}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-[#6A6A8A]">
+                <td className="px-4 py-3 text-[#3E5560]">
                   {e.description || '—'}
                 </td>
-                <td className="px-4 py-3 font-medium text-white">
+                <td className="px-4 py-3 font-medium text-[#223144]">
                   {formatMoney(e.amount)}
                 </td>
-                <td className="px-4 py-3 text-[#6A6A8A]">
+                <td className="px-4 py-3 text-[#3E5560]">
                   {LEVEL_LABEL[e.level]}
                 </td>
-                <td className="px-4 py-3 text-[#6A6A8A]">{e.contextName}</td>
+                <td className="px-4 py-3 text-[#3E5560]">{e.contextName}</td>
                 <td className="px-4 py-3">
                   <div className="flex justify-end gap-2">
                     <Link
                       href={`/dashboard/expenses/${e.id}/edit`}
-                      className="rounded-full border border-zinc-200 bg-[rgba(255,255,255,0.06)] px-3 py-1 text-xs font-medium text-[#E8E8F2] transition-colors hover:text-white"
+                      className="rounded-full border border-zinc-200 bg-[rgba(255,255,255,0.7)] px-3 py-1 text-xs font-medium text-[#223144] transition-colors hover:text-[#223144]"
                     >
                       Edit
                     </Link>
@@ -132,7 +136,7 @@ export default function ExpensesTable({
                         setError(null);
                         setTarget(e);
                       }}
-                      className="rounded-full border border-red-500/30 px-3 py-1 text-xs font-medium text-red-400 transition-colors hover:bg-red-500/10"
+                      className="rounded-full border border-red-500/30 px-3 py-1 text-xs font-medium text-red-700 transition-colors hover:bg-red-500/10"
                     >
                       Delete
                     </button>
@@ -149,17 +153,17 @@ export default function ExpensesTable({
           role="dialog"
           aria-modal="true"
           onClick={closeConfirm}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-navy/60 p-4"
         >
           <div
             ref={trapRef}
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-sm rounded-2xl border border-[#312D58] bg-[#17152F] p-6 shadow-xl"
+            className="w-full max-w-sm rounded-2xl border border-[#C2D9E0] bg-[#FFFFFF] p-6 shadow-xl"
           >
-            <h2 className="text-lg font-semibold tracking-tight text-white">
+            <h2 className="text-lg font-semibold tracking-tight text-[#223144]">
               Delete expense
             </h2>
-            <p className="mt-2 text-sm text-[#E8E8F2]">
+            <p className="mt-2 text-sm text-[#223144]">
               Delete this {expenseCategoryLabel(target.category)} expense of{' '}
               {formatMoney(target.amount)}? This action cannot be undone.
             </p>
@@ -167,7 +171,7 @@ export default function ExpensesTable({
             {error && (
               <p
                 role="alert"
-                className="mt-4 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-400"
+                className="mt-4 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-700"
               >
                 {error}
               </p>
@@ -178,7 +182,7 @@ export default function ExpensesTable({
                 type="button"
                 onClick={closeConfirm}
                 disabled={deleting}
-                className="rounded-full border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-4 py-2 text-sm font-medium text-[#E8E8F2] transition-colors hover:text-white disabled:opacity-60"
+                className="rounded-full border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-4 py-2 text-sm font-medium text-[#223144] transition-colors hover:text-[#223144] disabled:opacity-60"
               >
                 Cancel
               </button>

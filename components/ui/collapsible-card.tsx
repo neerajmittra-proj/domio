@@ -5,8 +5,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 // Matches the `glassCard` style used across the unit detail page.
 const glassCard =
-  'rounded-2xl border border-zinc-200 bg-[rgba(14,12,34,0.6)] backdrop-blur-md ' +
-  'shadow-[0_4px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.05)] ' +
+  'rounded-2xl border border-zinc-200 bg-[rgba(255,255,255,0.88)] backdrop-blur-md ' +
+  'shadow-[0_4px_20px_rgba(34,49,68,0.10)] ' +
   'transition-shadow duration-200 hover:shadow-md';
 
 function Chevron({ open }: { open: boolean }) {

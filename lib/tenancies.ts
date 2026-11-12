@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import type { ManagerScope } from '@/lib/manager-access';
 
 export type VacantUnitOption = {
   id: string;
@@ -17,11 +18,41 @@ export type PropertyWithVacantUnits = {
 
 // Owner's properties each with their currently-VACANT units (for the assign form).
 // IMPORTANT: Only LEAF entities (entities with NO child sub-units) can be assigned a tenant.
+// Pass tenantId to exclude units this tenant is already actively leasing.
 export async function listVacantUnitsByProperty(
   ownerId: string,
   role?: string,
+  tenantId?: string,
+  // Managers: only units they hold EDIT access to may be offered for assignment.
+  scope?: ManagerScope,
 ): Promise<PropertyWithVacantUnits[]> {
-  const whereClause = role === 'SUPER_ADMIN' ? {} : { ownerId };
+  const baseWhere = role === 'SUPER_ADMIN' ? {} : { ownerId };
+  const editSubIds = scope ? [...scope.editSubPropertyIds] : [];
+  const editPropIds = scope ? [...scope.editPropertyIds] : [];
+  const whereClause = scope
+    ? {
+        ...baseWhere,
+        OR: [
+          { id: { in: editPropIds } },
+          { subProperties: { some: { id: { in: editSubIds } } } },
+        ],
+      }
+    : baseWhere;
+
+  // Collect IDs of units/entities this tenant already occupies (active leases only)
+  let occupiedSubPropertyIds = new Set<string>();
+  let occupiedEntityIds = new Set<string>();
+  if (tenantId) {
+    const activeLeases = await prisma.tenancy.findMany({
+      where: { tenantId, status: 'ACTIVE' },
+      select: { subPropertyId: true, rentableEntityId: true },
+    });
+    for (const lease of activeLeases) {
+      if (lease.subPropertyId) occupiedSubPropertyIds.add(lease.subPropertyId);
+      if (lease.rentableEntityId) occupiedEntityIds.add(lease.rentableEntityId);
+    }
+  }
+
   const rows = await prisma.property.findMany({
     where: whereClause,
     orderBy: { name: 'asc' },
@@ -29,7 +60,10 @@ export async function listVacantUnitsByProperty(
       id: true,
       name: true,
       subProperties: {
-        where: { status: 'VACANT' },
+        where: {
+          status: 'VACANT',
+          ...(scope ? { id: { in: editSubIds } } : {}),
+        },
         orderBy: { unitNumber: 'asc' },
         select: { id: true, unitNumber: true, name: true, rentAmount: true },
       },
@@ -55,25 +89,31 @@ export async function listVacantUnitsByProperty(
   return rows.map((p) => {
     // If the property uses RentableEntity hierarchy, use leaf rentable entities.
     // If no rentable entities exist, fall back to subProperties.
-    const entityUnits: VacantUnitOption[] = p.rentableEntities.map((re) => {
-      const parentLabel = re.parent ? `${re.parent.name} → ` : '';
-      return {
-        id: re.id,
-        unitNumber: re.code,
-        name: `${parentLabel}${re.name} (${re.type})`,
-        rentAmount: re.rentAmount,
-        isRentableEntity: true,
-        entityType: re.type,
-      };
-    });
+    const entityUnits: VacantUnitOption[] = p.rentableEntities
+      // Managers only get hierarchy entities of properties they can EDIT.
+      .filter((re) => !scope || scope.editPropertyIds.has(p.id))
+      .filter((re) => !occupiedEntityIds.has(re.id))
+      .map((re) => {
+        const parentLabel = re.parent ? `${re.parent.name} → ` : '';
+        return {
+          id: re.id,
+          unitNumber: re.code,
+          name: `${parentLabel}${re.name} (${re.type})`,
+          rentAmount: re.rentAmount,
+          isRentableEntity: true,
+          entityType: re.type,
+        };
+      });
 
-    const subUnits: VacantUnitOption[] = p.subProperties.map((sp) => ({
-      id: sp.id,
-      unitNumber: sp.unitNumber,
-      name: sp.name,
-      rentAmount: sp.rentAmount,
-      isRentableEntity: false,
-    }));
+    const subUnits: VacantUnitOption[] = p.subProperties
+      .filter((sp) => !occupiedSubPropertyIds.has(sp.id))
+      .map((sp) => ({
+        id: sp.id,
+        unitNumber: sp.unitNumber,
+        name: sp.name,
+        rentAmount: sp.rentAmount,
+        isRentableEntity: false,
+      }));
 
     return {
       id: p.id,

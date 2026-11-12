@@ -145,7 +145,7 @@ function EntityTreeNode({
             ? 'border-emerald-200/70 bg-emerald-50/30'
             : isLeaf
             ? 'border-amber-200/60 bg-amber-50/20 hover:bg-amber-50/40'  // leaf vacant: amber
-            : 'border-zinc-200/70 bg-white')  // parent: plain white, no vacant indicator
+            : 'border-zinc-200/70 bg-card')  // parent: plain white, no vacant indicator
         }
         style={{ marginLeft: `${depth * ENTITY_INDENT_PX}px` }}
       >
@@ -171,7 +171,7 @@ function EntityTreeNode({
                 {open ? '▼' : '▶'}
               </button>
             ) : (
-              <span className="w-4 shrink-0 text-center text-[10px] text-zinc-300">•</span>
+              <span className="w-4 shrink-0 text-center text-[10px] text-[#3E5560]">•</span>
             )}
 
             {/* Type icon */}
@@ -428,7 +428,7 @@ export default function PropertyUnitsInline({
         onClick={toggle}
         aria-expanded={expanded}
         data-testid="prop-inline-toggle"
-        className="flex w-full items-center justify-between gap-3 rounded-xl border border-zinc-200/90 bg-white px-4 py-3 text-left shadow-xs transition-all hover:border-zinc-300 hover:shadow-sm"
+        className="flex w-full items-center justify-between gap-3 rounded-xl border border-zinc-200/90 bg-card px-4 py-3 text-left shadow-xs transition-all hover:border-zinc-300 hover:shadow-sm"
       >
         <span className="flex min-w-0 flex-wrap items-center gap-x-2.5 gap-y-1">
           <span className="text-sm font-bold text-zinc-900">{name}</span>
@@ -562,7 +562,7 @@ export default function PropertyUnitsInline({
                       }
                       endDrag();
                     }}
-                    className="rounded-xl border border-zinc-200/90 bg-white p-3.5 shadow-xs"
+                    className="rounded-xl border border-zinc-200/90 bg-card p-3.5 shadow-xs"
                   >
                     {/* Section header: editable label + remove (empty only) */}
                     <div className="mb-2.5 flex items-center justify-between gap-2 border-b border-zinc-100 pb-2">
@@ -579,7 +579,7 @@ export default function PropertyUnitsInline({
                             if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
                             if (e.key === 'Escape') setEditing(null);
                           }}
-                          className="rounded-lg border border-zinc-300 bg-zinc-50 px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider text-zinc-900 outline-none focus:border-zinc-900 focus:bg-white"
+                          className="rounded-lg border border-zinc-300 bg-zinc-50 px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider text-zinc-900 outline-none focus:border-zinc-900 focus:bg-card"
                         />
                       ) : (
                         <button
@@ -667,7 +667,7 @@ export default function PropertyUnitsInline({
                   type="button"
                   onClick={addSection}
                   data-testid="add-section"
-                  className="rounded-full border border-zinc-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-zinc-700 shadow-xs transition-all hover:bg-zinc-50 hover:border-zinc-300 hover:text-zinc-900"
+                  className="rounded-full border border-zinc-200 bg-card px-3.5 py-1.5 text-xs font-semibold text-zinc-700 shadow-xs transition-all hover:bg-zinc-50 hover:border-zinc-300 hover:text-zinc-900"
                 >
                   + Add section
                 </button>
@@ -676,7 +676,7 @@ export default function PropertyUnitsInline({
                   onClick={saveLayout}
                   disabled={saving}
                   data-testid="save-layout"
-                  className="rounded-full bg-zinc-900 px-4 py-1.5 text-xs font-semibold text-white shadow-xs transition-all hover:bg-zinc-800 disabled:opacity-60"
+                  className="rounded-full bg-brand-grad px-4 py-1.5 text-xs font-semibold text-white shadow-xs transition-all hover:bg-brand-grad-hover disabled:opacity-60"
                 >
                   {saving ? 'Saving…' : 'Save layout'}
                 </button>
@@ -691,7 +691,7 @@ export default function PropertyUnitsInline({
 
           {/* Empty state when no units and no hierarchy */}
           {!hasHierarchy && units.length === 0 && (
-            <div className="rounded-xl border border-dashed border-zinc-200 bg-white py-8 text-center">
+            <div className="rounded-xl border border-dashed border-zinc-200 bg-card py-8 text-center">
               <p className="text-sm font-medium text-zinc-500">No units added yet.</p>
             </div>
           )}
@@ -738,7 +738,7 @@ function UnitCard({
       data-unit-id={unit.id}
       style={{ borderLeft: `3.5px solid ${borderColor(unit)}` }}
       className={
-        'group flex w-48 cursor-grab flex-col gap-1.5 rounded-xl border border-zinc-200/90 bg-white p-3.5 shadow-xs ' +
+        'group flex w-48 cursor-grab flex-col gap-1.5 rounded-xl border border-zinc-200/90 bg-card p-3.5 shadow-xs ' +
         'transition-all hover:border-zinc-300 hover:shadow-md active:cursor-grabbing ' +
         (dimmed ? 'opacity-40' : '')
       }

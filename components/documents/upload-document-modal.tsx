@@ -15,8 +15,8 @@ import {
 } from '@/lib/document-types';
 
 const inputClass =
-  'w-full rounded-lg border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-3 py-2 text-sm text-white outline-none transition placeholder:text-[#B0B0C8] focus:border-zinc-700 focus:ring-2 focus:ring-zinc-500/20';
-const labelClass = 'text-sm font-medium text-[#E8E8F2]';
+  'w-full rounded-lg border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-3 py-2 text-sm text-[#223144] outline-none transition placeholder:text-[#7A929C] focus:border-zinc-700 focus:ring-2 focus:ring-zinc-500/20';
+const labelClass = 'text-sm font-medium text-[#223144]';
 
 type TenantOption = { id: string; name: string };
 
@@ -194,23 +194,23 @@ export default function UploadDocumentModal({
   const radioBtn = (active: boolean) =>
     'rounded-full px-3 py-1.5 text-xs font-medium transition-colors ' +
     (active
-      ? 'border border-zinc-300 bg-zinc-900 text-white'
-      : 'border border-[#312D58] bg-[rgba(255,255,255,0.04)] text-[#B0B0C8] hover:text-white');
+      ? 'border border-zinc-300 bg-brand-grad text-white'
+      : 'border border-[#C2D9E0] bg-[rgba(255,255,255,0.5)] text-[#3E5560] hover:text-[#223144]');
 
   return (
     <div
       role="dialog"
       aria-modal="true"
       onClick={() => !uploading && onClose()}
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4"
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-navy/60 p-4"
     >
       <form
         ref={trapRef}
         onClick={(e) => e.stopPropagation()}
         onSubmit={submit}
-        className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-zinc-200 bg-[rgba(14,12,34,0.95)] p-6 shadow-2xl backdrop-blur-xl"
+        className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-zinc-200 bg-[rgba(255,255,255,0.97)] p-6 shadow-2xl backdrop-blur-xl"
       >
-        <h2 className="text-lg font-semibold tracking-tight text-white">
+        <h2 className="text-lg font-semibold tracking-tight text-[#223144]">
           Upload Document
         </h2>
 
@@ -245,8 +245,8 @@ export default function UploadDocumentModal({
             <div className="flex items-center justify-center gap-3 text-sm">
               <span className="text-2xl">📄</span>
               <div className="text-left">
-                <p className="font-medium text-white">{file.name}</p>
-                <p className="text-xs text-[#6A6A8A]">
+                <p className="font-medium text-[#223144]">{file.name}</p>
+                <p className="text-xs text-[#3E5560]">
                   {formatFileSize(file.size)}
                 </p>
               </div>
@@ -256,7 +256,7 @@ export default function UploadDocumentModal({
                   e.stopPropagation();
                   setFile(null);
                 }}
-                className="ml-2 rounded-full px-2 text-[#B0B0C8] hover:text-white"
+                className="ml-2 rounded-full px-2 text-[#3E5560] hover:text-[#223144]"
               >
                 ✕
               </button>
@@ -264,10 +264,10 @@ export default function UploadDocumentModal({
           ) : (
             <>
               <div className="text-3xl">📤</div>
-              <p className="mt-2 text-sm text-[#E8E8F2]">
+              <p className="mt-2 text-sm text-[#223144]">
                 Drag &amp; drop or click to browse
               </p>
-              <p className="mt-1 text-xs text-[#6A6A8A]">
+              <p className="mt-1 text-xs text-[#3E5560]">
                 PDF, images, Word, Excel, txt · max 10MB
               </p>
             </>
@@ -308,7 +308,7 @@ export default function UploadDocumentModal({
 
           <div className="flex flex-col gap-1.5">
             <label htmlFor="doc-desc" className={labelClass}>
-              Description <span className="text-[#B0B0C8]">(optional)</span>
+              Description <span className="text-[#3E5560]">(optional)</span>
             </label>
             <textarea
               id="doc-desc"
@@ -323,7 +323,7 @@ export default function UploadDocumentModal({
           {locked ? (
             <div className="flex flex-col gap-1.5">
               <span className={labelClass}>Linked To</span>
-              <div className="rounded-lg border border-[#312D58] bg-[rgba(255,255,255,0.04)] px-3 py-2 text-sm text-zinc-500">
+              <div className="rounded-lg border border-[#C2D9E0] bg-[rgba(255,255,255,0.5)] px-3 py-2 text-sm text-zinc-500">
                 {lockedEntityLabel ?? 'This item'}
               </div>
             </div>
@@ -413,7 +413,7 @@ export default function UploadDocumentModal({
 
           <div className="flex flex-col gap-1.5">
             <label htmlFor="doc-expiry" className={labelClass}>
-              Expiry Date <span className="text-[#B0B0C8]">(optional)</span>
+              Expiry Date <span className="text-[#3E5560]">(optional)</span>
             </label>
             <input
               id="doc-expiry"
@@ -422,19 +422,19 @@ export default function UploadDocumentModal({
               onChange={(e) => setExpiryDate(e.target.value)}
               className={inputClass}
             />
-            <p className="text-xs text-[#6A6A8A]">e.g. insurance renewal date</p>
+            <p className="text-xs text-[#3E5560]">e.g. insurance renewal date</p>
           </div>
         </div>
 
         {uploading && (
           <div className="mt-4">
-            <div className="h-2 w-full overflow-hidden rounded-full bg-[#1A1A2A]">
+            <div className="h-2 w-full overflow-hidden rounded-full bg-[#EAF2F4]">
               <div
                 className="h-full rounded-full bg-zinc-900 transition-all"
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <p className="mt-1 text-center text-xs text-[#6A6A8A]">
+            <p className="mt-1 text-center text-xs text-[#3E5560]">
               Uploading… {progress}%
             </p>
           </div>
@@ -443,7 +443,7 @@ export default function UploadDocumentModal({
         {error && (
           <p
             role="alert"
-            className="mt-4 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-400"
+            className="mt-4 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-700"
           >
             {error}
           </p>
@@ -454,14 +454,14 @@ export default function UploadDocumentModal({
             type="button"
             onClick={() => !uploading && onClose()}
             disabled={uploading}
-            className="rounded-full border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-4 py-2 text-sm font-medium text-[#E8E8F2] transition-colors hover:text-white disabled:opacity-60"
+            className="rounded-full border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-4 py-2 text-sm font-medium text-[#223144] transition-colors hover:text-[#223144] disabled:opacity-60"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={uploading}
-            className="rounded-full bg-zinc-900 px-5 py-2 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90 disabled:opacity-60"
+            className="rounded-full bg-brand-grad px-5 py-2 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90 disabled:opacity-60"
           >
             {uploading ? 'Uploading…' : 'Upload Document'}
           </button>

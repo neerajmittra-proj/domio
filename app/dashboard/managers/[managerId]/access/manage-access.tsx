@@ -8,11 +8,11 @@ import type { OwnerStructure } from '@/lib/expenses';
 import type { ManagerAccessRecord } from '@/lib/managers';
 
 const glassCard =
-  'rounded-2xl border border-[rgba(91,79,232,0.15)] bg-[rgba(14,12,34,0.6)] p-5 backdrop-blur-md shadow-[0_4px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.05)]';
+  'rounded-2xl border border-[rgba(164,71,61,0.15)] bg-[rgba(255,255,255,0.88)] p-5 backdrop-blur-md shadow-[0_4px_20px_rgba(34,49,68,0.10)]';
 const sectionLabel =
-  'text-[11px] font-semibold uppercase tracking-[0.12em] text-[#8B6FE8]';
+  'text-[11px] font-semibold uppercase tracking-[0.12em] text-[#8D3B32]';
 const inputClass =
-  'w-full rounded-lg border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-3 py-2 text-sm text-white outline-none transition focus:border-[#5B4FE8] focus:ring-2 focus:ring-[#5B4FE8]/20';
+  'w-full rounded-lg border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-3 py-2 text-sm text-[#223144] outline-none transition focus:border-[#A4473D] focus:ring-2 focus:ring-[#A4473D]/20';
 
 export default function ManageAccess({
   managerId,
@@ -126,14 +126,14 @@ export default function ManageAccess({
     <div className="mx-auto max-w-3xl">
       <Link
         href="/dashboard/managers"
-        className="text-sm text-[#6A6A8A] transition-colors hover:text-white"
+        className="text-sm text-[#3E5560] transition-colors hover:text-[#223144]"
       >
         ← Back to Managers
       </Link>
-      <h1 className="mt-2 text-2xl font-semibold tracking-tight text-white">
+      <h1 className="mt-2 text-2xl font-semibold tracking-tight text-[#223144]">
         Managing access for {managerName}
         {managerDisplayId && (
-          <span className="ml-2 font-mono text-sm text-[#4A4A6A]">
+          <span className="ml-2 font-mono text-sm text-[#5B7280]">
             {managerDisplayId}
           </span>
         )}
@@ -143,26 +143,26 @@ export default function ManageAccess({
       <div className={glassCard + ' mt-6'}>
         <p className={sectionLabel}>Assigned Properties</p>
         {notice && (
-          <p className="mt-2 rounded-lg bg-green-500/10 px-3 py-2 text-sm text-green-400">
+          <p className="mt-2 rounded-lg bg-green-500/10 px-3 py-2 text-sm text-green-700">
             {notice}
           </p>
         )}
         {error && (
           <p
             role="alert"
-            className="mt-2 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-400"
+            className="mt-2 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-700"
           >
             {error}
           </p>
         )}
         {records.length === 0 ? (
-          <p className="mt-3 text-sm text-[#6A6A8A]">
+          <p className="mt-3 text-sm text-[#3E5560]">
             No access granted yet. Assign a property or unit below.
           </p>
         ) : (
-          <div className="mt-3 overflow-x-auto rounded-xl border border-[rgba(91,79,232,0.15)]">
+          <div className="mt-3 overflow-x-auto rounded-xl border border-[rgba(164,71,61,0.15)]">
             <table className="w-full min-w-[480px] text-left text-sm">
-              <thead className="bg-[rgba(91,79,232,0.1)] text-xs uppercase tracking-wide text-[#8B6FE8]">
+              <thead className="bg-[rgba(164,71,61,0.1)] text-xs uppercase tracking-wide text-[#8D3B32]">
                 <tr>
                   <th className="px-3 py-2 font-medium">Item</th>
                   <th className="px-3 py-2 font-medium">ID</th>
@@ -171,11 +171,11 @@ export default function ManageAccess({
                   <th className="px-3 py-2 text-right font-medium">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[rgba(91,79,232,0.1)]">
+              <tbody className="divide-y divide-[rgba(164,71,61,0.1)]">
                 {records.map((r) => (
                   <tr key={r.id}>
-                    <td className="px-3 py-2 text-white">{r.label}</td>
-                    <td className="px-3 py-2 font-mono text-xs text-[#4A4A6A]">
+                    <td className="px-3 py-2 text-[#223144]">{r.label}</td>
+                    <td className="px-3 py-2 font-mono text-xs text-[#5B7280]">
                       {r.displayId ?? '—'}
                     </td>
                     <td className="px-3 py-2">
@@ -183,8 +183,8 @@ export default function ManageAccess({
                         className={
                           'inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ' +
                           (r.accessLevel === 'EDIT'
-                            ? 'border border-[#5B4FE8]/30 bg-[#5B4FE8]/15 text-[#8B6FE8]'
-                            : 'border border-[#312D58] bg-[rgba(255,255,255,0.06)] text-[#B0B0C8]')
+                            ? 'border border-[#A4473D]/30 bg-[#A4473D]/15 text-[#8D3B32]'
+                            : 'border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] text-[#3E5560]')
                         }
                       >
                         {r.accessLevel === 'EDIT' ? 'Edit' : 'View'}
@@ -203,8 +203,8 @@ export default function ManageAccess({
                         className={
                           'inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors disabled:opacity-50 ' +
                           (r.canEditRentLedger
-                            ? 'border border-green-500/30 bg-green-500/15 text-green-400 hover:bg-green-500/25'
-                            : 'border border-[#312D58] bg-[rgba(255,255,255,0.06)] text-[#6A6A8A] hover:text-white')
+                            ? 'border border-green-500/30 bg-green-500/15 text-green-700 hover:bg-green-500/25'
+                            : 'border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] text-[#3E5560] hover:text-[#223144]')
                         }
                       >
                         {r.canEditRentLedger ? 'Can edit' : '—'}
@@ -233,7 +233,7 @@ export default function ManageAccess({
         <p className={sectionLabel}>Assign New Access</p>
         <div className="mt-3 flex flex-col gap-3">
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm text-[#E8E8F2]">Property</label>
+            <label className="text-sm text-[#223144]">Property</label>
             <select
               value={propertyId}
               onChange={(e) => {
@@ -256,8 +256,8 @@ export default function ManageAccess({
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm text-[#E8E8F2]">
-              Unit <span className="text-[#6A6A8A]">(optional — leave blank for whole property)</span>
+            <label className="text-sm text-[#223144]">
+              Unit <span className="text-[#3E5560]">(optional — leave blank for whole property)</span>
             </label>
             <select
               value={unitId}
@@ -275,7 +275,7 @@ export default function ManageAccess({
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm text-[#E8E8F2]">Level</label>
+            <label className="text-sm text-[#223144]">Level</label>
             <div className="flex gap-2">
               {(['VIEW', 'EDIT'] as const).map((lv) => (
                 <button
@@ -289,8 +289,8 @@ export default function ManageAccess({
                   className={
                     'rounded-full px-3 py-1.5 text-xs font-medium transition-colors ' +
                     (level === lv
-                      ? 'border border-[#8B6FE8]/50 bg-[#5B4FE8] text-white'
-                      : 'border border-[#312D58] bg-[rgba(255,255,255,0.04)] text-[#B0B0C8] hover:text-white')
+                      ? 'border border-[#8D3B32]/50 bg-[#A4473D] text-white'
+                      : 'border border-[#C2D9E0] bg-[rgba(255,255,255,0.5)] text-[#3E5560] hover:text-[#223144]')
                   }
                 >
                   {lv === 'VIEW' ? 'View Only' : 'View & Edit'}
@@ -304,11 +304,11 @@ export default function ManageAccess({
               type="checkbox"
               checked={rentEdit}
               onChange={(e) => setRentEdit(e.target.checked)}
-              className="mt-0.5 h-4 w-4 rounded border-[#312D58] bg-[rgba(255,255,255,0.06)] accent-[#5B4FE8]"
+              className="mt-0.5 h-4 w-4 rounded border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] accent-[#A4473D]"
             />
-            <span className="text-sm text-[#E8E8F2]">
+            <span className="text-sm text-[#223144]">
               Can edit the Rent Ledger
-              <span className="mt-0.5 block text-xs text-[#6A6A8A]">
+              <span className="mt-0.5 block text-xs text-[#3E5560]">
                 Allows adding, editing and deleting rent charges, payments and
                 monthly rent records for this assignment. All changes are
                 recorded in the audit log.
@@ -317,7 +317,7 @@ export default function ManageAccess({
           </label>
 
           {error && (
-            <p role="alert" className="rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-400">
+            <p role="alert" className="rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-700">
               {error}
             </p>
           )}

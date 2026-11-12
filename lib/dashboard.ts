@@ -1,6 +1,8 @@
 import type { ExpenseCategory, UtilityType } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { markOverdueBills } from '@/lib/utilities';
+import { expenseScopeWhere } from '@/lib/expenses';
+import { markOverdueRent, round2 } from '@/lib/rent-ledger';
 import { getPortfolioOverview } from '@/lib/portfolio-overview';
 import { getEntityTypeLabel } from '@/lib/document-types';
 
@@ -111,6 +113,8 @@ export type DashboardData = {
     document: DocumentAlert[];
     total: number;
   };
+  // Leaf-unit occupancy across flat units AND the rentable-entity hierarchy.
+  occupancy: { occupied: number; total: number };
   chart: ChartPoint[];
 };
 
@@ -168,14 +172,7 @@ export async function getDashboardData(
   const tenancyScope = scope
     ? { subPropertyId: { in: scope.subPropertyIds } }
     : {};
-  const propUnitScope = scope
-    ? {
-        OR: [
-          { propertyId: { in: scope.propertyIds } },
-          { subPropertyId: { in: scope.subPropertyIds } },
-        ],
-      }
-    : {};
+  const propUnitScope = expenseScopeWhere(scope);
   const utilScope = scope
     ? {
         utilityAccount: {
@@ -198,7 +195,8 @@ export async function getDashboardData(
       }
     : {};
 
-  await markOverdueBills(ownerId);
+  await Promise.all([markOverdueBills(ownerId), markOverdueRent(ownerId)]);
+  const todayStart = new Date(Date.UTC(cy, cm, now.getUTCDate()));
 
   const [
     overview,
@@ -211,11 +209,20 @@ export async function getDashboardData(
     utilityBills,
     expiringDocuments,
     fyEntries,
+    arrearsAgg,
+    fyLedgerRows,
   ] = await Promise.all([
     getPortfolioOverview(ownerId, scope),
     // Active tenancies → monthly expected + per-tenant collection rows.
     prisma.tenancy.findMany({
-      where: { ownerId, status: 'ACTIVE', ...tenancyScope },
+      // Only leases that actually cover the viewed month count as "expected".
+      where: {
+        ownerId,
+        status: 'ACTIVE',
+        startDate: { lt: monthEnd },
+        endDate: { gte: monthStart },
+        ...tenancyScope,
+      },
       select: {
         id: true,
         monthlyRent: true,
@@ -307,6 +314,22 @@ export async function getDashboardData(
       where: { ...ledgerEntryWhere, date: { gte: fyStart, lt: fyEnd } },
       select: { date: true, type: true, amount: true },
     }),
+    // Arrears from the rent schedule: past-due rows still unpaid (OVERDUE, or
+    // PARTIAL with a balance) — outstanding = amountDue - amountPaid.
+    prisma.rentLedger.aggregate({
+      _sum: { amountDue: true, amountPaid: true },
+      where: {
+        ...ledgerEntryWhere,
+        ownerId,
+        status: { in: ['OVERDUE', 'PARTIAL'] },
+        dueDate: { lt: todayStart },
+      },
+    }),
+    // FY scheduled rent by due month (the chart's "expected" series).
+    prisma.rentLedger.findMany({
+      where: { ...ledgerEntryWhere, ownerId, dueDate: { gte: fyStart, lt: fyEnd } },
+      select: { dueDate: true, amountDue: true },
+    }),
   ]);
 
   // ── Month + FY stat cards ──────────────────────────────────────────────────
@@ -344,25 +367,35 @@ export async function getDashboardData(
       pr.units.map((u) => ({ portfolio: p, property: pr, unit: u })),
     ),
   );
-  const totalOverdue = allUnits.reduce(
-    (s, x) => (x.unit.currentBalance < 0 ? s - x.unit.currentBalance : s),
+  const totalOverdue = Math.max(
     0,
+    round2((arrearsAgg._sum.amountDue ?? 0) - (arrearsAgg._sum.amountPaid ?? 0)),
   );
+  const occupancy = {
+    occupied: overview.reduce((s, p) => s + p.occupiedCount, 0),
+    total: overview.reduce((s, p) => s + p.unitCount, 0),
+  };
   const unitStatuses: UnitStatus[] = allUnits.map((x) => {
     const u = x.unit;
     const rent = u.monthlyExpected || u.rentAmount;
+    // What the unit owes: the larger of the journal deficit and the rent
+    // schedule's past-due balance (the journal alone has no scheduled charges).
+    const owed = Math.max(
+      u.overdueAmount,
+      u.currentBalance < 0 ? -u.currentBalance : 0,
+    );
     let status: UnitStatus['status'];
     if (!u.tenancyId) status = 'vacant';
-    else if (u.currentBalance >= 0) status = 'paid';
+    else if (owed <= 0) status = 'paid';
     else {
-      const months = rent > 0 ? Math.ceil(Math.abs(u.currentBalance) / rent) : 99;
+      const months = rent > 0 ? Math.ceil(owed / rent) : 99;
       status = months >= 2 ? 'overdue' : 'amber';
     }
     return {
       unitId: u.id,
       unitName: u.name,
       tenantName: u.tenantName,
-      currentBalance: u.currentBalance,
+      currentBalance: owed > 0 ? -owed : u.currentBalance,
       monthlyRent: rent,
       status,
       href: `/dashboard/portfolios/${x.portfolio.id}/properties/${x.property.id}/units/${u.id}`,
@@ -484,12 +517,25 @@ export async function getDashboardData(
     bucketIndex.set(`${yy}-${mm}`, buckets.length);
     buckets.push({ month: MONTHS[mm], expected: 0, collected: 0 });
   }
+  const chargeExpected = buckets.map(() => 0);
   for (const e of fyEntries) {
     const idx = bucketIndex.get(`${e.date.getUTCFullYear()}-${e.date.getUTCMonth()}`);
     if (idx === undefined) continue;
     if (e.type === 'PAYMENT') buckets[idx].collected += e.amount;
-    else if (e.type === 'RENT_CHARGE') buckets[idx].expected += Math.abs(e.amount);
+    else if (e.type === 'RENT_CHARGE') chargeExpected[idx] += Math.abs(e.amount);
   }
+  // Expected rent comes from the rent schedule (RentLedger.amountDue by due
+  // month); manual RENT_CHARGE journal entries are only used for months that
+  // have no schedule rows, so the same rent is never counted twice.
+  const scheduleExpected = buckets.map(() => 0);
+  for (const r of fyLedgerRows) {
+    const idx = bucketIndex.get(`${r.dueDate.getUTCFullYear()}-${r.dueDate.getUTCMonth()}`);
+    if (idx !== undefined) scheduleExpected[idx] += r.amountDue;
+  }
+  buckets.forEach((b, i) => {
+    b.expected = round2(scheduleExpected[i] > 0 ? scheduleExpected[i] : chargeExpected[i]);
+    b.collected = round2(b.collected);
+  });
 
   return {
     month,
@@ -511,6 +557,7 @@ export async function getDashboardData(
     recentActivity,
     unitStatuses,
     alerts: { overdue, expiring, vacant, utility, document, total },
+    occupancy,
     chart: buckets,
   };
 }

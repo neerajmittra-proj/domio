@@ -5,7 +5,7 @@ import type { Role } from '@prisma/client';
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
+    const body = await req.json().catch(() => ({}));
     const { name, email, phone, location, password, role = 'OWNER', ref } = body;
 
     // Check if referred by an agent
@@ -41,9 +41,9 @@ export async function POST(req: Request) {
       );
     }
 
-    if (!password || typeof password !== 'string' || password.length < 6) {
+    if (!password || typeof password !== 'string' || password.length < 8) {
       return NextResponse.json(
-        { error: 'Password must be at least 6 characters long.' },
+        { error: 'Password must be at least 8 characters long.' },
         { status: 400 },
       );
     }
@@ -148,8 +148,14 @@ export async function POST(req: Request) {
     );
   } catch (error: any) {
     console.error('Registration error:', error);
+    if (error?.code === 'P2002') {
+      return NextResponse.json(
+        { error: 'An account with this email or phone number already exists.' },
+        { status: 409 },
+      );
+    }
     return NextResponse.json(
-      { error: error?.message || 'Something went wrong during registration.' },
+      { error: 'Something went wrong during registration.' },
       { status: 500 },
     );
   }

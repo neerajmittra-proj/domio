@@ -2,7 +2,7 @@ import { formatMoney } from '@/lib/tenancy-types';
 import type { DashboardData } from '@/lib/dashboard';
 
 const glassCard =
-  'rounded-2xl border border-[#e1e2e3] bg-white p-6 shadow-xs';
+  'rounded-2xl border border-[#DCE9EC] bg-card p-6 shadow-xs';
 const label = 'font-bold text-xs uppercase tracking-wider text-zinc-400';
 
 function initials(name: string): string {

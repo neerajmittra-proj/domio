@@ -30,7 +30,14 @@ export async function PATCH(
       return NextResponse.json({ error: 'Request not found' }, { status: 404 });
     }
 
-    // Only receiver can ACCEPT or DECLINE. Sender can CANCEL.
+    // Only the receiver can ACCEPT or DECLINE; only the sender can CANCEL.
+    // Only a PENDING request can change state, and nobody can move it back to
+    // PENDING — otherwise contact details revealed on ACCEPT could be re-hidden
+    // and re-revealed, or a declined request resurrected.
+    const allowed: RequestStatus[] = ['ACCEPTED', 'DECLINED', 'CANCELLED'];
+    if (!status || !allowed.includes(status as RequestStatus)) {
+      return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
+    }
     if (status === 'CANCELLED') {
       if (existing.senderId !== userId) {
         return NextResponse.json({ error: 'Only the sender can cancel this request' }, { status: 403 });
@@ -40,16 +47,22 @@ export async function PATCH(
         return NextResponse.json({ error: 'Only the recipient can respond to this request' }, { status: 403 });
       }
     }
-
-    const validStatuses: RequestStatus[] = ['PENDING', 'ACCEPTED', 'DECLINED', 'CANCELLED'];
-    if (!status || !validStatuses.includes(status as RequestStatus)) {
-      return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
+    if (existing.status !== 'PENDING') {
+      return NextResponse.json(
+        { error: `This request is already ${existing.status.toLowerCase()}.` },
+        { status: 409 },
+      );
     }
 
-    const updated = await prisma.privacyRequest.update({
-      where: { id },
+    // Conditional on still being PENDING so concurrent responses can't both win.
+    const res = await prisma.privacyRequest.updateMany({
+      where: { id, status: 'PENDING' },
       data: { status: status as RequestStatus },
     });
+    if (res.count === 0) {
+      return NextResponse.json({ error: 'This request was already answered.' }, { status: 409 });
+    }
+    const updated = await prisma.privacyRequest.findUniqueOrThrow({ where: { id } });
 
     return NextResponse.json({
       success: true,

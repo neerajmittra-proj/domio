@@ -50,7 +50,7 @@ export default async function ReportsPage() {
 
       <Link
         href="/dashboard/reports/collection"
-        className="flex items-center justify-between rounded-2xl border border-zinc-200 bg-white p-5 transition-all hover:shadow-md hover:border-zinc-300 shadow-xs"
+        className="flex items-center justify-between rounded-2xl border border-zinc-200 bg-card p-5 transition-all hover:shadow-md hover:border-zinc-300 shadow-xs"
       >
         <div className="flex items-center gap-4">
           <span className="text-3xl">📈</span>
@@ -61,7 +61,7 @@ export default async function ReportsPage() {
             </p>
           </div>
         </div>
-        <span className="text-xs font-bold text-black bg-zinc-100 px-3 py-1.5 rounded-lg">View Matrix →</span>
+        <span className="text-xs font-bold text-ink bg-zinc-100 px-3 py-1.5 rounded-lg">View Matrix →</span>
       </Link>
 
       <ReportsClient

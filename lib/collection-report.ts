@@ -68,9 +68,16 @@ export async function getCollectionMatrix(
     const props = await prisma.property.findMany({
       where: { ownerId, ...(scope ? { id: { in: scope.propertyIds } } : {}) },
       orderBy: { name: 'asc' },
-      select: { id: true, name: true },
+      select: { id: true, name: true, portfolioId: true },
     });
-    columns = props.map((p) => ({ id: p.id, label: p.name }));
+    // propertyId/portfolioId let the tracker's portfolio/property filters work
+    // at property level too (otherwise every filter matched zero columns).
+    columns = props.map((p) => ({
+      id: p.id,
+      label: p.name,
+      propertyId: p.id,
+      portfolioId: p.portfolioId,
+    }));
   } else {
     const units = await prisma.subProperty.findMany({
       where: { ownerId, ...(scope ? { id: { in: scope.subPropertyIds } } : {}) },
@@ -170,7 +177,10 @@ export async function getCollectionMatrix(
 
   // Current outstanding per column: sum of negative tenancy balances
   // (balance = SUM(all LedgerEntry.amount); negative = tenant owes).
-  const [balances, opening, tenancies] = await Promise.all([
+  const todayStart = new Date(
+    Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), new Date().getUTCDate()),
+  );
+  const [balances, opening, tenancies, ledgerDue, ledgerOpening] = await Promise.all([
     prisma.ledgerEntry.groupBy({
       by: ['tenancyId'],
       where: { tenancy: { ownerId, ...subScope } },
@@ -191,6 +201,27 @@ export async function getCollectionMatrix(
         rentableEntity: { select: { propertyId: true } },
       },
     }),
+    // Rent-schedule arrears: past-due rows not fully paid. The journal has no
+    // scheduled charges, so on its own it always reports nothing outstanding.
+    prisma.rentLedger.groupBy({
+      by: ['tenancyId'],
+      where: {
+        status: { not: 'PAID' },
+        dueDate: { lt: todayStart },
+        tenancy: { ownerId, ...subScope },
+      },
+      _sum: { amountDue: true, amountPaid: true },
+    }),
+    // Same, restricted to rows that fell due before this FY started.
+    prisma.rentLedger.groupBy({
+      by: ['tenancyId'],
+      where: {
+        status: { not: 'PAID' },
+        dueDate: { lt: new Date(Math.min(fyStart.getTime(), todayStart.getTime())) },
+        tenancy: { ownerId, ...subScope },
+      },
+      _sum: { amountDue: true, amountPaid: true },
+    }),
   ]);
   const tenancyToCol = new Map(
     tenancies.map((t) => [
@@ -203,23 +234,38 @@ export async function getCollectionMatrix(
   );
 
   // Sum the negative (owed) per-tenancy balances into each column.
+  // Per tenancy, owed = the larger of the journal deficit and the schedule's
+  // unpaid past-due rent (never the sum — they describe the same rent).
   const sumOwed = (
-    rows: { tenancyId: string; _sum: { amount: number | null } }[],
+    journal: { tenancyId: string; _sum: { amount: number | null } }[],
+    schedule: {
+      tenancyId: string;
+      _sum: { amountDue: number | null; amountPaid: number | null };
+    }[],
   ): { byColumn: Record<string, number>; grand: number } => {
+    const owedByTenancy = new Map<string, number>();
+    for (const b of journal) {
+      const bal = b._sum.amount ?? 0;
+      if (bal < 0) owedByTenancy.set(b.tenancyId, -bal);
+    }
+    for (const r of schedule) {
+      const owed = (r._sum.amountDue ?? 0) - (r._sum.amountPaid ?? 0);
+      if (owed > 0) {
+        owedByTenancy.set(r.tenancyId, Math.max(owedByTenancy.get(r.tenancyId) ?? 0, owed));
+      }
+    }
     const byColumn: Record<string, number> = {};
     let grand = 0;
-    for (const b of rows) {
-      const bal = b._sum.amount ?? 0;
-      if (bal >= 0) continue; // settled or in credit
-      const colId = tenancyToCol.get(b.tenancyId);
+    for (const [tenancyId, owed] of owedByTenancy) {
+      const colId = tenancyToCol.get(tenancyId);
       if (!colId || !known.has(colId)) continue;
-      byColumn[colId] = (byColumn[colId] ?? 0) - bal;
-      grand += -bal;
+      byColumn[colId] = (byColumn[colId] ?? 0) + owed;
+      grand += owed;
     }
     return { byColumn, grand };
   };
-  const { byColumn: dueByColumn, grand: grandDue } = sumOwed(balances);
-  const { byColumn: openingByColumn, grand: grandOpening } = sumOwed(opening);
+  const { byColumn: dueByColumn, grand: grandDue } = sumOwed(balances, ledgerDue);
+  const { byColumn: openingByColumn, grand: grandOpening } = sumOwed(opening, ledgerOpening);
 
   return {
     by,

@@ -6,6 +6,7 @@ import type {
   RentableEntityType,
 } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
+import { markOverdueRent, round2 } from '@/lib/rent-ledger';
 
 // Rich, owner-scoped portfolio → property → unit overview powering the
 // portfolios accordion page and the property slide-in panel. A single nested
@@ -123,13 +124,15 @@ type LedgerRow = {
   status: string;
 };
 
-// An entry counts as overdue only if the DB status is explicitly 'OVERDUE'.
-// NOTE: rentLedger.amountPaid is set to 0 at schedule creation and is NOT
-// updated when payments are recorded (payments flow through ledgerEntry).
-// Relying on (amountDue - amountPaid) would therefore always equal amountDue,
-// inflating the overdue total to a multiple of the monthly rent.
-function isOverdue(l: LedgerRow): boolean {
-  return l.status === 'OVERDUE';
+// An entry counts as overdue when it is flagged OVERDUE, or is PARTIAL with its
+// due date already in the past (a part-paid month is still in arrears for the
+// remainder). rentLedger.amountPaid IS maintained by the payment routes, so the
+// overdue amount for an entry is (amountDue - amountPaid).
+function isOverdue(l: LedgerRow, todayStart: Date): boolean {
+  return (
+    l.status === 'OVERDUE' ||
+    (l.status === 'PARTIAL' && l.dueDate.getTime() < todayStart.getTime())
+  );
 }
 
 // ── RentableEntity tree builder ────────────────────────────────────────────────
@@ -151,7 +154,7 @@ type FlatEntityRow = {
     monthlyRent: number;
     endDate: Date;
     tenant: { name: string };
-    rentLedger: { amountPaid: number }[];
+    rentLedger: { amountPaid: number; paidDate: Date | null }[];
   }[];
 };
 
@@ -161,13 +164,29 @@ type FlatEntityRow = {
  *   - Parent node: effectiveRent = sum of children effectiveRent
  *     (we IGNORE the parent's own listedRent when it has children — per user requirement)
  */
-function buildEntityTree(rows: FlatEntityRow[]): OverviewEntityNode[] {
+function buildEntityTree(
+  rows: FlatEntityRow[],
+  monthStart: Date,
+  monthEnd: Date,
+): OverviewEntityNode[] {
   // First pass: create all nodes (isLeaf computed in second pass after wiring children)
   const nodeMap = new Map<string, OverviewEntityNode & { directCollection: number }>();
   for (const row of rows) {
     const lease = row.tenancies[0] ?? null;
+    // Collected THIS MONTH only (by payment date) — summing every row's
+    // all-time amountPaid inflated "monthly collected" with whole-lease history.
     const directColl = lease
-      ? lease.rentLedger.reduce((sum, item) => sum + item.amountPaid, 0)
+      ? round2(
+          lease.rentLedger.reduce(
+            (sum, item) =>
+              item.paidDate &&
+              item.paidDate.getTime() >= monthStart.getTime() &&
+              item.paidDate.getTime() < monthEnd.getTime()
+                ? sum + item.amountPaid
+                : sum,
+            0,
+          ),
+        )
       : 0;
 
     nodeMap.set(row.id, {
@@ -307,6 +326,11 @@ export async function getPortfolioOverview(
     Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1),
   );
 
+  const todayStart = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
+  );
+  await markOverdueRent(ownerId);
+
   const [portfolios, docCountRows, managerRows, paymentRows, balanceRows, entityRows] =
     await Promise.all([
     prisma.portfolio.findMany({
@@ -436,7 +460,7 @@ export async function getPortfolioOverview(
             endDate: true,
             tenant: { select: { name: true } },
             rentLedger: {
-              select: { amountPaid: true },
+              select: { amountPaid: true, paidDate: true },
             },
           },
         },
@@ -482,13 +506,10 @@ export async function getPortfolioOverview(
         const ledger = (tenancy?.rentLedger ?? []) as LedgerRow[];
 
         const overdueEntries = ledger
-          .filter((l) => isOverdue(l))
+          .filter((l) => isOverdue(l, todayStart))
           .sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime());
-        // amountPaid on rentLedger rows is not maintained (always 0) —
-        // sum amountDue directly for overdue rows.
-        const overdueAmount = overdueEntries.reduce(
-          (s, l) => s + l.amountDue,
-          0,
+        const overdueAmount = round2(
+          overdueEntries.reduce((s, l) => s + (l.amountDue - l.amountPaid), 0),
         );
         const oldestOverdue = overdueEntries[0] ?? null;
         const daysOverdue = oldestOverdue
@@ -540,7 +561,7 @@ export async function getPortfolioOverview(
 
       // ── RentableEntity hierarchy tree ──────────────────────────────────────
       const rawEntityRows = entityRowsByProperty.get(pr.id) ?? [];
-      const rentableEntities = buildEntityTree(rawEntityRows);
+      const rentableEntities = buildEntityTree(rawEntityRows, monthStart, monthEnd);
 
       // ── Monthly expected rent calculation ─────────────────────────────────
       // Priority: if RentableEntity hierarchy exists → use its leaf-sum rollup.

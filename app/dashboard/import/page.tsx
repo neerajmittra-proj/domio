@@ -14,16 +14,16 @@ export default async function ImportPage() {
     <div className="mx-auto max-w-5xl">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-white">
+          <h1 className="text-2xl font-semibold tracking-tight text-[#223144]">
             Data Import
           </h1>
-          <p className="mt-1 text-sm text-[#B0B0C8]">
+          <p className="mt-1 text-sm text-[#3E5560]">
             Bring historical property data into Domio from a spreadsheet.
           </p>
         </div>
         <Link
           href="/dashboard/import/history"
-          className="rounded-full border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-4 py-2 text-sm font-medium text-[#E8E8F2] transition-colors hover:text-white"
+          className="rounded-full border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-4 py-2 text-sm font-medium text-[#223144] transition-colors hover:text-[#223144]"
         >
           Import History
         </Link>

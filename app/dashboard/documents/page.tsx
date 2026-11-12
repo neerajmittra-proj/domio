@@ -21,7 +21,7 @@ export default async function DocumentsPage() {
 
   const [documents, structure, tenants] = await Promise.all([
     listDocumentsForOwner(ownerId, { scope }),
-    getOwnerStructure(ownerId),
+    getOwnerStructure(ownerId, scope),
     listTenantsForOwner(
       ownerId,
       ds.isManager ? ds.scope.subPropertyIds : undefined,

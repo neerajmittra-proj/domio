@@ -21,6 +21,29 @@ const EXPENSE_LEVEL_LABEL = {
   UNIT: 'Unit',
 } as const;
 
+// Translate the page's quick ranges into the explicit dates the PDF export
+// expects (UTC, inclusive), so "Export Report" matches what is on screen.
+function exportWindow(
+  range: string | undefined,
+  from: string | undefined,
+  to: string | undefined,
+): { from?: string; to?: string } {
+  const now = new Date();
+  const y = now.getUTCFullYear();
+  const m = now.getUTCMonth();
+  const iso = (d: Date) => d.toISOString().slice(0, 10);
+  if (range === 'thisMonth') {
+    return { from: iso(new Date(Date.UTC(y, m, 1))), to: iso(new Date(Date.UTC(y, m + 1, 0))) };
+  }
+  if (range === 'lastMonth') {
+    return { from: iso(new Date(Date.UTC(y, m - 1, 1))), to: iso(new Date(Date.UTC(y, m, 0))) };
+  }
+  if (range === 'thisYear') {
+    return { from: `${y}-01-01`, to: `${y}-12-31` };
+  }
+  return { from, to };
+}
+
 export default async function ExpensesPage({
   searchParams,
 }: {
@@ -44,6 +67,7 @@ export default async function ExpensesPage({
     ds.scope.editPropertyIds.size > 0 ||
     ds.scope.editSubPropertyIds.size > 0;
   const viewOnly = ds.isManager && !canEdit;
+  const exportDates = exportWindow(sp.range, sp.from, sp.to);
 
   const [summary, expenses, properties] = await Promise.all([
     getExpensePageSummary(ownerId, scope),
@@ -85,13 +109,13 @@ export default async function ExpensesPage({
           <ExpenseExportButton
             propertyId={sp.propertyId}
             category={sp.category}
-            dateFrom={sp.from}
-            dateTo={sp.to}
+            dateFrom={exportDates.from}
+            dateTo={exportDates.to}
           />
           {canEdit && (
             <Link
               href="/dashboard/expenses/new"
-              className="rounded-lg bg-zinc-900 px-4 py-2 text-xs sm:text-sm font-semibold text-white transition-all hover:bg-zinc-800 active:scale-95 shadow-sm"
+              className="rounded-lg bg-brand-grad px-4 py-2 text-xs sm:text-sm font-semibold text-white transition-all hover:bg-brand-grad-hover active:scale-95 shadow-sm"
             >
               + Add Expense
             </Link>
@@ -100,7 +124,7 @@ export default async function ExpensesPage({
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div className="rounded-2xl border border-[#e1e2e3] bg-white p-5 shadow-xs">
+        <div className="rounded-2xl border border-[#DCE9EC] bg-card p-5 shadow-xs">
           <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
             Total This Month
           </p>
@@ -108,7 +132,7 @@ export default async function ExpensesPage({
             {formatMoney(summary.thisMonth)}
           </p>
         </div>
-        <div className="rounded-2xl border border-[#e1e2e3] bg-white p-5 shadow-xs">
+        <div className="rounded-2xl border border-[#DCE9EC] bg-card p-5 shadow-xs">
           <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
             Total This Year
           </p>
@@ -116,7 +140,7 @@ export default async function ExpensesPage({
             {formatMoney(summary.thisYear)}
           </p>
         </div>
-        <div className="rounded-2xl border border-[#e1e2e3] bg-white p-5 shadow-xs">
+        <div className="rounded-2xl border border-[#DCE9EC] bg-card p-5 shadow-xs">
           <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
             Top Categories
           </p>

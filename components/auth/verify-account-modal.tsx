@@ -130,9 +130,9 @@ export default function VerifyAccountModal({
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-navy/60 backdrop-blur-xs p-4"
     >
-      <div className="relative w-full max-w-md rounded-3xl border border-zinc-200 bg-white p-6 sm:p-8 shadow-2xl">
+      <div className="relative w-full max-w-md rounded-3xl border border-zinc-200 bg-card p-6 sm:p-8 shadow-2xl">
         <button
           type="button"
           onClick={onClose}
@@ -167,7 +167,7 @@ export default function VerifyAccountModal({
             }}
             className={`flex-1 rounded-lg py-2 text-xs font-bold transition-all ${
               activeTab === 'email'
-                ? 'bg-white text-zinc-900 shadow-xs'
+                ? 'bg-card text-zinc-900 shadow-xs'
                 : 'text-zinc-500 hover:text-zinc-900'
             }`}
           >
@@ -182,7 +182,7 @@ export default function VerifyAccountModal({
             }}
             className={`flex-1 rounded-lg py-2 text-xs font-bold transition-all ${
               activeTab === 'phone'
-                ? 'bg-white text-zinc-900 shadow-xs'
+                ? 'bg-card text-zinc-900 shadow-xs'
                 : 'text-zinc-500 hover:text-zinc-900'
             }`}
           >
@@ -226,7 +226,7 @@ export default function VerifyAccountModal({
                         type="button"
                         onClick={handleSendOtp}
                         disabled={submitting}
-                        className="w-full rounded-xl bg-zinc-900 py-3 text-xs font-bold text-white shadow-sm hover:bg-zinc-800 disabled:opacity-50"
+                        className="w-full rounded-xl bg-brand-grad py-3 text-xs font-bold text-white shadow-sm hover:bg-brand-grad-hover disabled:opacity-50"
                       >
                         {submitting
                           ? 'Sending Code…'
@@ -245,7 +245,7 @@ export default function VerifyAccountModal({
                           value={otpCode}
                           onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
                           placeholder="• • • • • •"
-                          className="w-full rounded-xl border border-zinc-300 bg-white py-3 text-center font-mono text-2xl font-bold tracking-widest text-zinc-900 outline-none focus:border-zinc-900"
+                          className="w-full rounded-xl border border-zinc-300 bg-card py-3 text-center font-mono text-2xl font-bold tracking-widest text-zinc-900 outline-none focus:border-zinc-900"
                         />
                         {previewCode && (
                           <p className="rounded-lg bg-amber-50 p-2 text-center text-xs font-mono text-amber-800">
@@ -255,7 +255,7 @@ export default function VerifyAccountModal({
                         <button
                           type="submit"
                           disabled={submitting || otpCode.length !== 6}
-                          className="w-full rounded-xl bg-zinc-900 py-3 text-xs font-bold text-white shadow-sm hover:bg-zinc-800 disabled:opacity-50"
+                          className="w-full rounded-xl bg-brand-grad py-3 text-xs font-bold text-white shadow-sm hover:bg-brand-grad-hover disabled:opacity-50"
                         >
                           {submitting ? 'Verifying…' : 'Verify Email Code ✓'}
                         </button>
@@ -306,7 +306,7 @@ export default function VerifyAccountModal({
                         type="button"
                         onClick={handleSendOtp}
                         disabled={submitting}
-                        className="w-full rounded-xl bg-zinc-900 py-3 text-xs font-bold text-white shadow-sm hover:bg-zinc-800 disabled:opacity-50"
+                        className="w-full rounded-xl bg-brand-grad py-3 text-xs font-bold text-white shadow-sm hover:bg-brand-grad-hover disabled:opacity-50"
                       >
                         {submitting ? 'Sending SMS…' : 'Send 6-Digit SMS OTP →'}
                       </button>
@@ -323,7 +323,7 @@ export default function VerifyAccountModal({
                           value={otpCode}
                           onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
                           placeholder="• • • • • •"
-                          className="w-full rounded-xl border border-zinc-300 bg-white py-3 text-center font-mono text-2xl font-bold tracking-widest text-zinc-900 outline-none focus:border-zinc-900"
+                          className="w-full rounded-xl border border-zinc-300 bg-card py-3 text-center font-mono text-2xl font-bold tracking-widest text-zinc-900 outline-none focus:border-zinc-900"
                         />
                         {previewCode && (
                           <p className="rounded-lg bg-amber-50 p-2 text-center text-xs font-mono text-amber-800">
@@ -333,7 +333,7 @@ export default function VerifyAccountModal({
                         <button
                           type="submit"
                           disabled={submitting || otpCode.length !== 6}
-                          className="w-full rounded-xl bg-zinc-900 py-3 text-xs font-bold text-white shadow-sm hover:bg-zinc-800 disabled:opacity-50"
+                          className="w-full rounded-xl bg-brand-grad py-3 text-xs font-bold text-white shadow-sm hover:bg-brand-grad-hover disabled:opacity-50"
                         >
                           {submitting ? 'Verifying…' : 'Verify Phone Code ✓'}
                         </button>

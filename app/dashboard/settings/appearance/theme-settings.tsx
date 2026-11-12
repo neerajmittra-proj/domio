@@ -6,29 +6,20 @@ const OPTIONS: {
   id: Theme;
   label: string;
   desc: string;
-  // Preview swatch colours (static — they illustrate each theme).
+  // Preview swatch colours (static — they illustrate the theme).
   page: string;
   card: string;
   text: string;
   accent: string;
 }[] = [
   {
-    id: 'dark',
-    label: 'Dark',
-    desc: 'Void black surfaces — the Domio default.',
-    page: '#0A0A0F',
-    card: '#17152F',
-    text: '#FFFFFF',
-    accent: '#18181b',
-  },
-  {
     id: 'light',
-    label: 'Light',
-    desc: 'Bright surfaces with violet accents.',
-    page: '#FFFFFF',
-    card: '#F0EEFB',
-    text: '#1A1825',
-    accent: '#18181b',
+    label: 'Domio Brand',
+    desc: 'Beige paper background with terracotta and navy — the colours of the Domio logo.',
+    page: '#F1F7F8',
+    card: '#FFFFFF',
+    text: '#223144',
+    accent: '#A4473D',
   },
 ];
 
@@ -48,11 +39,11 @@ export default function ThemeSettings() {
       <h2 className="text-xs font-semibold uppercase tracking-[0.12em] text-zinc-500">
         Appearance
       </h2>
-      <p className="mt-1 text-sm text-[#6A6A8A]">
+      <p className="mt-1 text-sm text-[#3E5560]">
         Choose how Domio looks. Your choice is saved to your account.
       </p>
 
-      <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:max-w-xl">
         {OPTIONS.map((o) => {
           const selected = theme === o.id;
           return (
@@ -66,7 +57,7 @@ export default function ThemeSettings() {
                 'group rounded-2xl border-2 p-4 text-left transition-colors ' +
                 (selected
                   ? 'border-zinc-700 bg-zinc-50'
-                  : 'border-[#312D58] hover:border-[#71717a]')
+                  : 'border-[#C2D9E0] hover:border-[#8FA3AC]')
               }
             >
               {/* Mini preview */}
@@ -86,13 +77,13 @@ export default function ThemeSettings() {
 
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-semibold text-white">{o.label}</p>
-                  <p className="text-xs text-[#6A6A8A]">{o.desc}</p>
+                  <p className="text-sm font-semibold text-[#223144]">{o.label}</p>
+                  <p className="text-xs text-[#3E5560]">{o.desc}</p>
                 </div>
                 <span
                   className={
                     'flex h-6 w-6 items-center justify-center rounded-full ' +
-                    (selected ? 'bg-zinc-900 text-white' : 'text-[#4A4A6A]')
+                    (selected ? 'bg-brand-grad text-white' : 'text-[#5B7280]')
                   }
                   data-testid={selected ? `theme-card-${o.id}-check` : undefined}
                 >

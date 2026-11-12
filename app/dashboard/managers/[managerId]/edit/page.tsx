@@ -20,12 +20,12 @@ export default async function EditManagerPage({
     <div className="mx-auto max-w-lg">
       <Link
         href="/dashboard/managers"
-        className="text-sm text-[#6A6A8A] transition-colors hover:text-white"
+        className="text-sm text-[#3E5560] transition-colors hover:text-[#223144]"
       >
         ← Back to Managers
       </Link>
-      <div className="mt-4 rounded-2xl border border-[#312D58] bg-[#17152F] p-8 shadow-[0_10px_30px_-12px_rgba(0,0,0,0.9)]">
-        <h1 className="mb-6 text-2xl font-semibold tracking-tight text-white">
+      <div className="mt-4 rounded-2xl border border-[#C2D9E0] bg-[#FFFFFF] p-8 shadow-[0_10px_30px_-12px_rgba(34,49,68,0.30)]">
+        <h1 className="mb-6 text-2xl font-semibold tracking-tight text-[#223144]">
           Edit Manager
         </h1>
         <ManagerForm

@@ -22,7 +22,7 @@ const dateFmt = new Intl.DateTimeFormat('en-US', {
 });
 
 const glassCard =
-  'rounded-2xl border border-zinc-200 bg-[rgba(14,12,34,0.6)] p-5 backdrop-blur-md shadow-[0_4px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.05)]';
+  'rounded-2xl border border-zinc-200 bg-[rgba(255,255,255,0.88)] p-5 backdrop-blur-md shadow-[0_4px_20px_rgba(34,49,68,0.10)]';
 
 type EntityFilter = 'ALL' | EntityType;
 
@@ -122,12 +122,12 @@ export default function DocumentsVault({
   }
 
   function ExpiryCell({ d }: { d: DocumentWithUrl }) {
-    if (!d.expiryDate) return <span className="text-[#4A4A6A]">—</span>;
+    if (!d.expiryDate) return <span className="text-[#5B7280]">—</span>;
     const n = daysUntil(d.expiryDate, now);
     const label = dateFmt.format(new Date(d.expiryDate));
-    if (n < 0) return <span className="text-[#ef4444]">Expired · {label}</span>;
-    if (n <= 30) return <span className="text-[#E8A020]">{n}d · {label}</span>;
-    return <span className="text-[#22c55e]">{label}</span>;
+    if (n < 0) return <span className="text-[#B91C1C]">Expired · {label}</span>;
+    if (n <= 30) return <span className="text-[#B26A0B]">{n}d · {label}</span>;
+    return <span className="text-[#15803D]">{label}</span>;
   }
 
   return (
@@ -135,11 +135,11 @@ export default function DocumentsVault({
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-semibold tracking-tight text-white">
+          <h1 className="text-2xl font-semibold tracking-tight text-[#223144]">
             Documents
           </h1>
           {!canManage && (
-            <span className="inline-flex items-center gap-1 rounded-full border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-2.5 py-0.5 text-xs font-medium text-[#B0B0C8]">
+            <span className="inline-flex items-center gap-1 rounded-full border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-2.5 py-0.5 text-xs font-medium text-[#3E5560]">
               👁 View only
             </span>
           )}
@@ -148,7 +148,7 @@ export default function DocumentsVault({
           <button
             type="button"
             onClick={() => setUploadOpen(true)}
-            className="rounded-full border border-zinc-300 bg-zinc-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-zinc-800"
+            className="rounded-full border border-zinc-300 bg-brand-grad px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-brand-grad-hover"
           >
             Upload Document
           </button>
@@ -161,13 +161,13 @@ export default function DocumentsVault({
           <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-zinc-500">
             Total Documents
           </p>
-          <p className="mt-2 text-2xl font-bold text-white">{items.length}</p>
+          <p className="mt-2 text-2xl font-bold text-[#223144]">{items.length}</p>
         </div>
         <div className={glassCard}>
           <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-zinc-500">
             Expiring Soon
           </p>
-          <p className="mt-2 text-2xl font-bold text-[#E8A020]">
+          <p className="mt-2 text-2xl font-bold text-[#B26A0B]">
             {expiringSoon.length}
           </p>
         </div>
@@ -175,7 +175,7 @@ export default function DocumentsVault({
           <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-zinc-500">
             Expired
           </p>
-          <p className="mt-2 text-2xl font-bold text-[#ef4444]">
+          <p className="mt-2 text-2xl font-bold text-[#B91C1C]">
             {expired.length}
           </p>
         </div>
@@ -184,18 +184,18 @@ export default function DocumentsVault({
       {/* Expiry warning banner */}
       {expiringSoon.length > 0 && (
         <div className="mt-4 rounded-2xl border border-[rgba(232,160,32,0.3)] bg-[rgba(232,160,32,0.1)] px-5 py-4">
-          <p className="text-sm font-medium text-[#E8A020]">
+          <p className="text-sm font-medium text-[#B26A0B]">
             ⚠️ {expiringSoon.length} document
             {expiringSoon.length === 1 ? '' : 's'} expiring within 30 days
           </p>
-          <ul className="mt-2 space-y-1 text-sm text-[#E8E8F2]">
+          <ul className="mt-2 space-y-1 text-sm text-[#223144]">
             {expiringSoon.slice(0, 5).map((d) => (
               <li key={d.id}>
                 {d.name}
                 {d.entityLabel && (
-                  <span className="text-[#6A6A8A]"> · {d.entityLabel}</span>
+                  <span className="text-[#3E5560]"> · {d.entityLabel}</span>
                 )}
-                <span className="text-[#E8A020]">
+                <span className="text-[#B26A0B]">
                   {' '}
                   · expires in {daysUntil(d.expiryDate as Date, now)} days
                 </span>
@@ -216,8 +216,8 @@ export default function DocumentsVault({
               className={
                 'rounded-full px-3 py-1.5 text-xs font-medium transition-colors ' +
                 (entityFilter === f.value
-                  ? 'border border-zinc-300 bg-zinc-900 text-white'
-                  : 'border border-[#312D58] bg-[rgba(255,255,255,0.04)] text-[#B0B0C8] hover:text-white')
+                  ? 'border border-zinc-300 bg-brand-grad text-white'
+                  : 'border border-[#C2D9E0] bg-[rgba(255,255,255,0.5)] text-[#3E5560] hover:text-[#223144]')
               }
             >
               {f.label}
@@ -230,7 +230,7 @@ export default function DocumentsVault({
             onChange={(e) =>
               setTypeFilter(e.target.value as 'ALL' | DocumentType)
             }
-            className="rounded-lg border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-3 py-2 text-sm text-white outline-none focus:border-zinc-700"
+            className="rounded-lg border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-3 py-2 text-sm text-[#223144] outline-none focus:border-zinc-700"
           >
             <option value="ALL">All Types</option>
             {DOCUMENT_TYPES.map((d) => (
@@ -244,30 +244,30 @@ export default function DocumentsVault({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search documents..."
-            className="w-full max-w-xs rounded-lg border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-3 py-2 text-sm text-white outline-none transition placeholder:text-[#B0B0C8] focus:border-zinc-700 focus:ring-2 focus:ring-zinc-500/20"
+            className="w-full max-w-xs rounded-lg border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-3 py-2 text-sm text-[#223144] outline-none transition placeholder:text-[#7A929C] focus:border-zinc-700 focus:ring-2 focus:ring-zinc-500/20"
           />
         </div>
       </div>
 
       {/* Table / empty state */}
       {items.length === 0 ? (
-        <div className="mt-10 rounded-2xl border border-dashed border-[#312D58] bg-[#17152F] p-12 text-center">
+        <div className="mt-10 rounded-2xl border border-dashed border-[#C2D9E0] bg-[#FFFFFF] p-12 text-center">
           <div className="text-5xl">📁</div>
-          <p className="mt-4 text-lg font-semibold text-white">
+          <p className="mt-4 text-lg font-semibold text-[#223144]">
             No documents uploaded yet
           </p>
           {canManage && (
           <button
             type="button"
             onClick={() => setUploadOpen(true)}
-            className="mt-5 inline-flex rounded-full border border-zinc-300 bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-800"
+            className="mt-5 inline-flex rounded-full border border-zinc-300 bg-brand-grad px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-grad-hover"
           >
             Upload Document
           </button>
           )}
         </div>
       ) : filtered.length === 0 ? (
-        <p className="mt-10 text-center text-sm text-[#6A6A8A]">
+        <p className="mt-10 text-center text-sm text-[#3E5560]">
           No documents match your filters.
         </p>
       ) : (
@@ -295,12 +295,12 @@ export default function DocumentsVault({
                     <button
                       type="button"
                       onClick={() => handleDownload(d)}
-                      className="text-left font-medium text-white transition-colors hover:text-zinc-500"
+                      className="text-left font-medium text-[#223144] transition-colors hover:text-zinc-500"
                     >
                       {getDocumentTypeIcon(d.documentType)} {d.name}
                     </button>
                   </td>
-                  <td className="px-4 py-3 font-mono text-xs text-[#4A4A6A]">
+                  <td className="px-4 py-3 font-mono text-xs text-[#5B7280]">
                     {d.displayId ?? '—'}
                   </td>
                   <td className="px-4 py-3">
@@ -308,7 +308,7 @@ export default function DocumentsVault({
                       {getDocumentTypeLabel(d.documentType)}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-[#6A6A8A]">
+                  <td className="px-4 py-3 text-[#3E5560]">
                     {d.entityLabel ? (
                       <span>
                         <span aria-hidden>{getEntityTypeIcon(d.entityType)}</span>{' '}
@@ -318,10 +318,10 @@ export default function DocumentsVault({
                       '—'
                     )}
                   </td>
-                  <td className="px-4 py-3 text-[#6A6A8A]">
+                  <td className="px-4 py-3 text-[#3E5560]">
                     {formatFileSize(d.fileSize)}
                   </td>
-                  <td className="px-4 py-3 text-[#6A6A8A]">
+                  <td className="px-4 py-3 text-[#3E5560]">
                     {dateFmt.format(new Date(d.createdAt))}
                   </td>
                   <td className="px-4 py-3">
@@ -332,7 +332,7 @@ export default function DocumentsVault({
                       <button
                         type="button"
                         onClick={() => handleDownload(d)}
-                        className="rounded-full border border-[#71717a]/40 bg-zinc-900/15 px-3 py-1 text-xs font-medium text-zinc-500 transition-colors hover:bg-zinc-900/25"
+                        className="rounded-full border border-[#8FA3AC]/40 bg-zinc-900/15 px-3 py-1 text-xs font-medium text-zinc-500 transition-colors hover:bg-zinc-900/25"
                       >
                         Download
                       </button>
@@ -343,7 +343,7 @@ export default function DocumentsVault({
                             setDelError(null);
                             setTarget(d);
                           }}
-                          className="rounded-full border border-red-500/30 px-3 py-1 text-xs font-medium text-red-400 transition-colors hover:bg-red-500/10"
+                          className="rounded-full border border-red-500/30 px-3 py-1 text-xs font-medium text-red-700 transition-colors hover:bg-red-500/10"
                         >
                           Delete
                         </button>
@@ -370,23 +370,23 @@ export default function DocumentsVault({
           role="dialog"
           aria-modal="true"
           onClick={() => !deleting && setTarget(null)}
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4"
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-navy/60 p-4"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-sm rounded-2xl border border-[#312D58] bg-[#17152F] p-6 shadow-xl"
+            className="w-full max-w-sm rounded-2xl border border-[#C2D9E0] bg-[#FFFFFF] p-6 shadow-xl"
           >
-            <h2 className="text-lg font-semibold tracking-tight text-white">
+            <h2 className="text-lg font-semibold tracking-tight text-[#223144]">
               Delete document
             </h2>
-            <p className="mt-2 text-sm text-[#E8E8F2]">
+            <p className="mt-2 text-sm text-[#223144]">
               Delete “{target.name}”? This removes the file from storage and
               cannot be undone.
             </p>
             {delError && (
               <p
                 role="alert"
-                className="mt-4 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-400"
+                className="mt-4 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-700"
               >
                 {delError}
               </p>
@@ -396,7 +396,7 @@ export default function DocumentsVault({
                 type="button"
                 onClick={() => !deleting && setTarget(null)}
                 disabled={deleting}
-                className="rounded-full border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-4 py-2 text-sm font-medium text-[#E8E8F2] transition-colors hover:text-white disabled:opacity-60"
+                className="rounded-full border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-4 py-2 text-sm font-medium text-[#223144] transition-colors hover:text-[#223144] disabled:opacity-60"
               >
                 Cancel
               </button>

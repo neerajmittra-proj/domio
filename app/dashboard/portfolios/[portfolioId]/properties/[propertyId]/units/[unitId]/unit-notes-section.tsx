@@ -39,7 +39,7 @@ export default function UnitNotesSection({
   return (
     <div>
       <div className="flex items-center justify-between gap-2">
-        <p className="text-xs font-semibold uppercase tracking-wide text-[#8B6FE8]">
+        <p className="text-xs font-semibold uppercase tracking-wide text-[#8D3B32]">
           Notes
         </p>
         {!editing && (
@@ -50,7 +50,7 @@ export default function UnitNotesSection({
               setError(null);
               setEditing(true);
             }}
-            className="rounded-full border border-[rgba(139,111,232,0.4)] bg-[rgba(255,255,255,0.06)] px-3 py-1 text-xs font-medium text-[#E8E8F2] transition-colors hover:text-white"
+            className="rounded-full border border-[rgba(141,59,50,0.4)] bg-[rgba(255,255,255,0.7)] px-3 py-1 text-xs font-medium text-[#223144] transition-colors hover:text-[#223144]"
           >
             Edit
           </button>
@@ -64,12 +64,12 @@ export default function UnitNotesSection({
             onChange={(e) => setValue(e.target.value)}
             rows={4}
             placeholder="Add any additional information about this unit..."
-            className="w-full resize-y rounded-lg border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-3 py-2 text-sm text-white outline-none transition placeholder:text-[#B0B0C8] focus:border-[#5B4FE8] focus:ring-2 focus:ring-[#5B4FE8]/20"
+            className="w-full resize-y rounded-lg border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-3 py-2 text-sm text-[#223144] outline-none transition placeholder:text-[#7A929C] focus:border-[#A4473D] focus:ring-2 focus:ring-[#A4473D]/20"
           />
           {error && (
             <p
               role="alert"
-              className="mt-3 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-400"
+              className="mt-3 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-700"
             >
               {error}
             </p>
@@ -81,7 +81,7 @@ export default function UnitNotesSection({
                 if (!pending) setEditing(false);
               }}
               disabled={pending}
-              className="rounded-full border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-4 py-2 text-sm font-medium text-[#E8E8F2] transition-colors hover:text-white disabled:opacity-60"
+              className="rounded-full border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-4 py-2 text-sm font-medium text-[#223144] transition-colors hover:text-[#223144] disabled:opacity-60"
             >
               Cancel
             </button>
@@ -89,16 +89,16 @@ export default function UnitNotesSection({
               type="button"
               onClick={save}
               disabled={pending}
-              className="rounded-full bg-gradient-to-r from-[#5B4FE8] to-[#8B6FE8] px-4 py-2 text-sm font-medium text-white shadow-[0_0_24px_rgba(91,79,232,0.3)] transition-opacity hover:opacity-90 disabled:opacity-60"
+              className="rounded-full bg-gradient-to-r from-[#A4473D] to-[#8D3B32] px-4 py-2 text-sm font-medium text-white shadow-[0_0_24px_rgba(91,79,232,0.3)] transition-opacity hover:opacity-90 disabled:opacity-60"
             >
               {pending ? 'Saving…' : 'Save'}
             </button>
           </div>
         </div>
       ) : notes && notes.trim() ? (
-        <p className="mt-2 whitespace-pre-wrap text-sm text-[#6A6A8A]">{notes}</p>
+        <p className="mt-2 whitespace-pre-wrap text-sm text-[#3E5560]">{notes}</p>
       ) : (
-        <p className="mt-2 text-sm text-[#4A4A6A]">No notes added yet</p>
+        <p className="mt-2 text-sm text-[#5B7280]">No notes added yet</p>
       )}
     </div>
   );

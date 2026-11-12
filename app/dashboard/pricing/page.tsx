@@ -17,7 +17,7 @@ function FlowStep({
   return (
     <div className="flex gap-4">
       <div className="flex flex-col items-center">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-zinc-900 font-bold text-sm text-white">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-grad font-bold text-sm text-white">
           {step}
         </div>
         <div className="mt-2 w-px flex-1 bg-zinc-200" />
@@ -65,7 +65,7 @@ export default function PricingPage() {
     : [];
 
   return (
-    <div className="min-h-[calc(100vh-73px)] bg-white">
+    <div className="min-h-[calc(100vh-73px)]">
 
       {/* ── 1. Ledger Architecture Section ─────────────────────────────── */}
       <section className="border-b border-zinc-100 py-16 sm:py-20">
@@ -76,7 +76,7 @@ export default function PricingPage() {
             <span className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1 text-xs font-semibold text-zinc-600">
               💳 Ledger Architecture
             </span>
-            <h1 className="mt-4 text-3xl sm:text-4xl font-black tracking-tight text-black">
+            <h1 className="mt-4 text-3xl sm:text-4xl font-black tracking-tight text-ink">
               One Ledger per Lease
             </h1>
             <p className="mt-3 text-sm sm:text-base text-zinc-500 max-w-2xl mx-auto">
@@ -88,7 +88,7 @@ export default function PricingPage() {
           <div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-3">
             {/* Charge generation */}
             <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-6">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-900 text-white text-lg">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-grad text-white text-lg">
                 📅
               </div>
               <h3 className="mt-4 font-bold text-sm text-zinc-900">Charge Generation</h3>
@@ -99,7 +99,7 @@ export default function PricingPage() {
 
             {/* Payment recording */}
             <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-6">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-900 text-white text-lg">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-grad text-white text-lg">
                 💵
               </div>
               <h3 className="mt-4 font-bold text-sm text-zinc-900">Payment Recording</h3>
@@ -110,7 +110,7 @@ export default function PricingPage() {
 
             {/* Roll-up */}
             <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-6">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-900 text-white text-lg">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-grad text-white text-lg">
                 📊
               </div>
               <h3 className="mt-4 font-bold text-sm text-zinc-900">Roll-up to Any Level</h3>
@@ -121,7 +121,7 @@ export default function PricingPage() {
           </div>
 
           {/* Security deposits callout */}
-          <div className="mt-6 flex gap-4 rounded-2xl border border-zinc-200 bg-white p-6">
+          <div className="mt-6 flex gap-4 rounded-2xl border border-zinc-200 bg-card p-6">
             <div className="shrink-0 flex h-9 w-9 items-center justify-center rounded-xl border border-zinc-200 text-lg">
               🔐
             </div>
@@ -134,7 +134,7 @@ export default function PricingPage() {
           </div>
 
           {/* Space hierarchy callout */}
-          <div className="mt-4 rounded-2xl border border-zinc-200 bg-white p-6">
+          <div className="mt-4 rounded-2xl border border-zinc-200 bg-card p-6">
             <p className="font-bold text-sm text-zinc-900 mb-4">
               Space Hierarchy — Valid Parent → Child Paths
             </p>
@@ -180,7 +180,7 @@ export default function PricingPage() {
       {/* ── 2. Fee Comparison Search ─────────────────────────────────────── */}
       <section className="py-16 sm:py-24">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-black">
+          <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-ink">
             Estate Agent Commission Fees Explained
           </h2>
 
@@ -202,12 +202,12 @@ export default function PricingPage() {
                   setSelectedAddress(null);
                 }}
                 placeholder="e.g. 10 Downing Street, London, SW1A 2AA"
-                className="w-full rounded-xl border border-zinc-300 bg-white px-4 py-3.5 text-sm sm:text-base text-zinc-900 placeholder-zinc-400 focus:border-black focus:outline-none shadow-xs"
+                className="w-full rounded-xl border border-zinc-300 bg-card px-4 py-3.5 text-sm sm:text-base text-zinc-900 placeholder-zinc-400 focus:border-ink focus:outline-none shadow-xs"
               />
 
               {/* Live Autocomplete Dropdown */}
               {filteredSuggestions.length > 0 && !selectedAddress && (
-                <div className="absolute inset-x-0 top-full mt-1 overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-xl z-20">
+                <div className="absolute inset-x-0 top-full mt-1 overflow-hidden rounded-xl border border-zinc-200 bg-card shadow-xl z-20">
                   {filteredSuggestions.map((s) => (
                     <button
                       key={s}
@@ -229,7 +229,7 @@ export default function PricingPage() {
 
           {/* Instant Fee Breakdown Results */}
           {(selectedAddress || address.length > 3) && (
-            <div className="mt-8 rounded-2xl border border-[#e1e2e3] bg-[#fafaf9] p-6 text-left shadow-sm animate-in fade-in duration-300">
+            <div className="mt-8 rounded-2xl border border-[#DCE9EC] bg-[#FFFFFF] p-6 text-left shadow-sm animate-in fade-in duration-300">
               <h3 className="font-bold text-base text-zinc-900">
                 Transparent Fee Schedule for: <span className="text-zinc-600 font-black">{address || selectedAddress}</span>
               </h3>
@@ -243,7 +243,7 @@ export default function PricingPage() {
                   </p>
                 </div>
 
-                <div className="rounded-xl border border-zinc-200 bg-white p-4">
+                <div className="rounded-xl border border-zinc-200 bg-card p-4">
                   <p className="text-xs font-bold uppercase text-zinc-400">Traditional High-Street Agency</p>
                   <p className="mt-1 font-mono text-2xl font-black text-red-600">12% - 18% + VAT</p>
                   <p className="mt-1 text-xs text-zinc-500">
@@ -255,7 +255,7 @@ export default function PricingPage() {
               <div className="mt-6 flex justify-end">
                 <Link
                   href="/dashboard/tenants"
-                  className="inline-flex items-center gap-2 rounded-xl bg-black px-5 py-2.5 text-xs sm:text-sm font-bold text-white transition-all hover:bg-zinc-800 active:scale-95"
+                  className="inline-flex items-center gap-2 rounded-xl bg-brand-grad px-5 py-2.5 text-xs sm:text-sm font-bold text-white transition-all hover:bg-brand-grad-hover active:scale-95"
                 >
                   Onboard This Property →
                 </Link>

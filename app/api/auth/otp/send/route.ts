@@ -1,74 +1,72 @@
 import { NextResponse } from 'next/server';
-import { randomInt } from 'crypto';
-import bcrypt from 'bcryptjs';
+import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
-import { sendOtpToPhone } from '@/lib/phone-messaging';
-import { isValidPhone, formatE164Phone } from '@/lib/twilio';
+import { requestUserVerificationOtp } from '@/lib/user-verification';
+import { rateLimit } from '@/lib/rate-limit';
 
+// Sends an email / phone verification code to the SIGNED-IN user's own
+// address on file. The target is never taken from the request body, so this
+// cannot be used to message arbitrary numbers or to verify someone else.
 export async function POST(req: Request) {
   try {
-    const body = await req.json().catch(() => ({}));
-    const { phone, appName = 'Domio' } = body;
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
-    if (!phone || typeof phone !== 'string' || !isValidPhone(phone)) {
+    const body = await req.json().catch(() => ({}));
+    const type = body?.type;
+    if (type !== 'EMAIL_VERIFICATION' && type !== 'PHONE_VERIFICATION') {
+      return NextResponse.json({ error: 'Invalid verification type.' }, { status: 400 });
+    }
+
+    const limit = rateLimit(`verify-send:${session.user.id}:${type}`, 5, 60 * 60 * 1000);
+    if (!limit.ok) {
       return NextResponse.json(
-        { error: 'A valid phone number is required (minimum 8 digits).' },
+        { error: 'Too many code requests. Please try again later.' },
+        { status: 429 },
+      );
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { email: true, phone: true, emailVerified: true, phoneVerified: true },
+    });
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    const isEmail = type === 'EMAIL_VERIFICATION';
+    const target = isEmail ? user.email : user.phone;
+    if (!target) {
+      return NextResponse.json(
+        { error: `No ${isEmail ? 'email address' : 'phone number'} is saved on your account.` },
+        { status: 400 },
+      );
+    }
+    if (isEmail ? user.emailVerified : user.phoneVerified) {
+      return NextResponse.json(
+        { error: `Your ${isEmail ? 'email' : 'phone number'} is already verified.` },
         { status: 400 },
       );
     }
 
-    const formattedPhone = formatE164Phone(phone);
-    const rawOtp = String(randomInt(100000, 999999));
-    const otpHash = await bcrypt.hash(rawOtp, 10);
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 mins
-
-    // Invalidate existing unused OTPs for this phone
-    await prisma.userOtp.updateMany({
-      where: { target: formattedPhone, used: false },
-      data: { used: true },
-    }).catch(() => {});
-
-    // Try finding linked user if any
-    const user = await prisma.user.findFirst({
-      where: {
-        OR: [
-          { phone: formattedPhone },
-          { phone: phone.trim() },
-        ],
-      },
-      select: { id: true },
+    const result = await requestUserVerificationOtp({
+      userId: session.user.id,
+      type,
+      target,
     });
 
-    if (user) {
-      await prisma.userOtp.create({
-        data: {
-          userId: user.id,
-          type: 'PHONE_VERIFICATION',
-          target: formattedPhone,
-          otpHash,
-          expiresAt,
-        },
-      }).catch(() => {});
-    }
-
-    // Dispatch OTP via Twilio SMS & WhatsApp
-    const result = await sendOtpToPhone(formattedPhone, rawOtp, appName);
-
+    // When no email/SMS provider is configured the code can only be surfaced
+    // on screen. That is fine while developing, but in production it would let
+    // anyone "verify" an address they don't control, so it is withheld there.
     return NextResponse.json({
       success: true,
-      message: result.smsSent
-        ? `Verification OTP sent to ${formattedPhone} via Twilio SMS.`
-        : `Verification OTP generated for ${formattedPhone}.`,
-      smsSent: result.smsSent,
-      whatsappSent: result.whatsappSent,
-      whatsappUrl: result.whatsappUrl,
-      previewOtp: result.previewOtp || rawOtp,
+      message: result.message,
+      previewCode: process.env.NODE_ENV !== 'production' ? result.previewCode : undefined,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error('[POST /api/auth/otp/send] Error:', error);
-    return NextResponse.json(
-      { error: error?.message || 'Failed to dispatch verification OTP.' },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: 'Failed to send verification code.' }, { status: 500 });
   }
 }

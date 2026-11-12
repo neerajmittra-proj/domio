@@ -12,8 +12,8 @@ type Initial = {
 };
 
 const inputClass =
-  'rounded-lg border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-3 py-2 text-sm text-white outline-none transition placeholder:text-[#B0B0C8] focus:border-zinc-700 focus:ring-2 focus:ring-zinc-500/20';
-const labelClass = 'text-sm font-medium text-[#E8E8F2]';
+  'rounded-lg border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-3 py-2 text-sm text-[#223144] outline-none transition placeholder:text-[#7A929C] focus:border-zinc-700 focus:ring-2 focus:ring-zinc-500/20';
+const labelClass = 'text-sm font-medium text-[#223144]';
 
 export default function ManagerForm({
   mode,
@@ -93,7 +93,7 @@ export default function ManagerForm({
       </div>
       <div className="flex flex-col gap-1.5">
         <label htmlFor="phone" className={labelClass}>
-          Phone <span className="text-[#B0B0C8]">(optional)</span>
+          Phone <span className="text-[#3E5560]">(optional)</span>
         </label>
         <input id="phone" name="phone" type="tel" defaultValue={manager?.phone ?? ''} className={inputClass} />
       </div>
@@ -103,7 +103,7 @@ export default function ManagerForm({
             Temporary Password
           </label>
           <input id="password" name="password" type="text" required className={inputClass} />
-          <p className="text-xs text-[#6A6A8A]">
+          <p className="text-xs text-[#3E5560]">
             Shared with the manager in their welcome email; they should change it
             on first login.
           </p>
@@ -117,11 +117,11 @@ export default function ManagerForm({
             name="aiFullPortfolioRead"
             type="checkbox"
             defaultChecked={manager?.aiFullPortfolioRead ?? false}
-            className="mt-0.5 h-4 w-4 rounded border-[#312D58] bg-[rgba(255,255,255,0.06)] accent-[#18181b]"
+            className="mt-0.5 h-4 w-4 rounded border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] accent-[#223144]"
           />
           <span className={labelClass}>
             Full portfolio visibility in Ask Domi
-            <span className="mt-0.5 block text-xs font-normal text-[#6A6A8A]">
+            <span className="mt-0.5 block text-xs font-normal text-[#3E5560]">
               When off, Ask Domi only answers about the units this manager is
               granted access to. When on, it can read data across the whole
               portfolio.
@@ -131,13 +131,13 @@ export default function ManagerForm({
       )}
 
       {error && (
-        <p role="alert" className="rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-400">
+        <p role="alert" className="rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-700">
           {error}
         </p>
       )}
 
       {success && (
-        <p className="rounded-lg bg-green-500/10 px-3 py-2 text-sm text-green-400">
+        <p className="rounded-lg bg-green-500/10 px-3 py-2 text-sm text-green-700">
           ✓ Manager saved successfully
         </p>
       )}
@@ -145,7 +145,7 @@ export default function ManagerForm({
       <button
         type="submit"
         disabled={pending}
-        className="mt-2 rounded-full bg-zinc-900 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90 disabled:opacity-60"
+        className="mt-2 rounded-full bg-brand-grad px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90 disabled:opacity-60"
       >
         {pending ? 'Saving…' : mode === 'edit' ? 'Save Changes' : 'Create Manager'}
       </button>

@@ -42,18 +42,18 @@ export default async function EmailHistoryPage() {
     <div className="mx-auto max-w-6xl">
       <Link
         href="/dashboard/settings/notifications"
-        className="text-sm text-[#6A6A8A] transition-colors hover:text-white"
+        className="text-sm text-[#3E5560] transition-colors hover:text-[#223144]"
       >
         ← Back to Notification Settings
       </Link>
-      <h1 className="mt-2 text-2xl font-semibold tracking-tight text-white">
+      <h1 className="mt-2 text-2xl font-semibold tracking-tight text-[#223144]">
         Email History
       </h1>
 
       {logs.length === 0 ? (
-        <div className="mt-6 rounded-2xl border border-dashed border-[#312D58] bg-[#17152F] p-12 text-center">
+        <div className="mt-6 rounded-2xl border border-dashed border-[#C2D9E0] bg-[#FFFFFF] p-12 text-center">
           <div className="text-4xl">📭</div>
-          <p className="mt-3 text-sm text-[#E8E8F2]">No emails sent yet</p>
+          <p className="mt-3 text-sm text-[#223144]">No emails sent yet</p>
         </div>
       ) : (
         <div className="mt-6 overflow-x-auto rounded-2xl border border-zinc-200">
@@ -74,13 +74,13 @@ export default async function EmailHistoryPage() {
                   key={l.id}
                   className="transition-colors hover:bg-zinc-50"
                 >
-                  <td className="px-4 py-3 text-[#6A6A8A]">
+                  <td className="px-4 py-3 text-[#3E5560]">
                     {dtFmt.format(new Date(l.sentAt))}
                   </td>
-                  <td className="px-4 py-3 text-[#E8E8F2]">
+                  <td className="px-4 py-3 text-[#223144]">
                     {l.recipientEmail}
                   </td>
-                  <td className="px-4 py-3 text-[#6A6A8A]">{l.subject}</td>
+                  <td className="px-4 py-3 text-[#3E5560]">{l.subject}</td>
                   <td className="px-4 py-3">
                     <span className="inline-flex rounded-full border border-zinc-700/30 bg-zinc-900/15 px-2.5 py-0.5 text-xs font-medium text-zinc-500">
                       {templateLabel(l.templateType)}
@@ -88,16 +88,16 @@ export default async function EmailHistoryPage() {
                   </td>
                   <td className="px-4 py-3">
                     {l.status === 'SENT' ? (
-                      <span className="inline-flex rounded-full border border-green-500/30 bg-green-500/10 px-2.5 py-0.5 text-xs font-medium text-green-400">
+                      <span className="inline-flex rounded-full border border-green-500/30 bg-green-500/10 px-2.5 py-0.5 text-xs font-medium text-green-700">
                         Sent
                       </span>
                     ) : (
-                      <span className="inline-flex rounded-full border border-red-500/30 bg-red-500/10 px-2.5 py-0.5 text-xs font-medium text-red-400">
+                      <span className="inline-flex rounded-full border border-red-500/30 bg-red-500/10 px-2.5 py-0.5 text-xs font-medium text-red-700">
                         Failed
                       </span>
                     )}
                   </td>
-                  <td className="px-4 py-3 font-mono text-xs text-[#4A4A6A]">
+                  <td className="px-4 py-3 font-mono text-xs text-[#5B7280]">
                     {l.resendId ?? '—'}
                   </td>
                 </tr>

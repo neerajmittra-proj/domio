@@ -46,14 +46,14 @@ export default function TenancyHistory({ rows }: { rows: HistoryRow[] }) {
 
   if (rows.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-zinc-300 bg-white p-10 text-center shadow-xs">
+      <div className="rounded-2xl border border-dashed border-zinc-300 bg-card p-10 text-center shadow-xs">
         <p className="text-sm font-medium text-zinc-500">No tenancies recorded yet.</p>
       </div>
     );
   }
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+    <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-card shadow-sm">
       {error && (
         <p role="alert" className="border-b border-red-200 bg-red-50 px-5 py-2.5 text-sm font-semibold text-red-800">
           {error}
@@ -74,7 +74,7 @@ export default function TenancyHistory({ rows }: { rows: HistoryRow[] }) {
             <tr
               key={r.id}
               className={
-                (i % 2 === 0 ? 'bg-white' : 'bg-zinc-50/70') +
+                (i % 2 === 0 ? 'bg-card' : 'bg-zinc-50/70') +
                 ' transition-colors hover:bg-zinc-100/80'
               }
             >

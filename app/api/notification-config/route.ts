@@ -9,7 +9,10 @@ export async function GET() {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   // Notification preferences belong to the owner account, not individual
-  // managers — a manager reads/edits their owner's settings.
+  // managers — a manager reads their owner's settings (only owners edit).
+  if (session.user.role !== 'OWNER' && session.user.role !== 'MANAGER') {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
   const ownerId = session.user.role === 'MANAGER'
     ? (await prisma.user.findUnique({ where: { id: session.user.id }, select: { ownerId: true } }))?.ownerId
     : session.user.id;
@@ -18,6 +21,11 @@ export async function GET() {
   }
   const config = await getOrCreateNotificationConfig(ownerId);
   return NextResponse.json({ config });
+}
+
+// The settings UI saves with PATCH; POST is kept as an alias for older callers.
+export async function PATCH(request: Request) {
+  return POST(request);
 }
 
 export async function POST(request: Request) {

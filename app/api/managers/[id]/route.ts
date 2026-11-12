@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@/auth';
+import { requireOwner } from '@/lib/api-auth';
 import { prisma } from '@/lib/prisma';
 import { getOwnedManager } from '@/lib/managers';
 
@@ -7,10 +7,9 @@ export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const session = await auth();
-  if (!session?.user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const guard = await requireOwner();
+  if ('response' in guard) return guard.response;
+  const session = guard.session;
   const { id } = await params;
   const manager = await getOwnedManager(id, session.user.id);
   if (!manager) {
@@ -88,10 +87,9 @@ export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const session = await auth();
-  if (!session?.user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const guard = await requireOwner();
+  if ('response' in guard) return guard.response;
+  const session = guard.session;
   const { id } = await params;
   const manager = await getOwnedManager(id, session.user.id);
   if (!manager) {
@@ -105,6 +103,20 @@ export async function DELETE(
     ]);
     return NextResponse.json({ success: true });
   } catch (err) {
+    // P2003 = foreign-key violation: the manager is referenced by other records
+    // (ledger entries, documents, audit rows...). Keep the account for history,
+    // but revoke all access and deactivate it so they can no longer sign in.
+    if ((err as { code?: string })?.code === 'P2003') {
+      try {
+        await prisma.$transaction([
+          prisma.propertyAccess.deleteMany({ where: { managerId: id } }),
+          prisma.user.update({ where: { id }, data: { active: false } }),
+        ]);
+        return NextResponse.json({ success: true, deactivated: true });
+      } catch (err2) {
+        console.error('Failed to deactivate manager:', err2);
+      }
+    }
     console.error('Failed to delete manager:', err);
     return NextResponse.json(
       { error: 'Failed to delete manager. Please try again.' },

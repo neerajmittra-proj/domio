@@ -2,11 +2,21 @@ import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import { rateLimit } from '@/lib/rate-limit';
 
 export async function POST(request: Request) {
   const session = await auth();
   if (!session?.user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  // Brute-force guard: the current password is re-verified on every call.
+  const limit = rateLimit(`change-password:${session.user.id}`, 5, 15 * 60 * 1000);
+  if (!limit.ok) {
+    return NextResponse.json(
+      { error: 'Too many attempts. Please try again later.' },
+      { status: 429, headers: { 'Retry-After': String(limit.retryAfterSec) } },
+    );
   }
 
   const body = await request.json().catch(() => null);
@@ -40,7 +50,10 @@ export async function POST(request: Request) {
 
   try {
     const hashed = await bcrypt.hash(newPassword, 10);
-    await prisma.user.update({ where: { id: user.id }, data: { password: hashed } });
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { password: hashed, resetToken: null, resetTokenExpiry: null },
+    });
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error('Failed to change password:', err);

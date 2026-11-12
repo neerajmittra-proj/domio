@@ -3,7 +3,7 @@ import type { DocumentType, EntityType } from '@prisma/client';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { resolveDataScope, resolveEditAccess } from '@/lib/manager-access';
-import { uploadToR2 } from '@/lib/r2';
+import { uploadToR2, deleteFromR2 } from '@/lib/r2';
 import { generateDocumentId } from '@/lib/display-ids';
 import { isValidMimeType, MAX_FILE_SIZE } from '@/lib/document-types';
 
@@ -124,9 +124,11 @@ export async function POST(request: Request) {
   const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
   const fileKey = `documents/${ds.ownerId}/${Date.now()}-${safeName}`;
 
+  let uploaded = false;
   try {
     const buffer = Buffer.from(await file.arrayBuffer());
     await uploadToR2(fileKey, buffer, file.type);
+    uploaded = true;
 
     const displayId = await generateDocumentId().catch(() => null);
     const document = await prisma.document.create({
@@ -147,6 +149,8 @@ export async function POST(request: Request) {
     });
     return NextResponse.json({ document }, { status: 201 });
   } catch (err) {
+    // The DB insert failed after the file was stored: don't leave an orphan.
+    if (uploaded) await deleteFromR2(fileKey).catch(() => undefined);
     console.error('Failed to upload document:', err);
     return NextResponse.json(
       { error: 'Failed to upload document. Please try again.' },

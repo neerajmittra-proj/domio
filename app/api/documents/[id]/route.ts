@@ -40,12 +40,13 @@ export async function DELETE(
   }
 
   try {
+    // Remove the record first: if this fails nothing is lost, whereas deleting
+    // the stored file first could leave a record pointing at a missing file.
+    await prisma.document.delete({ where: { id } });
     await deleteFromR2(doc.fileKey).catch((err) => {
-      // Don't block the delete on storage cleanup — log and continue so the
-      // record isn't stuck forever if R2 is briefly unavailable.
+      // Storage cleanup is best-effort — an orphaned object is harmless.
       console.warn('Failed to delete file from R2 (continuing):', err);
     });
-    await prisma.document.delete({ where: { id } });
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error('Failed to delete document:', err);

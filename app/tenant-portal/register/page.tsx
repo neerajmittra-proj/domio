@@ -5,10 +5,10 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 const inputClass =
-  'w-full rounded-xl border border-white/15 bg-white/[0.06] px-4 py-3 text-sm text-white outline-none transition placeholder:text-zinc-500 focus:border-white focus:bg-white/[0.1] focus:ring-1 focus:ring-white/30';
-const labelClass = 'text-xs font-bold text-zinc-300 uppercase tracking-wider';
+  'w-full rounded-xl border border-[#223144]/18 bg-[#223144]/[0.05] px-4 py-3 text-sm text-[#223144] outline-none transition placeholder:text-zinc-500 focus:border-white focus:bg-white/[0.1] focus:ring-1 focus:ring-[#223144]/28';
+const labelClass = 'text-xs font-bold text-[#3E5560] uppercase tracking-wider';
 const submitClass =
-  'w-full rounded-xl bg-white px-5 py-3 text-sm font-bold text-zinc-950 shadow-md transition-all hover:bg-zinc-200 disabled:opacity-50 disabled:cursor-not-allowed';
+  'w-full rounded-xl bg-brand-grad px-5 py-3 text-sm font-bold text-white shadow-md transition-all hover:bg-brand-grad-hover disabled:opacity-50 disabled:cursor-not-allowed';
 
 export default function TenantRegisterPage() {
   const router = useRouter();
@@ -58,12 +58,12 @@ export default function TenantRegisterPage() {
     <div className="flex min-h-[80vh] items-center justify-center py-6">
       <div className="w-full max-w-md">
         {/* Glassmorphic Card (Matching Homepage) */}
-        <div className="rounded-3xl border border-white/20 bg-black/40 p-7 sm:p-9 shadow-2xl backdrop-blur-md">
+        <div className="rounded-3xl border border-[#223144]/18 bg-card/65 p-7 sm:p-9 shadow-2xl backdrop-blur-md">
           <div className="mb-6 flex flex-col items-center text-center">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-blue-400/40 bg-blue-950/60 text-2xl shadow-inner mb-3 text-blue-300">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-blue-300 bg-blue-100 text-2xl shadow-inner mb-3 text-blue-700">
               👤
             </div>
-            <h1 className="text-2xl font-black tracking-tight text-white">
+            <h1 className="text-2xl font-black tracking-tight text-[#223144]">
               Tenant Registration
             </h1>
             <p className="mt-1 text-xs text-zinc-400">
@@ -161,7 +161,7 @@ export default function TenantRegisterPage() {
             </div>
 
             {error && (
-              <p role="alert" className="rounded-xl border border-red-500/30 bg-red-500/10 px-3.5 py-2.5 text-xs font-semibold text-red-300">
+              <p role="alert" className="rounded-xl border border-red-500/30 bg-red-500/10 px-3.5 py-2.5 text-xs font-semibold text-red-700">
                 {error}
               </p>
             )}
@@ -171,10 +171,10 @@ export default function TenantRegisterPage() {
             </button>
           </form>
 
-          <div className="mt-6 border-t border-white/10 pt-4 text-center">
+          <div className="mt-6 border-t border-[#223144]/12 pt-4 text-center">
             <p className="text-xs text-zinc-400">
               Already have an account?{' '}
-              <Link href="/tenant-portal/login" className="font-bold text-white hover:underline">
+              <Link href="/tenant-portal/login" className="font-bold text-[#223144] hover:underline">
                 Sign In Here
               </Link>
             </p>

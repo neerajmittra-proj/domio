@@ -38,9 +38,9 @@ const FILTERS: { value: Filter; label: string }[] = [
 ];
 
 const ghostBtn =
-  'inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-3 py-1.5 text-xs font-semibold text-zinc-700 shadow-xs transition-all hover:bg-zinc-50 hover:border-zinc-300 hover:text-zinc-900';
+  'inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-card px-3 py-1.5 text-xs font-semibold text-zinc-700 shadow-xs transition-all hover:bg-zinc-50 hover:border-zinc-300 hover:text-zinc-900';
 const darkBtn =
-  'inline-flex items-center gap-1.5 rounded-full bg-zinc-900 px-3.5 py-1.5 text-xs font-semibold text-white shadow-xs transition-all hover:bg-zinc-800';
+  'inline-flex items-center gap-1.5 rounded-full bg-brand-grad px-3.5 py-1.5 text-xs font-semibold text-white shadow-xs transition-all hover:bg-brand-grad-hover';
 const dangerBtn =
   'inline-flex items-center gap-1.5 rounded-full border border-rose-200 bg-rose-50/60 px-3 py-1.5 text-xs font-semibold text-rose-600 shadow-xs transition-all hover:bg-rose-100 hover:border-rose-300';
 
@@ -220,7 +220,7 @@ export default function PortfolioAccordionList({
       {/* 2. Key Metrics Snapshot Cards */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
         {/* Total Portfolios */}
-        <div className="rounded-2xl border border-zinc-200/80 bg-white p-4 shadow-xs">
+        <div className="rounded-2xl border border-zinc-200/80 bg-card p-4 shadow-xs">
           <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
             Portfolios
           </p>
@@ -231,7 +231,7 @@ export default function PortfolioAccordionList({
         </div>
 
         {/* Properties */}
-        <div className="rounded-2xl border border-zinc-200/80 bg-white p-4 shadow-xs">
+        <div className="rounded-2xl border border-zinc-200/80 bg-card p-4 shadow-xs">
           <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
             Properties
           </p>
@@ -242,7 +242,7 @@ export default function PortfolioAccordionList({
         </div>
 
         {/* Units & Occupancy */}
-        <div className="rounded-2xl border border-zinc-200/80 bg-white p-4 shadow-xs">
+        <div className="rounded-2xl border border-zinc-200/80 bg-card p-4 shadow-xs">
           <div className="flex items-center justify-between">
             <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
               Occupancy
@@ -263,7 +263,7 @@ export default function PortfolioAccordionList({
         </div>
 
         {/* Monthly Revenue Collected */}
-        <div className="rounded-2xl border border-zinc-200/80 bg-white p-4 shadow-xs">
+        <div className="rounded-2xl border border-zinc-200/80 bg-card p-4 shadow-xs">
           <div className="flex items-center justify-between">
             <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
               Monthly Rent
@@ -282,7 +282,7 @@ export default function PortfolioAccordionList({
       </div>
 
       {/* 3. Filter Bar & Portfolio List — wrapped in a white block card */}
-      <div className="rounded-2xl border border-zinc-200/90 bg-white shadow-xs overflow-hidden">
+      <div className="rounded-2xl border border-zinc-200/90 bg-card shadow-xs overflow-hidden">
         {/* Filter Bar & Search */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-5 py-4 border-b border-zinc-100">
           {/* Category tabs */}
@@ -302,8 +302,8 @@ export default function PortfolioAccordionList({
                   className={
                     'inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all ' +
                     (isSelected
-                      ? 'bg-zinc-900 text-white shadow-xs'
-                      : 'border border-zinc-200 bg-zinc-50 text-zinc-600 hover:border-zinc-300 hover:bg-white hover:text-zinc-900')
+                      ? 'bg-brand-grad text-white shadow-xs'
+                      : 'border border-zinc-200 bg-zinc-50 text-zinc-600 hover:border-zinc-300 hover:bg-card hover:text-zinc-900')
                   }
                 >
                   <span>{f.label}</span>
@@ -311,7 +311,7 @@ export default function PortfolioAccordionList({
                     className={
                       'rounded-full px-1.5 py-0.2 text-[10px] font-bold ' +
                       (isSelected
-                        ? 'bg-white/20 text-white'
+                        ? 'bg-[#223144]/8 text-[#223144]'
                         : 'bg-zinc-100 text-zinc-500')
                     }
                   >
@@ -328,7 +328,7 @@ export default function PortfolioAccordionList({
               <button
                 type="button"
                 onClick={toggleAll}
-                className="hidden sm:inline-flex rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-xs font-semibold text-zinc-600 transition-colors hover:border-zinc-300 hover:bg-white hover:text-zinc-900"
+                className="hidden sm:inline-flex rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-xs font-semibold text-zinc-600 transition-colors hover:border-zinc-300 hover:bg-card hover:text-zinc-900"
               >
                 {open.size === filtered.length ? 'Collapse All' : 'Expand All'}
               </button>
@@ -353,7 +353,7 @@ export default function PortfolioAccordionList({
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search portfolios or properties..."
-                className="w-full rounded-full border border-zinc-200 bg-zinc-50 py-1.5 pl-9 pr-3 text-xs text-zinc-900 shadow-xs outline-none transition placeholder:text-zinc-400 focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 focus:bg-white"
+                className="w-full rounded-full border border-zinc-200 bg-zinc-50 py-1.5 pl-9 pr-3 text-xs text-zinc-900 shadow-xs outline-none transition placeholder:text-zinc-400 focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 focus:bg-card"
               />
             </div>
           </div>
@@ -413,7 +413,7 @@ export default function PortfolioAccordionList({
                 <div
                   key={p.id}
                   className={
-                    'rounded-xl border bg-white transition-all duration-200 ' +
+                    'rounded-xl border bg-card transition-all duration-200 ' +
                     (isOpen
                       ? 'border-zinc-300 shadow-sm ring-1 ring-zinc-900/5'
                       : 'border-zinc-200 hover:border-zinc-300 hover:shadow-sm')
@@ -480,8 +480,8 @@ export default function PortfolioAccordionList({
                         className={
                           'mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border transition-all duration-200 ' +
                           (isOpen
-                            ? 'rotate-90 border-zinc-900 bg-zinc-900 text-white'
-                            : 'border-zinc-200 bg-white text-zinc-500')
+                            ? 'rotate-90 border-zinc-900 bg-brand-grad text-white'
+                            : 'border-zinc-200 bg-card text-zinc-500')
                         }
                       >
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -493,12 +493,12 @@ export default function PortfolioAccordionList({
                     {/* Stats Grid */}
                     <div className="grid grid-cols-3 gap-px border-t border-zinc-100 bg-zinc-100/80">
                       {/* Properties */}
-                      <div className="bg-white px-4 py-3">
+                      <div className="bg-card px-4 py-3">
                         <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Properties</p>
                         <p className="mt-0.5 text-xl font-bold text-zinc-900">{p.propertyCount}</p>
                       </div>
                       {/* Occupancy */}
-                      <div className="bg-white px-4 py-3">
+                      <div className="bg-card px-4 py-3">
                         <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Occupancy</p>
                         <p className="mt-0.5 text-xl font-bold text-zinc-900">
                           {p.occupiedCount}
@@ -512,7 +512,7 @@ export default function PortfolioAccordionList({
                         </div>
                       </div>
                       {/* Revenue */}
-                      <div className="bg-white px-4 py-3">
+                      <div className="bg-card px-4 py-3">
                         <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Rent</p>
                         <p className="mt-0.5 text-sm font-bold text-emerald-600 font-mono truncate">
                           {formatMoney(p.monthlyCollected)}
@@ -557,7 +557,7 @@ export default function PortfolioAccordionList({
                   <PortfolioExpand isOpen={isOpen}>
                     <div className="border-t border-zinc-200/70 bg-zinc-50/80 px-4 py-3 sm:px-5 sm:py-4 space-y-3">
                       {p.properties.length === 0 ? (
-                        <div className="rounded-xl border border-dashed border-zinc-200 bg-white p-6 text-center">
+                        <div className="rounded-xl border border-dashed border-zinc-200 bg-card p-6 text-center">
                           <p className="text-sm font-medium text-zinc-500">
                             No properties in this portfolio yet.
                           </p>
@@ -603,12 +603,12 @@ export default function PortfolioAccordionList({
           role="dialog"
           aria-modal="true"
           onClick={() => !deleting && setTarget(null)}
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 backdrop-blur-xs p-4"
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-navy/40 backdrop-blur-xs p-4"
         >
           <div
             ref={trapRef}
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-white p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-150"
+            className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-card p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-150"
           >
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-rose-50 text-rose-600 mb-3">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -634,7 +634,7 @@ export default function PortfolioAccordionList({
                 type="button"
                 onClick={() => !deleting && setTarget(null)}
                 disabled={deleting}
-                className="rounded-full border border-zinc-200 bg-white px-4 py-2 text-xs font-semibold text-zinc-700 transition-colors hover:bg-zinc-100 hover:text-zinc-900 disabled:opacity-60"
+                className="rounded-full border border-zinc-200 bg-card px-4 py-2 text-xs font-semibold text-zinc-700 transition-colors hover:bg-zinc-100 hover:text-zinc-900 disabled:opacity-60"
               >
                 Cancel
               </button>
@@ -727,7 +727,7 @@ function PropertyRow({
   const base = `/dashboard/portfolios/${portfolioId}/properties/${property.id}`;
 
   return (
-    <div className="rounded-2xl border border-zinc-200/90 bg-white p-4 sm:p-5 shadow-xs transition-all hover:border-zinc-300">
+    <div className="rounded-2xl border border-zinc-200/90 bg-card p-4 sm:p-5 shadow-xs transition-all hover:border-zinc-300">
       {/* Property Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
@@ -771,7 +771,7 @@ function PropertyRow({
             <span className="font-medium text-zinc-600">
               {property.unitCount} {property.unitCount === 1 ? 'unit' : 'units'} ({property.occupiedCount} occ)
             </span>
-            <span className="text-zinc-300">•</span>
+            <span className="text-[#3E5560]">•</span>
             <span className="font-medium text-zinc-600">
               Rent: <strong className="text-zinc-900 font-mono">{formatMoney(property.monthlyCollected)}</strong> / {formatMoney(property.monthlyExpected)}
             </span>

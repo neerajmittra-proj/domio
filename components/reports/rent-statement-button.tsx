@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { downloadReport, todayStr, monthsAgoStr } from './download';
 
 const inputClass =
-  'w-full rounded-lg border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-3 py-2 text-sm text-white outline-none focus:border-zinc-700 focus:ring-2 focus:ring-zinc-500/20';
+  'w-full rounded-lg border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-3 py-2 text-sm text-[#223144] outline-none focus:border-zinc-700 focus:ring-2 focus:ring-zinc-500/20';
 
 // "Download Rent Statement" for a unit's active tenancy (Unit Detail page).
 export default function RentStatementButton({ tenancyId }: { tenancyId: string }) {
@@ -35,7 +35,7 @@ export default function RentStatementButton({ tenancyId }: { tenancyId: string }
           setError(null);
           setOpen(true);
         }}
-        className="rounded-full border border-zinc-200 bg-[rgba(255,255,255,0.06)] px-3 py-1.5 text-xs font-medium text-[#E8E8F2] transition-colors hover:text-white"
+        className="rounded-full border border-zinc-200 bg-[rgba(255,255,255,0.7)] px-3 py-1.5 text-xs font-medium text-[#223144] transition-colors hover:text-[#223144]"
       >
         Download Rent Statement
       </button>
@@ -45,27 +45,27 @@ export default function RentStatementButton({ tenancyId }: { tenancyId: string }
           role="dialog"
           aria-modal="true"
           onClick={() => !loading && setOpen(false)}
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4"
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-navy/60 p-4"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-[rgba(14,12,34,0.95)] p-6 shadow-2xl backdrop-blur-xl"
+            className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-[rgba(255,255,255,0.97)] p-6 shadow-2xl backdrop-blur-xl"
           >
-            <h2 className="text-lg font-semibold tracking-tight text-white">
+            <h2 className="text-lg font-semibold tracking-tight text-[#223144]">
               Rent Statement
             </h2>
             <div className="mt-4 grid grid-cols-2 gap-3">
               <div className="flex flex-col gap-1.5">
-                <label className="text-sm text-[#E8E8F2]">Period From</label>
+                <label className="text-sm text-[#223144]">Period From</label>
                 <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className={inputClass} />
               </div>
               <div className="flex flex-col gap-1.5">
-                <label className="text-sm text-[#E8E8F2]">Period To</label>
+                <label className="text-sm text-[#223144]">Period To</label>
                 <input type="date" value={to} onChange={(e) => setTo(e.target.value)} className={inputClass} />
               </div>
             </div>
             {error && (
-              <p role="alert" className="mt-4 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-400">
+              <p role="alert" className="mt-4 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-700">
                 {error}
               </p>
             )}
@@ -74,7 +74,7 @@ export default function RentStatementButton({ tenancyId }: { tenancyId: string }
                 type="button"
                 onClick={() => !loading && setOpen(false)}
                 disabled={loading}
-                className="rounded-full border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-4 py-2 text-sm font-medium text-[#E8E8F2] transition-colors hover:text-white disabled:opacity-60"
+                className="rounded-full border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-4 py-2 text-sm font-medium text-[#223144] transition-colors hover:text-[#223144] disabled:opacity-60"
               >
                 Cancel
               </button>
@@ -82,7 +82,7 @@ export default function RentStatementButton({ tenancyId }: { tenancyId: string }
                 type="button"
                 onClick={go}
                 disabled={loading}
-                className="inline-flex items-center gap-2 rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90 disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-full bg-brand-grad px-4 py-2 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90 disabled:opacity-60"
               >
                 {loading && (
                   <span className="h-3 w-3 animate-spin rounded-full border-2 border-white/40 border-t-white" />

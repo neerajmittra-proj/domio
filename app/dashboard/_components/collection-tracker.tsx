@@ -13,13 +13,13 @@ type PropOpt = Opt & { portfolioId: string };
 type UnitOpt = { id: string; label: string; portfolioId: string; propertyId: string };
 
 const money = (n: number) =>
-  n > 0 ? formatMoney(n) : <span className="text-[#4A4A6A]">—</span>;
+  n > 0 ? formatMoney(n) : <span className="text-[#5B7280]">—</span>;
 const owed = (n: number) =>
-  n > 0 ? `-${formatMoney(n)}` : <span className="text-[#4A4A6A]">—</span>;
+  n > 0 ? `-${formatMoney(n)}` : <span className="text-[#5B7280]">—</span>;
 const owedGrand = (n: number) => (n > 0 ? `-${formatMoney(n)}` : formatMoney(0));
 
 const selectClass =
-  'h-8 rounded-lg border border-[#312D58] bg-[#17152F] px-2 text-sm text-[#E8E8F2] focus:border-zinc-700 focus:outline-none';
+  'h-8 rounded-lg border border-[#C2D9E0] bg-[#FFFFFF] px-2 text-sm text-[#223144] focus:border-zinc-700 focus:outline-none';
 
 export default function CollectionTracker({
   matrix,
@@ -115,7 +115,7 @@ export default function CollectionTracker({
   const numCell = 'whitespace-nowrap px-3 py-2 text-right tabular-nums';
 
   return (
-    <section className="rounded-2xl border border-zinc-200 bg-[#17152F]">
+    <section className="rounded-2xl border border-zinc-200 bg-[#FFFFFF]">
       {/* Header / toggle */}
       <button
         type="button"
@@ -126,8 +126,8 @@ export default function CollectionTracker({
         <div className="flex items-center gap-3">
           <span className="text-xl">📊</span>
           <div>
-            <p className="font-semibold text-white">Collection Tracker</p>
-            <p className="text-sm text-[#6A6A8A]">
+            <p className="font-semibold text-[#223144]">Collection Tracker</p>
+            <p className="text-sm text-[#3E5560]">
               Payments by unit and month · {m.fyLabel}
             </p>
           </div>
@@ -203,7 +203,7 @@ export default function CollectionTracker({
                 type="button"
                 onClick={downloadPdf}
                 disabled={pdfLoading || m.columns.length === 0}
-                className="inline-flex h-8 items-center gap-1.5 rounded-full border border-zinc-200 bg-[rgba(255,255,255,0.06)] px-3 text-xs font-medium text-[#E8E8F2] transition-colors hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex h-8 items-center gap-1.5 rounded-full border border-zinc-200 bg-[rgba(255,255,255,0.7)] px-3 text-xs font-medium text-[#223144] transition-colors hover:text-[#223144] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {pdfLoading ? 'Generating…' : 'PDF'}
               </button>
@@ -211,15 +211,15 @@ export default function CollectionTracker({
           </div>
 
           {m.columns.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-[#312D58] p-8 text-center text-sm text-[#6A6A8A]">
+            <div className="rounded-xl border border-dashed border-[#C2D9E0] p-8 text-center text-sm text-[#3E5560]">
               Nothing matches this filter.
             </div>
           ) : (
             <div className="overflow-x-auto rounded-xl border border-zinc-200">
               <table className="min-w-full border-collapse text-sm">
                 <thead>
-                  <tr className="bg-[#1A1A2A] text-xs uppercase tracking-wide text-zinc-500">
-                    <th className={stickyCol + ' bg-[#1A1A2A] text-left font-medium'}>
+                  <tr className="bg-[#EAF2F4] text-xs uppercase tracking-wide text-zinc-500">
+                    <th className={stickyCol + ' bg-[#EAF2F4] text-left font-medium'}>
                       Month
                     </th>
                     {m.columns.map((c) => (
@@ -230,21 +230,21 @@ export default function CollectionTracker({
                       >
                         <div>{c.label}</div>
                         {c.sublabel && (
-                          <div className="text-[10px] font-normal normal-case text-[#6A6A8A]">
+                          <div className="text-[10px] font-normal normal-case text-[#3E5560]">
                             {c.sublabel}
                           </div>
                         )}
                       </th>
                     ))}
-                    <th className="whitespace-nowrap px-3 py-2 text-right font-semibold text-white">
+                    <th className="whitespace-nowrap px-3 py-2 text-right font-semibold text-[#223144]">
                       Total
                     </th>
                   </tr>
                 </thead>
                 <tbody>
                   {/* Opening (owed, yellow) */}
-                  <tr className="border-t border-[rgba(232,160,32,0.25)] bg-[rgba(232,160,32,0.06)] font-medium text-[#E8A020]">
-                    <td className={stickyCol + ' bg-[#211a13] text-left'}>
+                  <tr className="border-t border-[rgba(232,160,32,0.25)] bg-[rgba(232,160,32,0.06)] font-medium text-[#B26A0B]">
+                    <td className={stickyCol + ' bg-[#EAF2F4] text-left'}>
                       Opening Balance (b/f)
                     </td>
                     {m.columns.map((c) => (
@@ -257,8 +257,8 @@ export default function CollectionTracker({
                     </td>
                   </tr>
                   {/* Total Due (owed, red) */}
-                  <tr className="border-y border-[rgba(239,68,68,0.25)] bg-[rgba(239,68,68,0.06)] font-medium text-red-400">
-                    <td className={stickyCol + ' bg-[#21141a] text-left'}>
+                  <tr className="border-y border-[rgba(239,68,68,0.25)] bg-[rgba(239,68,68,0.06)] font-medium text-red-700">
+                    <td className={stickyCol + ' bg-[#F5E1DE] text-left'}>
                       Total Due (current)
                     </td>
                     {m.columns.map((c) => (
@@ -276,10 +276,10 @@ export default function CollectionTracker({
                       key={mo.key}
                       className={
                         'border-t border-zinc-200 ' +
-                        (i % 2 ? 'bg-[rgba(255,255,255,0.015)]' : '')
+                        (i % 2 ? 'bg-[rgba(34,49,68,0.035)]' : '')
                       }
                     >
-                      <td className={stickyCol + ' bg-[#0E0C22] text-left text-white'}>
+                      <td className={stickyCol + ' bg-[#FFFFFF] text-left text-[#223144]'}>
                         {mo.label}
                       </td>
                       {m.columns.map((c) => {
@@ -298,14 +298,14 @@ export default function CollectionTracker({
                           </td>
                         );
                       })}
-                      <td className={numCell + ' font-medium text-white'}>
+                      <td className={numCell + ' font-medium text-[#223144]'}>
                         {money(m.totalByMonth[mo.key] ?? 0)}
                       </td>
                     </tr>
                   ))}
                   {/* Total Received (green) */}
-                  <tr className="border-t-2 border-[rgba(34,197,94,0.3)] bg-[rgba(34,197,94,0.07)] font-semibold text-green-400">
-                    <td className={stickyCol + ' bg-[#12211a] text-left'}>
+                  <tr className="border-t-2 border-[rgba(34,197,94,0.3)] bg-[rgba(34,197,94,0.07)] font-semibold text-green-700">
+                    <td className={stickyCol + ' bg-[#E3EEE6] text-left'}>
                       Total Received
                     </td>
                     {m.columns.map((c) => (

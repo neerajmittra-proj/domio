@@ -13,7 +13,7 @@ type Initial = {
 };
 
 const inputClass =
-  'w-full rounded-xl border border-zinc-300 bg-white px-3.5 py-2.5 text-sm text-zinc-900 shadow-xs outline-none transition placeholder:text-zinc-400 focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10';
+  'w-full rounded-xl border border-zinc-300 bg-card px-3.5 py-2.5 text-sm text-zinc-900 shadow-xs outline-none transition placeholder:text-zinc-400 focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10';
 const labelClass = 'text-xs font-bold uppercase tracking-wider text-zinc-700';
 
 export default function PortfolioForm({
@@ -96,7 +96,7 @@ export default function PortfolioForm({
 
       <div className="flex flex-col gap-1.5">
         <label htmlFor="description" className={labelClass}>
-          Description <span className="text-[#B0B0C8]">(optional)</span>
+          Description <span className="text-[#3E5560]">(optional)</span>
         </label>
         <textarea
           id="description"
@@ -108,7 +108,7 @@ export default function PortfolioForm({
       </div>
 
       {error && (
-        <p role="alert" className="rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-400">
+        <p role="alert" className="rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-700">
           {error}
         </p>
       )}
@@ -116,7 +116,7 @@ export default function PortfolioForm({
       <button
         type="submit"
         disabled={pending}
-        className="mt-2 rounded-full bg-zinc-900 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90 disabled:opacity-60"
+        className="mt-2 rounded-full bg-brand-grad px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90 disabled:opacity-60"
       >
         {pending
           ? 'Saving…'

@@ -134,40 +134,36 @@ export default function AgentDashboardPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: nextStatus }),
       });
-      if (res.ok) {
-        fetchAgentData();
+      if (!res.ok) {
+        const json = await res.json().catch(() => null);
+        alert(json?.error ?? 'Could not update this request.');
       }
+      fetchAgentData();
     } catch {
-      /* ignore */
+      alert('Connection error. Please try again.');
     }
   }
 
   return (
-    <div className="min-h-full bg-[#fafaf9]">
+    <div className="min-h-full">
       {/* ── Signature Architectural Hero for Agent Hub ───────────── */}
-      <section className="relative overflow-hidden bg-zinc-950 py-12 sm:py-16 text-white">
-        <div
-          className="absolute inset-0 bg-cover bg-center opacity-25 mix-blend-luminosity"
-          style={{
-            backgroundImage: `radial-gradient(circle at 50% 50%, rgba(30, 41, 59, 0.8), rgba(9, 9, 11, 0.98)), url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1800&q=80')`,
-          }}
-        />
+      <section className="relative overflow-hidden bg-transparent py-12 sm:py-16 text-[#223144]">
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium backdrop-blur-md">
+              <div className="inline-flex items-center gap-2 rounded-full border border-[#223144]/18 bg-[#223144]/8 px-3 py-1 text-xs font-medium backdrop-blur-md">
                 <span>💼</span>
                 <span>Agent &amp; Brokerage Hub</span>
                 {data.displayId && (
-                  <span className="font-mono text-amber-400">· {data.displayId}</span>
+                  <span className="font-mono text-amber-800">· {data.displayId}</span>
                 )}
               </div>
-              <h1 className="mt-3 text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white leading-tight">
+              <h1 className="mt-3 text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[#223144] leading-tight">
                 {data.agencyName || 'Agent Dashboard'}
               </h1>
-              <p className="mt-2 text-sm sm:text-base text-zinc-300 max-w-2xl font-normal">
-                Operational in <span className="font-semibold text-white">📍 {data.location}</span> · Commission structure: <span className="font-semibold text-amber-400">{data.commissionRate}</span>
+              <p className="mt-2 text-sm sm:text-base text-[#3E5560] max-w-2xl font-normal">
+                Operational in <span className="font-semibold text-[#223144]">📍 {data.location}</span> · Commission structure: <span className="font-semibold text-amber-800">{data.commissionRate}</span>
               </p>
 
               {/* Skills badges */}
@@ -175,7 +171,7 @@ export default function AgentDashboardPage() {
                 {data.skills.map((skill) => (
                   <span
                     key={skill}
-                    className="rounded-full border border-white/15 bg-white/10 px-2.5 py-0.5 text-[11px] font-semibold text-zinc-200"
+                    className="rounded-full border border-[#223144]/18 bg-[#223144]/8 px-2.5 py-0.5 text-[11px] font-semibold text-[#3E5560]"
                   >
                     {skill}
                   </span>
@@ -186,7 +182,7 @@ export default function AgentDashboardPage() {
             <div className="flex flex-wrap items-center gap-3">
               <Link
                 href="/dashboard/agents"
-                className="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-bold text-black transition-all hover:bg-zinc-100 hover:scale-105 active:scale-95 shadow-lg"
+                className="inline-flex items-center gap-2 rounded-xl bg-brand-grad px-5 py-3 text-sm font-bold text-white transition-all hover:bg-brand-grad-hover hover:scale-105 active:scale-95 shadow-lg"
               >
                 <span>🤝</span> Browse Agent Marketplace
               </Link>
@@ -195,35 +191,35 @@ export default function AgentDashboardPage() {
 
           {/* Quick Metrics Bar */}
           <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <div className="rounded-xl border border-white/15 bg-black/40 p-4 backdrop-blur-md">
+            <div className="rounded-xl border border-[#223144]/18 bg-card/65 p-4 backdrop-blur-md">
               <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
                 Invited Users
               </p>
-              <p className="mt-1 font-mono text-2xl font-bold text-white">
+              <p className="mt-1 font-mono text-2xl font-bold text-[#223144]">
                 {data.invitedCount}
               </p>
             </div>
-            <div className="rounded-xl border border-white/15 bg-black/40 p-4 backdrop-blur-md">
+            <div className="rounded-xl border border-[#223144]/18 bg-card/65 p-4 backdrop-blur-md">
               <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
                 Properties In Network
               </p>
-              <p className="mt-1 font-mono text-2xl font-bold text-emerald-400">
+              <p className="mt-1 font-mono text-2xl font-bold text-emerald-700">
                 {data.totalPropertiesManaged}
               </p>
             </div>
-            <div className="rounded-xl border border-white/15 bg-black/40 p-4 backdrop-blur-md">
+            <div className="rounded-xl border border-[#223144]/18 bg-card/65 p-4 backdrop-blur-md">
               <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
                 Commission Earned
               </p>
-              <p className="mt-1 font-mono text-2xl font-bold text-amber-400">
+              <p className="mt-1 font-mono text-2xl font-bold text-amber-800">
                 ${data.totalCommissionEarned.toLocaleString()}
               </p>
             </div>
-            <div className="rounded-xl border border-white/15 bg-black/40 p-4 backdrop-blur-md">
+            <div className="rounded-xl border border-[#223144]/18 bg-card/65 p-4 backdrop-blur-md">
               <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
                 Hiring Inquiries
               </p>
-              <p className="mt-1 font-mono text-2xl font-bold text-zinc-200">
+              <p className="mt-1 font-mono text-2xl font-bold text-[#3E5560]">
                 {data.hiringRequests.length}
               </p>
             </div>
@@ -250,7 +246,7 @@ export default function AgentDashboardPage() {
 
             {/* Link Copy & Share Actions */}
             <div className="flex flex-col gap-3 min-w-[320px]">
-              <div className="flex items-center gap-2 rounded-2xl border border-zinc-300 bg-white p-2 shadow-xs">
+              <div className="flex items-center gap-2 rounded-2xl border border-zinc-300 bg-card p-2 shadow-xs">
                 <input
                   type="text"
                   readOnly
@@ -263,7 +259,7 @@ export default function AgentDashboardPage() {
                   className={`shrink-0 rounded-xl px-4 py-2 text-xs font-bold transition-all ${
                     copied
                       ? 'bg-emerald-600 text-white'
-                      : 'bg-zinc-900 text-white hover:bg-zinc-800'
+                      : 'bg-brand-grad text-white hover:bg-brand-grad-hover'
                   }`}
                 >
                   {copied ? 'Copied ✓' : 'Copy Link'}
@@ -329,7 +325,7 @@ export default function AgentDashboardPage() {
 
         {/* Tab 1: Invited Users */}
         {activeTab === 'invites' && (
-          <div className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
+          <div className="rounded-3xl border border-zinc-200 bg-card p-6 shadow-sm">
             <h3 className="text-lg font-bold text-zinc-900 mb-4">
               Users Registered via Your Invite Link
             </h3>
@@ -397,7 +393,7 @@ export default function AgentDashboardPage() {
 
         {/* Tab 2: Hiring Requests */}
         {activeTab === 'hiring' && (
-          <div className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
+          <div className="rounded-3xl border border-zinc-200 bg-card p-6 shadow-sm">
             <h3 className="text-lg font-bold text-zinc-900 mb-4">
               Direct Hiring Requests from Owners &amp; Tenants
             </h3>
@@ -416,7 +412,7 @@ export default function AgentDashboardPage() {
                 {data.hiringRequests.map((hr) => (
                   <div
                     key={hr.id}
-                    className="flex flex-col justify-between rounded-2xl border border-zinc-200 bg-white p-5 shadow-xs"
+                    className="flex flex-col justify-between rounded-2xl border border-zinc-200 bg-card p-5 shadow-xs"
                   >
                     <div>
                       <div className="flex items-center justify-between gap-2">
@@ -477,7 +473,7 @@ export default function AgentDashboardPage() {
                           <button
                             type="button"
                             onClick={() => handleStatusChange(hr.id, 'ACCEPTED')}
-                            className="flex-1 rounded-xl bg-zinc-900 py-1.5 text-xs font-bold text-white hover:bg-zinc-800"
+                            className="flex-1 rounded-xl bg-brand-grad py-1.5 text-xs font-bold text-white hover:bg-brand-grad-hover"
                           >
                             Accept
                           </button>
@@ -509,7 +505,7 @@ export default function AgentDashboardPage() {
 
         {/* Tab 3: Closed Deals */}
         {activeTab === 'deals' && (
-          <div className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
+          <div className="rounded-3xl border border-zinc-200 bg-card p-6 shadow-sm">
             <h3 className="text-lg font-bold text-zinc-900 mb-4">
               Brokered Deals &amp; Commission History
             </h3>

@@ -53,7 +53,7 @@ export default function TerminateLeaseButton({
           setError(null);
           setOpen(true);
         }}
-        className="rounded-full border border-red-500/30 px-4 py-2 text-sm font-medium text-red-400 transition-colors hover:bg-red-500/10"
+        className="rounded-full border border-red-500/30 px-4 py-2 text-sm font-medium text-red-700 transition-colors hover:bg-red-500/10"
       >
         Terminate Lease
       </button>
@@ -65,24 +65,24 @@ export default function TerminateLeaseButton({
           onClick={() => {
             if (!pending) setOpen(false);
           }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-navy/60 p-4"
         >
           <div
             ref={trapRef}
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-sm rounded-2xl border border-[#312D58] bg-[#17152F] p-6 shadow-xl"
+            className="w-full max-w-sm rounded-2xl border border-[#C2D9E0] bg-[#FFFFFF] p-6 shadow-xl"
           >
-            <h2 className="text-lg font-semibold tracking-tight text-white">
+            <h2 className="text-lg font-semibold tracking-tight text-[#223144]">
               Terminate lease
             </h2>
-            <p className="mt-2 text-sm text-[#E8E8F2]">
+            <p className="mt-2 text-sm text-[#223144]">
               Terminate this tenancy? The unit will be marked vacant. This cannot
               be undone.
             </p>
             {error && (
               <p
                 role="alert"
-                className="mt-4 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-400"
+                className="mt-4 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-700"
               >
                 {error}
               </p>
@@ -94,7 +94,7 @@ export default function TerminateLeaseButton({
                   if (!pending) setOpen(false);
                 }}
                 disabled={pending}
-                className="rounded-full border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-4 py-2 text-sm font-medium text-[#E8E8F2] transition-colors hover:text-white disabled:opacity-60"
+                className="rounded-full border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-4 py-2 text-sm font-medium text-[#223144] transition-colors hover:text-[#223144] disabled:opacity-60"
               >
                 Cancel
               </button>

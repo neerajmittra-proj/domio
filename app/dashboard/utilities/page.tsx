@@ -28,7 +28,7 @@ function SummaryCard({
         ? 'text-red-600'
         : 'text-zinc-900';
   return (
-    <div className="rounded-2xl border border-[#e1e2e3] bg-white p-5 shadow-xs">
+    <div className="rounded-2xl border border-[#DCE9EC] bg-card p-5 shadow-xs">
       <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">{label}</p>
       <p className={'mt-1.5 font-mono text-2xl font-bold ' + color}>{value}</p>
     </div>
@@ -66,7 +66,7 @@ export default async function UtilitiesPage() {
         {canEdit && (
           <Link
             href="/dashboard/utilities/accounts/new"
-            className="rounded-lg bg-zinc-900 px-4 py-2 text-xs sm:text-sm font-semibold text-white transition-all hover:bg-zinc-800 active:scale-95 shadow-sm"
+            className="rounded-lg bg-brand-grad px-4 py-2 text-xs sm:text-sm font-semibold text-white transition-all hover:bg-brand-grad-hover active:scale-95 shadow-sm"
           >
             + Add Account
           </Link>

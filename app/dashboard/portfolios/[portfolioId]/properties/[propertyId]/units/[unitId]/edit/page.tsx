@@ -59,6 +59,14 @@ export default async function EditUnitPage({
   }
 
   if (!resolvedUnit) notFound();
+  // Managers need EDIT access (unit-level, or property-level for hierarchy entities).
+  if (
+    ds.isManager &&
+    !ds.scope.editSubPropertyIds.has(unitId) &&
+    !ds.scope.editPropertyIds.has(propertyId)
+  ) {
+    notFound();
+  }
 
   const listHref = `/dashboard/portfolios/${portfolioId}/properties/${propertyId}/units`;
 
@@ -71,7 +79,7 @@ export default async function EditUnitPage({
         ← Back to units
       </Link>
 
-      <div className="rounded-2xl border border-zinc-200/90 bg-white p-6 sm:p-8 shadow-xs">
+      <div className="rounded-2xl border border-zinc-200/90 bg-card p-6 sm:p-8 shadow-xs">
         <h1 className="mb-6 text-xl sm:text-2xl font-bold tracking-tight text-zinc-900">
           Edit Unit
         </h1>

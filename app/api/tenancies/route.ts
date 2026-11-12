@@ -60,8 +60,27 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Valid monthly rent is required.' }, { status: 400 });
     }
 
-    const deposit = securityDeposit !== undefined && securityDeposit !== '' ? Number(securityDeposit) : 0;
-    const day = paymentDayOfMonth ? Math.min(28, Math.max(1, Number(paymentDayOfMonth))) : 1;
+    const deposit =
+      securityDeposit !== undefined && securityDeposit !== null && securityDeposit !== ''
+        ? Number(securityDeposit)
+        : 0;
+    if (!Number.isFinite(deposit) || deposit < 0) {
+      return NextResponse.json(
+        { error: 'Security deposit must be a non-negative number.' },
+        { status: 400 },
+      );
+    }
+    const dayRaw =
+      paymentDayOfMonth !== undefined && paymentDayOfMonth !== null && paymentDayOfMonth !== ''
+        ? Number(paymentDayOfMonth)
+        : 1;
+    if (!Number.isFinite(dayRaw)) {
+      return NextResponse.json(
+        { error: 'Payment day must be a number between 1 and 28.' },
+        { status: 400 },
+      );
+    }
+    const day = Math.min(28, Math.max(1, Math.trunc(dayRaw)));
 
     // ── Verify tenant exists ───────────────────────────────────────────────
     const tenant = await prisma.tenant.findUnique({
@@ -94,9 +113,29 @@ export async function POST(req: Request) {
         );
       }
 
+      // Managers need EDIT access to the unit (404 when it is out of scope).
+      if (ds.isManager) {
+        if (!ds.scope.subPropertyIds.includes(subPropertyId)) {
+          return NextResponse.json({ error: 'Unit not found.' }, { status: 404 });
+        }
+        if (!ds.scope.editSubPropertyIds.has(subPropertyId)) {
+          return NextResponse.json(
+            { error: 'You have view-only access to this unit.' },
+            { status: 403 },
+          );
+        }
+      }
+
+      if (unit.status === 'MAINTENANCE') {
+        return NextResponse.json(
+          { error: 'This unit is under maintenance and cannot be leased. Set it to Vacant first.' },
+          { status: 400 },
+        );
+      }
+
       targetOwnerId = unit.property.ownerId;
 
-      // Check for overlapping active lease
+      // Check for overlapping active lease on this unit (any tenant)
       const existingLease = await prisma.tenancy.findFirst({
         where: {
           subPropertyId,
@@ -111,6 +150,21 @@ export async function POST(req: Request) {
           { status: 400 },
         );
       }
+
+      // Check: this tenant must not already have an active lease on the same unit
+      const tenantUnitDuplicate = await prisma.tenancy.findFirst({
+        where: {
+          tenantId,
+          subPropertyId,
+          status: 'ACTIVE',
+        },
+      });
+      if (tenantUnitDuplicate) {
+        return NextResponse.json(
+          { error: 'This tenant already has an active lease on this unit.' },
+          { status: 400 },
+        );
+      }
     }
 
     // ── Hierarchical RentableEntity (Building/Floor/Room/Bed) ────────────
@@ -120,6 +174,7 @@ export async function POST(req: Request) {
         select: {
           id: true,
           ownerId: true,
+          propertyId: true,
           status: true,
           name: true,
           type: true,
@@ -129,6 +184,31 @@ export async function POST(req: Request) {
 
       if (!entity) {
         return NextResponse.json({ error: 'Rental entity not found.' }, { status: 404 });
+      }
+
+      // Access first (don't leak structure of other owners' entities), then rules.
+      if (!isSuperAdmin && entity.ownerId !== ds.ownerId && entity.ownerId !== session.user.id) {
+        return NextResponse.json(
+          { error: 'Access denied: this entity belongs to a different owner.' },
+          { status: 403 },
+        );
+      }
+      if (ds.isManager) {
+        if (!ds.scope.propertyIds.includes(entity.propertyId)) {
+          return NextResponse.json({ error: 'Rental entity not found.' }, { status: 404 });
+        }
+        if (!ds.scope.editPropertyIds.has(entity.propertyId)) {
+          return NextResponse.json(
+            { error: 'You have view-only access to this property.' },
+            { status: 403 },
+          );
+        }
+      }
+      if (entity.status === 'MAINTENANCE') {
+        return NextResponse.json(
+          { error: `"${entity.name}" is under maintenance and cannot be leased. Set it to Vacant first.` },
+          { status: 400 },
+        );
       }
 
       // STRICT RULE: If entity has child sub-units (e.g. rooms under a floor, beds under a room),
@@ -181,6 +261,21 @@ export async function POST(req: Request) {
         }
       } catch (e) {
         console.warn('[POST /api/tenancies] Descendant conflict check skipped:', e);
+      }
+
+      // Check: this tenant must not already have an active lease on the same rentable entity
+      const tenantEntityDuplicate = await prisma.tenancy.findFirst({
+        where: {
+          tenantId,
+          rentableEntityId,
+          status: 'ACTIVE',
+        },
+      });
+      if (tenantEntityDuplicate) {
+        return NextResponse.json(
+          { error: 'This tenant already has an active lease on this unit.' },
+          { status: 400 },
+        );
       }
     }
 

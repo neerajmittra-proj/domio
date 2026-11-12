@@ -7,7 +7,7 @@ import { CURRENCIES, DEFAULT_CURRENCY } from '@/lib/currencies';
 import DatePicker from '@/components/ui/date-picker';
 
 const inputClass =
-  'rounded-xl border border-zinc-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-zinc-900 shadow-2xs outline-none transition placeholder:text-zinc-400 focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10';
+  'rounded-xl border border-zinc-300 bg-card px-3.5 py-2.5 text-sm font-semibold text-zinc-900 shadow-2xs outline-none transition placeholder:text-zinc-400 focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10';
 const labelClass = 'text-xs font-bold uppercase tracking-wider text-zinc-700';
 
 function todayISO() {
@@ -148,7 +148,7 @@ export default function AssignForm({
           className={inputClass}
         >
           {available.map((p) => (
-            <option key={p.id} value={p.id} className="bg-white text-zinc-900">
+            <option key={p.id} value={p.id} className="bg-card text-zinc-900">
               {p.name} ({p.vacantUnits.length} vacant {p.vacantUnits.length === 1 ? 'unit' : 'units'})
             </option>
           ))}
@@ -166,7 +166,7 @@ export default function AssignForm({
           className={inputClass}
         >
           {units.map((u) => (
-            <option key={u.id} value={u.id} className="bg-white text-zinc-900">
+            <option key={u.id} value={u.id} className="bg-card text-zinc-900">
               {u.unitNumber} — {u.name} (Listed: ₹{u.rentAmount.toLocaleString()}/mo)
             </option>
           ))}
@@ -185,7 +185,7 @@ export default function AssignForm({
             onChange={(iso) => setStartDate(iso)}
             placeholder="MM/DD/YYYY"
             ariaLabel="Lease Start Date"
-            className="border-zinc-300 bg-white text-zinc-900"
+            className="border-zinc-300 bg-card text-zinc-900"
           />
         </div>
         <div className="flex flex-col gap-1.5">
@@ -200,7 +200,7 @@ export default function AssignForm({
             onChange={(iso) => setEndDate(iso)}
             placeholder="MM/DD/YYYY"
             ariaLabel="Lease End Date"
-            className="border-zinc-300 bg-white text-zinc-900"
+            className="border-zinc-300 bg-card text-zinc-900"
           />
         </div>
       </div>
@@ -210,7 +210,7 @@ export default function AssignForm({
           <label htmlFor="monthlyRent" className={labelClass}>
             Monthly Rent
           </label>
-          <div className="flex overflow-hidden rounded-xl border border-zinc-300 bg-white focus-within:border-zinc-900 focus-within:ring-2 focus-within:ring-zinc-900/10 transition shadow-2xs">
+          <div className="flex overflow-hidden rounded-xl border border-zinc-300 bg-card focus-within:border-zinc-900 focus-within:ring-2 focus-within:ring-zinc-900/10 transition shadow-2xs">
             <select
               id="currency"
               value={currency}
@@ -220,7 +220,7 @@ export default function AssignForm({
               aria-label="Currency"
             >
               {CURRENCIES.map((c) => (
-                <option key={c.code} value={c.code} className="bg-white text-zinc-900">
+                <option key={c.code} value={c.code} className="bg-card text-zinc-900">
                   {c.symbol} {c.code}
                 </option>
               ))}
@@ -280,7 +280,7 @@ export default function AssignForm({
       <button
         type="submit"
         disabled={pending || !unitId}
-        className="mt-2 rounded-xl bg-zinc-900 py-3 text-sm font-bold text-white shadow-sm transition-all hover:bg-zinc-800 active:scale-98 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
+        className="mt-2 rounded-xl bg-brand-grad py-3 text-sm font-bold text-white shadow-sm transition-all hover:bg-brand-grad-hover active:scale-98 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
       >
         {pending ? 'Assigning Unit & Creating Lease…' : '✓ Assign Unit & Activate Lease'}
       </button>

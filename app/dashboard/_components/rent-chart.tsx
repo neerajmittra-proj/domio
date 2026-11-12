@@ -28,7 +28,7 @@ function CustomTooltip({ active, payload }: TipProps) {
   const variance = p.collected - p.expected;
   const up = variance >= 0;
   return (
-    <div className="rounded-xl border border-zinc-200 bg-white p-3 text-xs shadow-xl">
+    <div className="rounded-xl border border-zinc-200 bg-card p-3 text-xs shadow-xl">
       <p className="mb-1 font-bold text-zinc-900">{p.month}</p>
       <p className="font-medium text-zinc-600">Expected: {formatMoney(p.expected)}</p>
       <p className="font-semibold text-zinc-700">Collected: {formatMoney(p.collected)}</p>
@@ -52,7 +52,7 @@ export default function RentChart({ data }: { data: ChartPoint[] }) {
   const totalCollected = data.reduce((s, d) => s + d.collected, 0);
 
   return (
-    <div className="rounded-2xl border border-[#e1e2e3] bg-white p-6 shadow-xs">
+    <div className="rounded-2xl border border-[#DCE9EC] bg-card p-6 shadow-xs">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xs font-bold uppercase tracking-wider text-zinc-400">

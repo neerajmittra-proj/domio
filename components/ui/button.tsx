@@ -20,9 +20,9 @@ const sizes: Record<ButtonSize, string> = {
 
 const variants: Record<ButtonVariant, string> = {
   primary:
-    'bg-zinc-900 text-white hover:bg-zinc-800 shadow-sm',
+    'bg-brand-grad text-white hover:bg-brand-grad-hover shadow-sm',
   ghost: 'border border-zinc-300 text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900',
-  danger: 'border border-red-500/40 text-red-400 hover:bg-red-500/10',
+  danger: 'border border-red-500/40 text-red-700 hover:bg-red-500/10',
   outline: 'border border-zinc-200 text-zinc-700 hover:bg-zinc-50',
 };
 

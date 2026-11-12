@@ -19,7 +19,10 @@ export async function POST(request: Request) {
   const ds = await resolveDataScope(session.user);
   const body = await request.json().catch(() => ({}));
 
-  const fyStartYear = Number.isInteger(body?.fy) ? body.fy : currentFyStartYear();
+  const fyStartYear =
+    Number.isInteger(body?.fy) && body.fy >= 2000 && body.fy <= 2100
+      ? body.fy
+      : currentFyStartYear();
   const by: CollectionLevel = body?.by === 'property' ? 'property' : 'unit';
   const portfolioId = typeof body?.portfolioId === 'string' && body.portfolioId ? body.portfolioId : undefined;
   const propertyId = typeof body?.propertyId === 'string' && body.propertyId ? body.propertyId : undefined;
@@ -34,10 +37,10 @@ export async function POST(request: Request) {
     const col = full.columns.find((c) => c.id === unitId);
     scopeLabel = col ? (col.sublabel ? `${col.sublabel} — ${col.label}` : col.label) : 'Selected unit';
   } else if (propertyId) {
-    const p = await prisma.property.findUnique({ where: { id: propertyId }, select: { name: true } });
+    const p = await prisma.property.findFirst({ where: { id: propertyId, ownerId: ds.ownerId }, select: { name: true } });
     scopeLabel = p ? `Property: ${p.name}` : 'Selected property';
   } else if (portfolioId) {
-    const p = await prisma.portfolio.findUnique({ where: { id: portfolioId }, select: { name: true } });
+    const p = await prisma.portfolio.findFirst({ where: { id: portfolioId, ownerId: ds.ownerId }, select: { name: true } });
     scopeLabel = p ? `Portfolio: ${p.name}` : 'Selected portfolio';
   }
 

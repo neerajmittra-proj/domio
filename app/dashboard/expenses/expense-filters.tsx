@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { EXPENSE_CATEGORIES } from '@/lib/expense-types';
 
 const controlClass =
-  'rounded-lg border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-3 py-2 text-sm text-white outline-none transition focus:border-zinc-700 focus:ring-2 focus:ring-zinc-500/20';
+  'rounded-lg border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-3 py-2 text-sm text-[#223144] outline-none transition focus:border-zinc-700 focus:ring-2 focus:ring-zinc-500/20';
 
 type Current = {
   category: string;
@@ -143,7 +143,7 @@ export default function ExpenseFilters({
         <button
           type="button"
           onClick={() => router.push('/dashboard/expenses')}
-          className="rounded-lg border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-3 py-2 text-sm font-medium text-[#B0B0C8] transition-colors hover:text-white"
+          className="rounded-lg border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-3 py-2 text-sm font-medium text-[#3E5560] transition-colors hover:text-[#223144]"
         >
           Clear
         </button>

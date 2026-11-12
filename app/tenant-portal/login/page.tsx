@@ -5,11 +5,11 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 // Exact card/input styles from homepage action cards
-const cardClass = 'rounded-xl border border-white/25 bg-black/40 backdrop-blur-md';
-const inputClass = 'w-full rounded-xl border border-white/20 bg-black/30 px-4 py-3 text-sm text-white outline-none transition placeholder:text-zinc-500 focus:border-white/50 focus:bg-black/50';
+const cardClass = 'rounded-xl border border-[#223144]/28 bg-card/65 backdrop-blur-md';
+const inputClass = 'w-full rounded-xl border border-[#223144]/18 bg-card/60 px-4 py-3 text-sm text-[#223144] outline-none transition placeholder:text-zinc-500 focus:border-[#223144]/40 focus:bg-card/75';
 const labelClass = 'text-[11px] font-bold uppercase tracking-widest text-zinc-400';
 // White pill — exact "Sign Up Free →" style from homepage
-const primaryBtn = 'w-full rounded-full bg-white px-5 py-3 text-sm font-bold text-zinc-950 hover:bg-zinc-200 transition-colors shadow-xs disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer';
+const primaryBtn = 'w-full rounded-full bg-brand-grad px-5 py-3 text-sm font-bold text-white hover:bg-brand-grad-hover transition-colors shadow-xs disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer';
 
 type LoginMode = 'phone' | 'password';
 type Step = 'phone' | 'otp';
@@ -78,7 +78,7 @@ export default function TenantLoginPage() {
 
         {/* Page heading — same style as homepage hero */}
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-extrabold tracking-tight text-white">Tenant Sign In</h1>
+          <h1 className="text-3xl font-extrabold tracking-tight text-[#223144]">Tenant Sign In</h1>
           <p className="mt-2 text-sm text-zinc-400">
             Access your rent ledger, lease agreements &amp; payment receipts
           </p>
@@ -88,12 +88,12 @@ export default function TenantLoginPage() {
         <div className={cardClass + ' p-7 sm:p-8 shadow-2xl'}>
 
           {/* Mode tabs — white active pill, grey inactive */}
-          <div className="mb-6 flex rounded-xl border border-white/15 bg-white/[0.04] p-1">
+          <div className="mb-6 flex rounded-xl border border-[#223144]/18 bg-[#223144]/[0.05] p-1">
             {(['phone', 'password'] as const).map((m) => (
               <button key={m} type="button"
                 onClick={() => { setMode(m); setError(null); if (m === 'phone') setStep('phone'); }}
                 className={`flex-1 rounded-lg py-2.5 text-xs font-bold transition-all cursor-pointer ${
-                  mode === m ? 'bg-white text-zinc-950 shadow-sm' : 'text-zinc-400 hover:text-white'
+                  mode === m ? 'bg-card text-zinc-950 shadow-sm' : 'text-zinc-400 hover:text-[#223144]'
                 }`}>
                 {m === 'phone' ? '📲 Phone OTP' : '🔑 Email & Password'}
               </button>
@@ -115,7 +115,7 @@ export default function TenantLoginPage() {
                   onChange={(e) => setPassword(e.target.value)} placeholder="••••••••"
                   className={inputClass} autoComplete="current-password" />
               </div>
-              {error && <p role="alert" className="rounded-xl border border-red-500/30 bg-red-950/30 px-3.5 py-2.5 text-xs font-semibold text-red-300">{error}</p>}
+              {error && <p role="alert" className="rounded-xl border border-red-500/30 bg-red-100 px-3.5 py-2.5 text-xs font-semibold text-red-700">{error}</p>}
               <button type="submit" disabled={pending} className={primaryBtn + ' mt-1'}>
                 {pending ? 'Signing In…' : 'Sign In to Portal →'}
               </button>
@@ -132,7 +132,7 @@ export default function TenantLoginPage() {
                   className={inputClass} autoComplete="tel" />
                 <p className="text-[11px] text-zinc-500 mt-0.5">We'll send a 6-digit OTP via SMS and WhatsApp.</p>
               </div>
-              {error && <p role="alert" className="rounded-xl border border-red-500/30 bg-red-950/30 px-3.5 py-2.5 text-xs font-semibold text-red-300">{error}</p>}
+              {error && <p role="alert" className="rounded-xl border border-red-500/30 bg-red-100 px-3.5 py-2.5 text-xs font-semibold text-red-700">{error}</p>}
               <button type="submit" disabled={pending} className={primaryBtn + ' mt-1'}>
                 {pending ? 'Sending OTP…' : 'Send OTP via SMS / WhatsApp →'}
               </button>
@@ -142,25 +142,25 @@ export default function TenantLoginPage() {
           {/* OTP step */}
           {mode === 'phone' && step === 'otp' && (
             <form onSubmit={handleVerifyOtp} className="flex flex-col gap-4">
-              <div className="rounded-xl border border-white/15 bg-white/[0.04] p-3.5 text-center">
-                <p className="text-xs font-semibold text-white">
-                  📲 OTP sent to <span className="font-mono text-zinc-300">{phone}</span>
+              <div className="rounded-xl border border-[#223144]/18 bg-[#223144]/[0.05] p-3.5 text-center">
+                <p className="text-xs font-semibold text-[#223144]">
+                  📲 OTP sent to <span className="font-mono text-[#3E5560]">{phone}</span>
                 </p>
                 <p className="mt-0.5 text-[11px] text-zinc-500">
                   {smsSent ? 'Check your SMS inbox.' : 'Check your phone or use WhatsApp below.'}
                 </p>
                 {whatsappUrl && (
                   <a href={whatsappUrl} target="_blank" rel="noopener noreferrer"
-                    className="mt-2.5 inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/5 px-4 py-1.5 text-xs font-bold text-white hover:bg-white/10 transition-colors">
+                    className="mt-2.5 inline-flex items-center gap-1.5 rounded-full border border-[#223144]/18 bg-[#223144]/5 px-4 py-1.5 text-xs font-bold text-[#223144] hover:bg-[#223144]/8 transition-colors">
                     💬 Open on WhatsApp
                   </a>
                 )}
               </div>
               {devOtp && (
-                <div className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2">
+                <div className="flex items-center justify-between rounded-xl border border-[#223144]/12 bg-[#223144]/[0.05] px-3 py-2">
                   <span className="text-[11px] text-zinc-500">OTP received?</span>
                   <button type="button" onClick={() => setOtp(devOtp)}
-                    className="rounded-md bg-white/10 px-2.5 py-1 text-[11px] font-bold text-white hover:bg-white/20 transition cursor-pointer">
+                    className="rounded-md bg-[#223144]/8 px-2.5 py-1 text-[11px] font-bold text-[#223144] hover:bg-[#223144]/8 transition cursor-pointer">
                     ⚡ Auto-Fill ({devOtp})
                   </button>
                 </div>
@@ -173,22 +173,22 @@ export default function TenantLoginPage() {
                   className={inputClass + ' text-center text-2xl tracking-[0.5em] font-mono'}
                   autoComplete="one-time-code" autoFocus />
               </div>
-              {error && <p role="alert" className="rounded-xl border border-red-500/30 bg-red-950/30 px-3.5 py-2.5 text-xs font-semibold text-red-300">{error}</p>}
+              {error && <p role="alert" className="rounded-xl border border-red-500/30 bg-red-100 px-3.5 py-2.5 text-xs font-semibold text-red-700">{error}</p>}
               <button type="submit" disabled={pending || otp.length !== 6} className={primaryBtn + ' mt-1'}>
                 {pending ? 'Verifying…' : 'Verify & Enter Portal →'}
               </button>
               <button type="button"
                 onClick={() => { setStep('phone'); setOtp(''); setError(null); setDevOtp(null); }}
-                className="text-center text-xs text-zinc-500 hover:text-white transition-colors cursor-pointer">
+                className="text-center text-xs text-zinc-500 hover:text-[#223144] transition-colors cursor-pointer">
                 ← Use a different phone number
               </button>
             </form>
           )}
 
-          <div className="mt-6 border-t border-white/10 pt-5 text-center">
+          <div className="mt-6 border-t border-[#223144]/12 pt-5 text-center">
             <p className="text-xs text-zinc-500">
               New tenant?{' '}
-              <Link href="/tenant-portal/register" className="font-bold text-white hover:underline">
+              <Link href="/tenant-portal/register" className="font-bold text-[#223144] hover:underline">
                 Create your account →
               </Link>
             </p>

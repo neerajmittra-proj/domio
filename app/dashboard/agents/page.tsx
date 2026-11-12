@@ -134,35 +134,29 @@ export default function AgentsDirectoryPage() {
   };
 
   return (
-    <div className="min-h-full bg-[#fafaf9]">
+    <div className="min-h-full">
       {/* ── Architectural Hero for Agent Marketplace ───────────── */}
-      <section className="relative overflow-hidden bg-zinc-950 py-12 sm:py-16 text-white">
-        <div
-          className="absolute inset-0 bg-cover bg-center opacity-25 mix-blend-luminosity"
-          style={{
-            backgroundImage: `radial-gradient(circle at 50% 50%, rgba(30, 41, 59, 0.8), rgba(9, 9, 11, 0.98)), url('https://images.unsplash.com/photo-1577495508048-b635879837f1?auto=format&fit=crop&w=1800&q=80')`,
-          }}
-        />
+      <section className="relative overflow-hidden bg-transparent py-12 sm:py-16 text-[#223144]">
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium backdrop-blur-md">
+              <div className="inline-flex items-center gap-2 rounded-full border border-[#223144]/18 bg-[#223144]/8 px-3 py-1 text-xs font-medium backdrop-blur-md">
                 <span>🤝</span>
                 <span>Agent &amp; Broker Marketplace</span>
               </div>
-              <h1 className="mt-3 text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white leading-tight">
+              <h1 className="mt-3 text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[#223144] leading-tight">
                 Hire Verified Agents
               </h1>
-              <p className="mt-2 text-sm sm:text-base text-zinc-300 max-w-2xl font-normal">
-                Filter property agents and brokers by <span className="font-semibold text-white">Location</span> and <span className="font-semibold text-amber-400">Specialized Skills</span> to manage your properties or find rental leases.
+              <p className="mt-2 text-sm sm:text-base text-[#3E5560] max-w-2xl font-normal">
+                Filter property agents and brokers by <span className="font-semibold text-[#223144]">Location</span> and <span className="font-semibold text-amber-800">Specialized Skills</span> to manage your properties or find rental leases.
               </p>
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
               <Link
                 href="/dashboard/agent/register"
-                className="inline-flex items-center gap-2 rounded-xl bg-amber-500 px-5 py-3 text-sm font-bold text-zinc-950 transition-all hover:bg-amber-400 hover:scale-105 active:scale-95 shadow-lg shadow-amber-500/20"
+                className="inline-flex items-center gap-2 rounded-xl bg-brand-grad px-5 py-3 text-sm font-bold text-white transition-all hover:bg-brand-grad-hover hover:scale-105 active:scale-95 shadow-lg shadow-amber-500/20"
               >
                 <span>💼</span> Work as an Agent
               </Link>
@@ -172,7 +166,7 @@ export default function AgentsDirectoryPage() {
           {/* Search Form inside Hero */}
           <form
             onSubmit={handleSearch}
-            className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-12 rounded-2xl border border-white/15 bg-black/40 p-3 backdrop-blur-md"
+            className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-12 rounded-2xl border border-[#223144]/18 bg-card/65 p-3 backdrop-blur-md"
           >
             <div className="relative sm:col-span-6">
               <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-zinc-400">
@@ -183,7 +177,7 @@ export default function AgentsDirectoryPage() {
                 value={locationInput}
                 onChange={(e) => setLocationInput(e.target.value)}
                 placeholder="Filter by city or location (e.g. New York, London)..."
-                className="w-full rounded-xl border border-white/10 bg-white/5 py-2.5 pl-10 pr-3 text-sm text-white placeholder-zinc-400 outline-none focus:border-amber-400"
+                className="w-full rounded-xl border border-[#223144]/12 bg-[#223144]/5 py-2.5 pl-10 pr-3 text-sm text-[#223144] placeholder-zinc-400 outline-none focus:border-amber-400"
               />
             </div>
 
@@ -196,13 +190,13 @@ export default function AgentsDirectoryPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Agent name, agency, or keyword..."
-                className="w-full rounded-xl border border-white/10 bg-white/5 py-2.5 pl-10 pr-3 text-sm text-white placeholder-zinc-400 outline-none focus:border-amber-400"
+                className="w-full rounded-xl border border-[#223144]/12 bg-[#223144]/5 py-2.5 pl-10 pr-3 text-sm text-[#223144] placeholder-zinc-400 outline-none focus:border-amber-400"
               />
             </div>
 
             <button
               type="submit"
-              className="sm:col-span-2 rounded-xl bg-white px-4 py-2.5 text-xs font-bold text-black transition-all hover:bg-zinc-100"
+              className="sm:col-span-2 rounded-xl bg-brand-grad px-4 py-2.5 text-xs font-bold text-white transition-all hover:bg-brand-grad-hover"
             >
               Filter Agents
             </button>
@@ -218,8 +212,8 @@ export default function AgentsDirectoryPage() {
                 onClick={() => setSelectedSkill(s)}
                 className={`rounded-full px-3 py-1 text-xs font-semibold transition-all ${
                   selectedSkill.toLowerCase() === s.toLowerCase()
-                    ? 'bg-amber-400 text-black font-bold shadow-sm'
-                    : 'border border-white/10 bg-white/5 text-zinc-300 hover:bg-white/15 hover:text-white'
+                    ? 'bg-brand-grad text-white font-bold shadow-sm'
+                    : 'border border-[#223144]/12 bg-[#223144]/5 text-[#3E5560] hover:bg-[#223144]/8 hover:text-[#223144]'
                 }`}
               >
                 {s}
@@ -255,12 +249,12 @@ export default function AgentsDirectoryPage() {
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="h-64 animate-pulse rounded-2xl border border-zinc-200 bg-white p-6"
+                className="h-64 animate-pulse rounded-2xl border border-zinc-200 bg-card p-6"
               />
             ))}
           </div>
         ) : agents.length === 0 ? (
-          <div className="rounded-3xl border border-dashed border-zinc-200 bg-white p-12 text-center">
+          <div className="rounded-3xl border border-dashed border-zinc-200 bg-card p-12 text-center">
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-zinc-100 text-2xl">
               🤝
             </div>
@@ -276,7 +270,7 @@ export default function AgentsDirectoryPage() {
             {agents.map((a) => (
               <div
                 key={a.id}
-                className="flex flex-col justify-between rounded-3xl border border-zinc-200/90 bg-white p-6 shadow-xs transition-all hover:border-zinc-300 hover:shadow-md"
+                className="flex flex-col justify-between rounded-3xl border border-zinc-200/90 bg-card p-6 shadow-xs transition-all hover:border-zinc-300 hover:shadow-md"
               >
                 <div>
                   {/* Top: Location & Rating */}
@@ -337,7 +331,7 @@ export default function AgentsDirectoryPage() {
                   <button
                     type="button"
                     onClick={() => openHireModal(a)}
-                    className="w-full rounded-2xl bg-zinc-900 py-3 text-xs font-bold text-white shadow-sm transition-all hover:bg-zinc-800 active:scale-[0.99]"
+                    className="w-full rounded-2xl bg-brand-grad py-3 text-xs font-bold text-white shadow-sm transition-all hover:bg-brand-grad-hover active:scale-[0.99]"
                   >
                     🤝 Hire / Inquire with Agent →
                   </button>
@@ -353,9 +347,9 @@ export default function AgentsDirectoryPage() {
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-navy/60 backdrop-blur-xs p-4"
         >
-          <div className="relative w-full max-w-lg rounded-3xl border border-zinc-200 bg-white p-6 sm:p-8 shadow-2xl">
+          <div className="relative w-full max-w-lg rounded-3xl border border-zinc-200 bg-card p-6 sm:p-8 shadow-2xl">
             <button
               type="button"
               onClick={() => setHireModalOpen(false)}
@@ -390,7 +384,7 @@ export default function AgentsDirectoryPage() {
                     onClick={() => setClientRole('OWNER')}
                     className={`rounded-xl border p-2 text-xs font-bold transition-all ${
                       clientRole === 'OWNER'
-                        ? 'border-zinc-900 bg-zinc-900 text-white'
+                        ? 'border-zinc-900 bg-brand-grad text-white'
                         : 'border-zinc-200 bg-zinc-50 text-zinc-600'
                     }`}
                   >
@@ -401,7 +395,7 @@ export default function AgentsDirectoryPage() {
                     onClick={() => setClientRole('RENTER')}
                     className={`rounded-xl border p-2 text-xs font-bold transition-all ${
                       clientRole === 'RENTER'
-                        ? 'border-zinc-900 bg-zinc-900 text-white'
+                        ? 'border-zinc-900 bg-brand-grad text-white'
                         : 'border-zinc-200 bg-zinc-50 text-zinc-600'
                     }`}
                   >
@@ -422,7 +416,7 @@ export default function AgentsDirectoryPage() {
                     value={clientName}
                     onChange={(e) => setClientName(e.target.value)}
                     placeholder="e.g. Sarah Jenkins"
-                    className="w-full rounded-xl border border-zinc-300 bg-white px-3.5 py-2 text-xs text-zinc-900 outline-none focus:border-zinc-900"
+                    className="w-full rounded-xl border border-zinc-300 bg-card px-3.5 py-2 text-xs text-zinc-900 outline-none focus:border-zinc-900"
                   />
                 </div>
                 <div className="flex flex-col gap-1">
@@ -435,7 +429,7 @@ export default function AgentsDirectoryPage() {
                     value={clientPhone}
                     onChange={(e) => setClientPhone(e.target.value)}
                     placeholder="e.g. +1 555 0192"
-                    className="w-full rounded-xl border border-zinc-300 bg-white px-3.5 py-2 text-xs text-zinc-900 outline-none focus:border-zinc-900"
+                    className="w-full rounded-xl border border-zinc-300 bg-card px-3.5 py-2 text-xs text-zinc-900 outline-none focus:border-zinc-900"
                   />
                 </div>
               </div>
@@ -449,7 +443,7 @@ export default function AgentsDirectoryPage() {
                   <select
                     value={serviceNeeded}
                     onChange={(e) => setServiceNeeded(e.target.value)}
-                    className="w-full rounded-xl border border-zinc-300 bg-white px-3.5 py-2 text-xs text-zinc-900 outline-none focus:border-zinc-900"
+                    className="w-full rounded-xl border border-zinc-300 bg-card px-3.5 py-2 text-xs text-zinc-900 outline-none focus:border-zinc-900"
                   >
                     <option value="Find Tenants">Find Tenants</option>
                     <option value="Find Rental Space">Find Rental Space</option>
@@ -468,7 +462,7 @@ export default function AgentsDirectoryPage() {
                     value={propertyType}
                     onChange={(e) => setPropertyType(e.target.value)}
                     placeholder="e.g. Flat, Land, Hospital, Hotel"
-                    className="w-full rounded-xl border border-zinc-300 bg-white px-3.5 py-2 text-xs text-zinc-900 outline-none focus:border-zinc-900"
+                    className="w-full rounded-xl border border-zinc-300 bg-card px-3.5 py-2 text-xs text-zinc-900 outline-none focus:border-zinc-900"
                   />
                 </div>
               </div>
@@ -483,7 +477,7 @@ export default function AgentsDirectoryPage() {
                   value={budgetOrRent}
                   onChange={(e) => setBudgetOrRent(e.target.value)}
                   placeholder="e.g. 2500"
-                  className="w-full rounded-xl border border-zinc-300 bg-white px-3.5 py-2 text-xs text-zinc-900 outline-none focus:border-zinc-900"
+                  className="w-full rounded-xl border border-zinc-300 bg-card px-3.5 py-2 text-xs text-zinc-900 outline-none focus:border-zinc-900"
                 />
               </div>
 
@@ -497,7 +491,7 @@ export default function AgentsDirectoryPage() {
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Describe your requirements..."
-                  className="w-full rounded-xl border border-zinc-300 bg-white px-3.5 py-2 text-xs text-zinc-900 outline-none focus:border-zinc-900"
+                  className="w-full rounded-xl border border-zinc-300 bg-card px-3.5 py-2 text-xs text-zinc-900 outline-none focus:border-zinc-900"
                 />
               </div>
 
@@ -516,7 +510,7 @@ export default function AgentsDirectoryPage() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="mt-2 w-full rounded-xl bg-zinc-900 py-3 text-xs font-bold text-white shadow-md hover:bg-zinc-800 disabled:opacity-50"
+                className="mt-2 w-full rounded-xl bg-brand-grad py-3 text-xs font-bold text-white shadow-md hover:bg-brand-grad-hover disabled:opacity-50"
               >
                 {submitting ? 'Sending Request…' : 'Submit Hiring Inquiry →'}
               </button>

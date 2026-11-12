@@ -29,20 +29,20 @@ function AccountBills({ accountId }: { accountId: string }) {
   }, [accountId]);
 
   if (bills === null) {
-    return <p className="px-2 py-2 text-xs text-[#B0B0C8]">Loading bills…</p>;
+    return <p className="px-2 py-2 text-xs text-[#3E5560]">Loading bills…</p>;
   }
   if (bills.length === 0) {
-    return <p className="px-2 py-2 text-xs text-[#B0B0C8]">No bills yet.</p>;
+    return <p className="px-2 py-2 text-xs text-[#3E5560]">No bills yet.</p>;
   }
   return (
     <ul className="mt-1 space-y-1">
       {bills.map((b) => (
         <li
           key={b.id}
-          className="flex items-center justify-between gap-2 rounded-md bg-[rgba(255,255,255,0.02)] px-2 py-1 text-xs"
+          className="flex items-center justify-between gap-2 rounded-md bg-[rgba(34,49,68,0.035)] px-2 py-1 text-xs"
         >
-          <span className="text-[#B0B0C8]">{formatDate(b.dueDate)}</span>
-          <span className="text-[#E8E8F2]">{formatMoney(b.amount)}</span>
+          <span className="text-[#3E5560]">{formatDate(b.dueDate)}</span>
+          <span className="text-[#223144]">{formatMoney(b.amount)}</span>
           <span
             className={
               'rounded-full px-2 py-0.5 text-[10px] font-medium ' +
@@ -100,21 +100,21 @@ export default function UnitUtilities({
 
       <div className="mt-2">
         {accounts === null ? (
-          <p className="text-xs text-[#B0B0C8]">Loading…</p>
+          <p className="text-xs text-[#3E5560]">Loading…</p>
         ) : accounts.length === 0 ? (
-          <p className="text-xs text-[#B0B0C8]">No utility accounts for this unit.</p>
+          <p className="text-xs text-[#3E5560]">No utility accounts for this unit.</p>
         ) : (
           <ul className="space-y-2">
             {accounts.map((a) => (
               <li
                 key={a.id}
-                className="rounded-lg border border-[#312D58] bg-[rgba(255,255,255,0.04)] p-2.5"
+                className="rounded-lg border border-[#C2D9E0] bg-[rgba(255,255,255,0.5)] p-2.5"
               >
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex min-w-0 items-center gap-2">
                     <span aria-hidden>{utilityTypeIcon(a.type)}</span>
-                    <span className="truncate text-sm text-[#E8E8F2]">
-                      <span className="font-medium text-white">
+                    <span className="truncate text-sm text-[#223144]">
+                      <span className="font-medium text-[#223144]">
                         {a.provider}
                       </span>{' '}
                       · {utilityTypeLabel(a.type)} · {a.accountNumber}
@@ -124,7 +124,7 @@ export default function UnitUtilities({
                     type="button"
                     onClick={() => setOpenId(openId === a.id ? null : a.id)}
                     aria-expanded={openId === a.id}
-                    className="shrink-0 rounded-full border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-3 py-1 text-xs font-medium text-[#B0B0C8] transition-colors hover:text-white"
+                    className="shrink-0 rounded-full border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-3 py-1 text-xs font-medium text-[#3E5560] transition-colors hover:text-[#223144]"
                   >
                     {openId === a.id ? 'Hide Bills' : 'View Bills'}
                   </button>

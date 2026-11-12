@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 const inputClass =
-  'w-full rounded-lg border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-3 py-2 text-sm text-white outline-none transition placeholder:text-[#B0B0C8] focus:border-zinc-700 focus:ring-2 focus:ring-zinc-500/20';
+  'w-full rounded-lg border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-3 py-2 text-sm text-[#223144] outline-none transition placeholder:text-[#7A929C] focus:border-zinc-700 focus:ring-2 focus:ring-zinc-500/20';
 const labelClass = 'text-sm font-medium text-zinc-500';
 
 export default function ResetPasswordForm({ token }: { token: string }) {
@@ -23,14 +23,14 @@ export default function ResetPasswordForm({ token }: { token: string }) {
         <p
           role="alert"
           data-testid="reset-error"
-          className="rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-400"
+          className="rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-700"
         >
           Invalid or expired reset link.
         </p>
         <Link
           href="/login"
           data-testid="request-new-reset"
-          className="text-sm font-medium text-zinc-500 transition-colors hover:text-white"
+          className="text-sm font-medium text-zinc-500 transition-colors hover:text-[#223144]"
         >
           Request a new reset link →
         </Link>
@@ -75,7 +75,7 @@ export default function ResetPasswordForm({ token }: { token: string }) {
       <p
         role="status"
         data-testid="reset-success"
-        className="rounded-lg bg-emerald-500/10 px-3 py-2 text-sm text-emerald-400"
+        className="rounded-lg bg-emerald-500/10 px-3 py-2 text-sm text-emerald-700"
       >
         Password reset! Redirecting to login…
       </p>
@@ -120,7 +120,7 @@ export default function ResetPasswordForm({ token }: { token: string }) {
           <p
             role="alert"
             data-testid="reset-error"
-            className="rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-400"
+            className="rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-700"
           >
             {error}
           </p>
@@ -128,7 +128,7 @@ export default function ResetPasswordForm({ token }: { token: string }) {
             <Link
               href="/login"
               data-testid="request-new-reset"
-              className="text-sm font-medium text-zinc-500 transition-colors hover:text-white"
+              className="text-sm font-medium text-zinc-500 transition-colors hover:text-[#223144]"
             >
               Request a new reset link →
             </Link>
@@ -139,7 +139,7 @@ export default function ResetPasswordForm({ token }: { token: string }) {
       <button
         type="submit"
         disabled={pending}
-        className="mt-2 rounded-lg border border-zinc-300 bg-zinc-900 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-zinc-800 disabled:opacity-60"
+        className="mt-2 rounded-lg border border-zinc-300 bg-brand-grad px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-brand-grad-hover disabled:opacity-60"
       >
         {pending ? 'Resetting…' : 'Reset Password'}
       </button>

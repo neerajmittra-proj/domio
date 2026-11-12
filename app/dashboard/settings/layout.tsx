@@ -26,7 +26,7 @@ export default async function SettingsLayout({
           <Link
             key={t.href}
             href={t.href}
-            className="rounded-full border border-[#312D58] bg-[rgba(255,255,255,0.04)] px-4 py-1.5 text-sm font-medium text-[#B0B0C8] transition-colors hover:border-[#71717a] hover:text-white"
+            className="rounded-full border border-[#C2D9E0] bg-[rgba(255,255,255,0.5)] px-4 py-1.5 text-sm font-medium text-[#3E5560] transition-colors hover:border-[#8FA3AC] hover:text-[#223144]"
           >
             {t.label}
           </Link>

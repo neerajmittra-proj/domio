@@ -313,7 +313,7 @@ export default function TenantsGrid({
           </div>
           <Link
             href="/dashboard/tenants/new"
-            className="inline-flex items-center gap-1 rounded-lg bg-zinc-900 px-4 py-2 text-xs sm:text-sm font-semibold text-white transition-all hover:bg-zinc-800 active:scale-95 shadow-sm"
+            className="inline-flex items-center gap-1 rounded-lg bg-brand-grad px-4 py-2 text-xs sm:text-sm font-semibold text-white transition-all hover:bg-brand-grad-hover active:scale-95 shadow-sm"
           >
             <span>+</span> Add Tenant
           </Link>
@@ -323,7 +323,7 @@ export default function TenantsGrid({
       {/* KPI Overview Strip */}
       <div className="grid grid-cols-2 gap-2 sm:gap-3 sm:grid-cols-4">
         {/* Total Tenants */}
-        <div className="rounded-xl border border-zinc-200 bg-white p-3 sm:p-4 shadow-sm">
+        <div className="rounded-xl border border-zinc-200 bg-card p-3 sm:p-4 shadow-sm">
           <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-zinc-400">
             Total Tenants
           </p>
@@ -336,7 +336,7 @@ export default function TenantsGrid({
         </div>
 
         {/* Total Collected */}
-        <div className="rounded-xl border border-zinc-200 bg-white p-3 sm:p-4 shadow-sm">
+        <div className="rounded-xl border border-zinc-200 bg-card p-3 sm:p-4 shadow-sm">
           <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-zinc-400">
             Collected
           </p>
@@ -349,7 +349,7 @@ export default function TenantsGrid({
         </div>
 
         {/* Outstanding Arrears */}
-        <div className="rounded-xl border border-zinc-200 bg-white p-3 sm:p-4 shadow-sm">
+        <div className="rounded-xl border border-zinc-200 bg-card p-3 sm:p-4 shadow-sm">
           <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-zinc-400">
             Overdue
           </p>
@@ -362,7 +362,7 @@ export default function TenantsGrid({
         </div>
 
         {/* Occupancy / Assigned */}
-        <div className="rounded-xl border border-zinc-200 bg-white p-3 sm:p-4 shadow-sm">
+        <div className="rounded-xl border border-zinc-200 bg-card p-3 sm:p-4 shadow-sm">
           <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-zinc-400">
             Leased
           </p>
@@ -392,7 +392,7 @@ export default function TenantsGrid({
           type="button"
           onClick={handleBulkReminders}
           disabled={bulkSending}
-          className="shrink-0 rounded-xl bg-zinc-900 px-3.5 py-2 text-xs font-bold text-white shadow-xs hover:bg-zinc-800 disabled:opacity-50 transition-all whitespace-nowrap"
+          className="shrink-0 rounded-xl bg-brand-grad px-3.5 py-2 text-xs font-bold text-white shadow-xs hover:bg-brand-grad-hover disabled:opacity-50 transition-all whitespace-nowrap"
         >
           {bulkSending ? 'Dispatching…' : '🔔 Send Monthly Reminders to All'}
         </button>
@@ -405,7 +405,7 @@ export default function TenantsGrid({
       )}
 
       {/* Filter & Search Bar */}
-      <div className="flex flex-col gap-2 rounded-xl border border-zinc-200 bg-white p-2.5 sm:p-3 shadow-sm">
+      <div className="flex flex-col gap-2 rounded-xl border border-zinc-200 bg-card p-2.5 sm:p-3 shadow-sm">
         {/* Search input with 44px thumb touch height */}
         <div className="relative w-full">
           <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-zinc-400">
@@ -419,7 +419,7 @@ export default function TenantsGrid({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search name, phone, unit, or ID..."
-            className="w-full rounded-lg border border-zinc-200 bg-zinc-50 py-2.5 pl-9 pr-8 text-sm text-zinc-900 placeholder-zinc-400 transition-all focus:border-zinc-400 focus:bg-white focus:outline-none"
+            className="w-full rounded-lg border border-zinc-200 bg-zinc-50 py-2.5 pl-9 pr-8 text-sm text-zinc-900 placeholder-zinc-400 transition-all focus:border-zinc-400 focus:bg-card focus:outline-none"
           />
           {searchQuery && (
             <button
@@ -440,7 +440,7 @@ export default function TenantsGrid({
               onClick={() => setActiveTab('all')}
               className={`rounded-lg px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-all active:scale-95 ${
                 activeTab === 'all'
-                  ? 'bg-zinc-900 text-white shadow-sm'
+                  ? 'bg-brand-grad text-white shadow-sm'
                   : 'bg-zinc-100 border border-zinc-200 text-zinc-600 hover:text-zinc-900'
               }`}
             >
@@ -502,7 +502,7 @@ export default function TenantsGrid({
       {/* Colour Legend */}
       <div
         data-testid="tenant-legend"
-        className="flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-[11px] text-zinc-500 shadow-sm"
+        className="flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg border border-zinc-200 bg-card px-3 py-1.5 text-[11px] text-zinc-500 shadow-sm"
       >
         <span className="font-semibold text-[10px] uppercase tracking-wider text-zinc-400">Status:</span>
         {LEGEND.map((l) => (
@@ -519,7 +519,7 @@ export default function TenantsGrid({
 
       {/* Results View */}
       {filteredItems.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-zinc-200 bg-white p-8 text-center shadow-sm">
+        <div className="rounded-2xl border border-dashed border-zinc-200 bg-card p-8 text-center shadow-sm">
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100 text-zinc-400">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="11" cy="11" r="8" />
@@ -550,7 +550,7 @@ export default function TenantsGrid({
               key={t.id}
               data-testid="tenant-card"
               style={{ borderLeftColor: statusVar(t), borderLeftWidth: 4 }}
-              className="group flex flex-col justify-between rounded-xl border border-zinc-200 bg-white p-4 shadow-sm transition-all hover:border-zinc-300 hover:shadow-md"
+              className="group flex flex-col justify-between rounded-xl border border-zinc-200 bg-card p-4 shadow-sm transition-all hover:border-zinc-300 hover:shadow-md"
             >
               <div>
                 {/* Top: Name + ID + Status */}
@@ -645,7 +645,7 @@ export default function TenantsGrid({
                       className={`rounded-full px-2.5 py-1 text-[10px] font-bold transition-all ${
                         t.rentReminderEnabled
                           ? 'bg-emerald-600 text-white hover:bg-emerald-700'
-                          : 'border border-zinc-300 bg-white text-zinc-600 hover:bg-zinc-100'
+                          : 'border border-zinc-300 bg-card text-zinc-600 hover:bg-zinc-100'
                       }`}
                     >
                       {reminderLoading === t.id
@@ -660,7 +660,7 @@ export default function TenantsGrid({
                         onClick={() => handleSendReminderNow(t.id)}
                         disabled={reminderLoading === `send-${t.id}`}
                         title="Send rent reminder right now"
-                        className="rounded-lg border border-zinc-200 bg-white px-2 py-1 text-[10px] font-bold text-zinc-700 hover:bg-zinc-100 disabled:opacity-50"
+                        className="rounded-lg border border-zinc-200 bg-card px-2 py-1 text-[10px] font-bold text-zinc-700 hover:bg-zinc-100 disabled:opacity-50"
                       >
                         {reminderLoading === `send-${t.id}` ? 'Sending…' : 'Send Now'}
                       </button>
@@ -679,7 +679,7 @@ export default function TenantsGrid({
                 </Link>
                 <Link
                   href={`/dashboard/tenants/${t.id}/edit`}
-                  className="rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-xs font-semibold text-zinc-700 transition-all hover:bg-zinc-50 active:scale-95"
+                  className="rounded-md border border-zinc-200 bg-card px-3 py-1.5 text-xs font-semibold text-zinc-700 transition-all hover:bg-zinc-50 active:scale-95"
                 >
                   Edit
                 </Link>
@@ -698,7 +698,7 @@ export default function TenantsGrid({
           ))}
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-zinc-200 bg-white shadow-sm">
+        <div className="overflow-x-auto rounded-xl border border-zinc-200 bg-card shadow-sm">
           <table className="w-full min-w-[820px] text-left text-sm">
             <thead className="border-b border-zinc-200 bg-zinc-50 font-mono text-xs uppercase tracking-wider text-zinc-500">
               <tr>
@@ -718,7 +718,7 @@ export default function TenantsGrid({
                   key={t.id}
                   data-testid="tenant-row"
                   style={{ boxShadow: `inset 4px 0 0 0 ${statusVar(t)}` }}
-                  className={i % 2 === 0 ? 'bg-white hover:bg-zinc-50' : 'bg-zinc-50/50 hover:bg-zinc-50'}
+                  className={i % 2 === 0 ? 'bg-card hover:bg-zinc-50' : 'bg-zinc-50/50 hover:bg-zinc-50'}
                 >
                   <td className="px-5 py-3 font-semibold text-zinc-900">
                     <Link
@@ -787,7 +787,7 @@ export default function TenantsGrid({
                       </Link>
                       <Link
                         href={`/dashboard/tenants/${t.id}/edit`}
-                        className="rounded-md border border-zinc-200 bg-white px-2.5 py-1 text-xs font-semibold text-zinc-700 hover:bg-zinc-50"
+                        className="rounded-md border border-zinc-200 bg-card px-2.5 py-1 text-xs font-semibold text-zinc-700 hover:bg-zinc-50"
                       >
                         Edit
                       </Link>
@@ -815,7 +815,7 @@ export default function TenantsGrid({
         <Link
           href="/dashboard/tenants/new"
           aria-label="Add new tenant"
-          className="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-900 text-white shadow-lg active:scale-90 transition-all font-bold text-2xl"
+          className="flex h-12 w-12 items-center justify-center rounded-full bg-brand-grad text-white shadow-lg active:scale-90 transition-all font-bold text-2xl"
         >
           +
         </Link>
@@ -827,12 +827,12 @@ export default function TenantsGrid({
           role="dialog"
           aria-modal="true"
           onClick={closeConfirm}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-navy/40 backdrop-blur-xs p-4"
         >
           <div
             ref={trapRef}
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-white p-6 shadow-xl"
+            className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-card p-6 shadow-xl"
           >
             <h2 className="text-xl font-bold tracking-tight text-zinc-900">
               Delete Tenant

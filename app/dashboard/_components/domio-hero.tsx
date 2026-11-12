@@ -147,20 +147,13 @@ export default function DomioHero() {
 
   return (
     <>
-      <section suppressHydrationWarning className="relative overflow-hidden bg-zinc-950 py-16 sm:py-24 text-white">
-        {/* Background Dark Architectural Texture */}
-        <div
-          className="absolute inset-0 bg-cover bg-center opacity-30 mix-blend-luminosity"
-          style={{
-            backgroundImage: `radial-gradient(circle at 50% 50%, rgba(30, 41, 59, 0.8), rgba(9, 9, 11, 0.98)), url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1800&q=80')`,
-          }}
-        />
+      <section suppressHydrationWarning className="relative overflow-hidden bg-transparent py-16 sm:py-24 text-[#223144]">
 
         <div className="relative mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
-          <h1 className="text-3xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl text-white">
+          <h1 className="text-3xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl text-[#223144]">
             Domio Property Management
           </h1>
-          <p className="mt-4 text-base sm:text-xl text-zinc-300 font-normal">
+          <p className="mt-4 text-base sm:text-xl text-[#3E5560] font-normal">
             What would you like to do?
           </p>
 
@@ -171,12 +164,12 @@ export default function DomioHero() {
               <Link
                 key={card.href}
                 href={card.href}
-                className="group flex flex-col items-center justify-center rounded-xl border border-white/25 bg-black/40 px-4 py-5 backdrop-blur-md transition-all hover:border-white/70 hover:bg-black/60 hover:scale-105 active:scale-95 min-w-[135px] sm:min-w-[145px] max-w-[160px]"
+                className="group flex flex-col items-center justify-center rounded-xl border border-[#223144]/28 bg-card/65 px-4 py-5 backdrop-blur-md transition-all hover:border-[#223144]/40 hover:bg-card/85 hover:scale-105 active:scale-95 min-w-[135px] sm:min-w-[145px] max-w-[160px]"
               >
-                <div className="flex h-11 w-11 items-center justify-center text-white transition-transform group-hover:scale-110">
+                <div className="flex h-11 w-11 items-center justify-center text-[#223144] transition-transform group-hover:scale-110">
                   {card.icon}
                 </div>
-                <span className="mt-3 text-center text-xs font-semibold leading-snug text-white">
+                <span className="mt-3 text-center text-xs font-semibold leading-snug text-[#223144]">
                   {card.title}
                 </span>
               </Link>
@@ -186,12 +179,12 @@ export default function DomioHero() {
             <button
               type="button"
               onClick={() => setTenantModalOpen(true)}
-              className="group flex flex-col items-center justify-center rounded-xl border border-white/25 bg-black/40 px-4 py-5 backdrop-blur-md transition-all hover:border-white/70 hover:bg-black/60 hover:scale-105 active:scale-95 min-w-[135px] sm:min-w-[145px] max-w-[160px] cursor-pointer"
+              className="group flex flex-col items-center justify-center rounded-xl border border-[#223144]/28 bg-card/65 px-4 py-5 backdrop-blur-md transition-all hover:border-[#223144]/40 hover:bg-card/85 hover:scale-105 active:scale-95 min-w-[135px] sm:min-w-[145px] max-w-[160px] cursor-pointer"
             >
-              <div className="flex h-11 w-11 items-center justify-center text-white transition-transform group-hover:scale-110">
+              <div className="flex h-11 w-11 items-center justify-center text-[#223144] transition-transform group-hover:scale-110">
                 <TenantJoinIcon />
               </div>
-              <span className="mt-3 text-center text-xs font-semibold leading-snug text-white">
+              <span className="mt-3 text-center text-xs font-semibold leading-snug text-[#223144]">
                 Join as a tenant
               </span>
             </button>
@@ -200,12 +193,12 @@ export default function DomioHero() {
             <button
               type="button"
               onClick={() => setAgentModalOpen(true)}
-              className="group flex flex-col items-center justify-center rounded-xl border border-white/25 bg-black/40 px-4 py-5 backdrop-blur-md transition-all hover:border-white/70 hover:bg-black/60 hover:scale-105 active:scale-95 min-w-[135px] sm:min-w-[145px] max-w-[160px] cursor-pointer"
+              className="group flex flex-col items-center justify-center rounded-xl border border-[#223144]/28 bg-card/65 px-4 py-5 backdrop-blur-md transition-all hover:border-[#223144]/40 hover:bg-card/85 hover:scale-105 active:scale-95 min-w-[135px] sm:min-w-[145px] max-w-[160px] cursor-pointer"
             >
-              <div className="flex h-11 w-11 items-center justify-center text-white transition-transform group-hover:scale-110">
+              <div className="flex h-11 w-11 items-center justify-center text-[#223144] transition-transform group-hover:scale-110">
                 <AgentIcon />
               </div>
-              <span className="mt-3 text-center text-xs font-semibold leading-snug text-white">
+              <span className="mt-3 text-center text-xs font-semibold leading-snug text-[#223144]">
                 Join as an agent
               </span>
             </button>
@@ -218,9 +211,9 @@ export default function DomioHero() {
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 overflow-y-auto"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-navy/75 backdrop-blur-sm p-4 overflow-y-auto"
         >
-          <div className="relative w-full max-w-3xl rounded-3xl border border-zinc-200 bg-white p-6 sm:p-10 shadow-2xl text-zinc-900 my-8">
+          <div className="relative w-full max-w-3xl rounded-3xl border border-zinc-200 bg-card p-6 sm:p-10 shadow-2xl text-zinc-900 my-8">
             <button
               type="button"
               onClick={() => setAgentModalOpen(false)}
@@ -339,13 +332,13 @@ export default function DomioHero() {
             <div className="mt-8 pt-6 border-t border-zinc-100 flex flex-wrap items-center justify-center gap-3">
               <Link
                 href="/dashboard/agent"
-                className="rounded-full bg-zinc-950 px-8 py-3 text-xs sm:text-sm font-bold text-white shadow-md hover:bg-zinc-800 transition-all"
+                className="rounded-full bg-transparent px-8 py-3 text-xs sm:text-sm font-bold text-[#223144] shadow-md hover:bg-brand-grad-hover transition-all"
               >
                 Join As An Agent →
               </Link>
               <Link
                 href="/dashboard/agents"
-                className="rounded-full border border-zinc-300 bg-white px-6 py-3 text-xs sm:text-sm font-bold text-zinc-800 hover:bg-zinc-100 transition-colors"
+                className="rounded-full border border-zinc-300 bg-card px-6 py-3 text-xs sm:text-sm font-bold text-zinc-800 hover:bg-zinc-100 transition-colors"
               >
                 Browse Agent Marketplace
               </Link>
@@ -359,9 +352,9 @@ export default function DomioHero() {
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 overflow-y-auto"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-navy/75 backdrop-blur-sm p-4 overflow-y-auto"
         >
-          <div className="relative w-full max-w-2xl rounded-3xl border border-zinc-200 bg-white p-6 sm:p-10 shadow-2xl text-zinc-900 my-8">
+          <div className="relative w-full max-w-2xl rounded-3xl border border-zinc-200 bg-card p-6 sm:p-10 shadow-2xl text-zinc-900 my-8">
             <button
               type="button"
               onClick={() => setTenantModalOpen(false)}
@@ -416,7 +409,7 @@ export default function DomioHero() {
               </Link>
               <Link
                 href="/dashboard/search"
-                className="rounded-full border border-zinc-300 bg-white px-6 py-3 text-xs sm:text-sm font-bold text-zinc-800 hover:bg-zinc-100 transition-colors"
+                className="rounded-full border border-zinc-300 bg-card px-6 py-3 text-xs sm:text-sm font-bold text-zinc-800 hover:bg-zinc-100 transition-colors"
               >
                 🔍 Search Rental Properties
               </Link>

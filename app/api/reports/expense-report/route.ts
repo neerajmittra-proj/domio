@@ -3,6 +3,7 @@ import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { resolveDataScope } from '@/lib/manager-access';
 import { isExpenseCategory } from '@/lib/expense-types';
+import { expenseScopeWhere } from '@/lib/expenses';
 import { renderReportPdf } from '@/lib/reports/render';
 import { ExpenseReportPDF, type ExpenseReportData } from '@/lib/reports/expense-report';
 
@@ -16,7 +17,14 @@ export async function POST(request: Request) {
 
   const dateFrom = body?.dateFrom ? new Date(body.dateFrom) : new Date(0);
   const dateToRaw = body?.dateTo ? new Date(body.dateTo) : new Date();
-  const dateToExclusive = new Date(dateToRaw.getTime() + 24 * 60 * 60 * 1000);
+  if (Number.isNaN(dateFrom.getTime()) || Number.isNaN(dateToRaw.getTime())) {
+    return NextResponse.json({ error: 'Valid report dates are required.' }, { status: 400 });
+  }
+  // `dateTo` is inclusive of its whole (UTC) day.
+  const dateToDay = new Date(
+    Date.UTC(dateToRaw.getUTCFullYear(), dateToRaw.getUTCMonth(), dateToRaw.getUTCDate()),
+  );
+  const dateToExclusive = new Date(dateToDay.getTime() + 24 * 60 * 60 * 1000);
   const category = isExpenseCategory(body?.category) ? body.category : undefined;
   const portfolioId = typeof body?.portfolioId === 'string' && body.portfolioId ? body.portfolioId : undefined;
   const propertyId = typeof body?.propertyId === 'string' && body.propertyId ? body.propertyId : undefined;
@@ -29,14 +37,7 @@ export async function POST(request: Request) {
       date: { gte: dateFrom, lt: dateToExclusive },
       ...(category ? { category } : {}),
       ...(propertyId ? { propertyId } : portfolioId ? { portfolioId } : {}),
-      ...(scope
-        ? {
-            OR: [
-              { propertyId: { in: scope.propertyIds } },
-              { subPropertyId: { in: scope.subPropertyIds } },
-            ],
-          }
-        : {}),
+      ...expenseScopeWhere(scope),
     },
     orderBy: { date: 'desc' },
     select: {
@@ -75,10 +76,10 @@ export async function POST(request: Request) {
 
   let scopeLabel = 'All properties';
   if (propertyId) {
-    const p = await prisma.property.findUnique({ where: { id: propertyId }, select: { name: true } });
+    const p = await prisma.property.findFirst({ where: { id: propertyId, ownerId: ds.ownerId }, select: { name: true } });
     scopeLabel = p ? `Property: ${p.name}` : 'Selected property';
   } else if (portfolioId) {
-    const p = await prisma.portfolio.findUnique({ where: { id: portfolioId }, select: { name: true } });
+    const p = await prisma.portfolio.findFirst({ where: { id: portfolioId, ownerId: ds.ownerId }, select: { name: true } });
     scopeLabel = p ? `Portfolio: ${p.name}` : 'Selected portfolio';
   }
 

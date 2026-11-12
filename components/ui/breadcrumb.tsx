@@ -10,7 +10,7 @@ export function Breadcrumb({ items }: { items: BreadcrumbItem[] }) {
     <nav className="flex flex-wrap items-center gap-1.5 text-xs sm:text-sm font-medium">
       {items.map((item, i) => (
         <span key={i} className="flex items-center gap-1.5">
-          {i > 0 && <span className="text-zinc-300">/</span>}
+          {i > 0 && <span className="text-[#3E5560]">/</span>}
           {item.href ? (
             <Link
               href={item.href}

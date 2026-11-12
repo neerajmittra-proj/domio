@@ -2,7 +2,7 @@ import { formatMoney } from '@/lib/tenancy-types';
 import type { DashboardData } from '@/lib/dashboard';
 
 const glassCard =
-  'rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm';
+  'rounded-2xl border border-zinc-200 bg-card p-5 shadow-sm';
 const label = 'font-semibold text-xs uppercase tracking-widest text-zinc-400';
 
 // Section 2 (left) — financial-year roll-up, 6 stats in a 3×2 grid.
@@ -24,15 +24,15 @@ export default function FyOverview({ d }: { d: DashboardData }) {
     sub?: string;
     testid?: boolean;
   }[] = [
-    { label: 'Annual Expected', value: formatMoney(d.annualExpected), color: 'text-amber-400' },
-    { label: 'Collected · FY', value: formatMoney(d.collectedFY), color: 'text-emerald-400' },
-    { label: 'Total Overdue', value: formatMoney(d.totalOverdue), color: 'text-red-400' },
-    { label: 'Expenses · FY', value: formatMoney(d.expensesFY), color: 'text-[#f1f5f9]' },
-    { label: 'Collection Rate', value: `${fyRate}%`, color: 'text-white', testid: true },
+    { label: 'Annual Expected', value: formatMoney(d.annualExpected), color: 'text-amber-800' },
+    { label: 'Collected · FY', value: formatMoney(d.collectedFY), color: 'text-emerald-700' },
+    { label: 'Total Overdue', value: formatMoney(d.totalOverdue), color: 'text-red-700' },
+    { label: 'Expenses · FY', value: formatMoney(d.expensesFY), color: 'text-[#223144]' },
+    { label: 'Collection Rate', value: `${fyRate}%`, color: 'text-[#223144]', testid: true },
     {
       label: 'Expenses as % of Collected',
       value: expenseRatio,
-      color: 'text-[#f1f5f9]',
+      color: 'text-[#223144]',
       sub: 'of collected revenue',
     },
   ];

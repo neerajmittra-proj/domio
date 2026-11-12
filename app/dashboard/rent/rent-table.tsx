@@ -16,7 +16,7 @@ import { RENT_STATUSES } from '@/lib/rent-types';
 import AuditHistoryPopover from '@/components/rent/audit-history-popover';
 
 const inputClass =
-  'w-full rounded-xl border border-zinc-300 bg-white px-3.5 py-2.5 text-sm text-zinc-900 shadow-xs outline-none transition placeholder:text-zinc-400 focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10';
+  'w-full rounded-xl border border-zinc-300 bg-card px-3.5 py-2.5 text-sm text-zinc-900 shadow-xs outline-none transition placeholder:text-zinc-400 focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10';
 const labelClass = 'text-xs font-bold uppercase tracking-wider text-zinc-700';
 
 // "01 Jun 2026" — payment/rent-for dates are stored at UTC midnight, so format
@@ -147,7 +147,7 @@ export default function RentTable({
   }
   if (entries.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-zinc-200 bg-white p-12 text-center shadow-xs">
+      <div className="rounded-2xl border border-dashed border-zinc-200 bg-card p-12 text-center shadow-xs">
         <p className="text-sm font-semibold text-zinc-700">No rent entries found</p>
         <p className="mt-1 text-xs text-zinc-500">There are no rent ledger records matching your current filter.</p>
       </div>
@@ -156,7 +156,7 @@ export default function RentTable({
 
   return (
     <>
-      <div className="overflow-x-auto rounded-2xl border border-zinc-200/90 bg-white shadow-xs">
+      <div className="overflow-x-auto rounded-2xl border border-zinc-200/90 bg-card shadow-xs">
         <table className="w-full min-w-[760px] text-left text-sm">
           <thead className="border-b border-zinc-200 bg-zinc-50/90 text-[11px] font-bold uppercase tracking-wider text-zinc-600">
             <tr>
@@ -199,7 +199,7 @@ export default function RentTable({
                   <tr
                     key={e.id}
                     className={`transition-colors hover:bg-zinc-50/80 ${
-                      overdue ? 'bg-red-50/35 hover:bg-red-50/60' : 'bg-white'
+                      overdue ? 'bg-red-50/35 hover:bg-red-50/60' : 'bg-card'
                     }`}
                   >
                     <td className="px-4 py-3.5 font-bold text-zinc-900">
@@ -294,7 +294,7 @@ export default function RentTable({
                               setError(null);
                               setTarget(e);
                             }}
-                            className="rounded-full bg-zinc-900 px-3.5 py-1 text-xs font-semibold text-white shadow-xs transition hover:bg-zinc-800"
+                            className="rounded-full bg-brand-grad px-3.5 py-1 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-grad-hover"
                           >
                             Record Payment
                           </button>
@@ -308,7 +308,7 @@ export default function RentTable({
                                 setEditTarget(e);
                               }}
                               disabled={pending}
-                              className="rounded-full border border-zinc-200 bg-white px-2.5 py-1 text-xs font-semibold text-zinc-700 shadow-xs transition hover:bg-zinc-100 hover:border-zinc-300 hover:text-zinc-900 disabled:opacity-50"
+                              className="rounded-full border border-zinc-200 bg-card px-2.5 py-1 text-xs font-semibold text-zinc-700 shadow-xs transition hover:bg-zinc-100 hover:border-zinc-300 hover:text-zinc-900 disabled:opacity-50"
                             >
                               Edit
                             </button>
@@ -340,12 +340,12 @@ export default function RentTable({
           role="dialog"
           aria-modal="true"
           onClick={closeModal}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-navy/60 p-4 backdrop-blur-xs"
         >
           <form
             onClick={(e) => e.stopPropagation()}
             onSubmit={submitPayment}
-            className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-white p-6 shadow-2xl"
+            className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-card p-6 shadow-2xl"
           >
             <h2 className="text-lg font-bold tracking-tight text-zinc-900">
               Record Payment
@@ -364,10 +364,11 @@ export default function RentTable({
                   id="amountPaid"
                   name="amountPaid"
                   type="number"
-                  min="0"
+                  min="0.01"
+                  max={Math.round((target.amountDue - target.amountPaid) * 100) / 100}
                   step="any"
                   required
-                  defaultValue={target.amountDue}
+                  defaultValue={Math.round((target.amountDue - target.amountPaid) * 100) / 100}
                   className={inputClass}
                 />
               </div>
@@ -448,14 +449,14 @@ export default function RentTable({
                 type="button"
                 onClick={closeModal}
                 disabled={pending}
-                className="rounded-full border border-zinc-300 bg-white px-4 py-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-100 disabled:opacity-50"
+                className="rounded-full border border-zinc-300 bg-card px-4 py-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-100 disabled:opacity-50"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={pending}
-                className="rounded-full bg-zinc-900 px-5 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-zinc-800 disabled:opacity-60"
+                className="rounded-full bg-brand-grad px-5 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-grad-hover disabled:opacity-60"
               >
                 {pending ? 'Saving…' : 'Save Payment'}
               </button>
@@ -469,12 +470,12 @@ export default function RentTable({
           role="dialog"
           aria-modal="true"
           onClick={closeModal}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-navy/60 p-4 backdrop-blur-xs"
         >
           <form
             onClick={(e) => e.stopPropagation()}
             onSubmit={submitEdit}
-            className="max-h-[90vh] w-full max-w-sm overflow-y-auto rounded-2xl border border-zinc-200 bg-white p-6 shadow-2xl"
+            className="max-h-[90vh] w-full max-w-sm overflow-y-auto rounded-2xl border border-zinc-200 bg-card p-6 shadow-2xl"
           >
             <h2 className="text-lg font-bold tracking-tight text-zinc-900">
               Edit Rent Record
@@ -656,14 +657,14 @@ export default function RentTable({
                 type="button"
                 onClick={closeModal}
                 disabled={pending}
-                className="rounded-full border border-zinc-300 bg-white px-4 py-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-100 disabled:opacity-60"
+                className="rounded-full border border-zinc-300 bg-card px-4 py-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-100 disabled:opacity-60"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={pending}
-                className="rounded-full bg-zinc-900 px-5 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-zinc-800 disabled:opacity-60"
+                className="rounded-full bg-brand-grad px-5 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-grad-hover disabled:opacity-60"
               >
                 {pending ? 'Saving…' : 'Save changes'}
               </button>

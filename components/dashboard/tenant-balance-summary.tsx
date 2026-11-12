@@ -67,27 +67,27 @@ export default function TenantBalanceSummary({
 
   if (rows === null) {
     return (
-      <div className="mt-6 rounded-2xl border border-zinc-200 bg-[rgba(14,12,34,0.6)] p-6">
+      <div className="mt-6 rounded-2xl border border-zinc-200 bg-[rgba(255,255,255,0.88)] p-6">
         {heading}
-        <p className="px-1 py-3 text-sm text-[#B0B0C8]">Loading tenant balances…</p>
+        <p className="px-1 py-3 text-sm text-[#3E5560]">Loading tenant balances…</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="mt-6 rounded-2xl border border-zinc-200 bg-[rgba(14,12,34,0.6)] p-6">
+      <div className="mt-6 rounded-2xl border border-zinc-200 bg-[rgba(255,255,255,0.88)] p-6">
         {heading}
-        <p className="px-1 py-3 text-sm text-red-400">{error}</p>
+        <p className="px-1 py-3 text-sm text-red-700">{error}</p>
       </div>
     );
   }
 
   if (rows.length === 0) {
     return (
-      <div className="mt-6 rounded-2xl border border-zinc-200 bg-[rgba(14,12,34,0.6)] p-6">
+      <div className="mt-6 rounded-2xl border border-zinc-200 bg-[rgba(255,255,255,0.88)] p-6">
         {heading}
-        <p className="px-1 py-3 text-sm text-[#B0B0C8]">
+        <p className="px-1 py-3 text-sm text-[#3E5560]">
           No active tenants to show.
         </p>
       </div>
@@ -110,7 +110,7 @@ export default function TenantBalanceSummary({
   }));
 
   return (
-    <div className="mt-6 rounded-2xl border border-zinc-200 bg-[rgba(14,12,34,0.6)] p-6">
+    <div className="mt-6 rounded-2xl border border-zinc-200 bg-[rgba(255,255,255,0.88)] p-6">
       <div className="mb-4 flex items-center justify-between gap-2">
         <h3 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
           {title}
@@ -146,19 +146,19 @@ export default function TenantBalanceSummary({
                   <td className="px-3 py-2">
                     <Link
                       href={href}
-                      className="font-medium text-white underline-offset-2 hover:text-zinc-500 hover:underline"
+                      className="font-medium text-[#223144] underline-offset-2 hover:text-zinc-500 hover:underline"
                     >
                       {r.tenantName}
                     </Link>
                   </td>
                   <td className="px-3 py-2 text-zinc-500">{r.unitName}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-right text-white">
+                  <td className="whitespace-nowrap px-3 py-2 text-right text-[#223144]">
                     {formatMoney(r.monthlyRent)}
                   </td>
                   <td
                     className={
                       'whitespace-nowrap px-3 py-2 text-right font-semibold ' +
-                      (overdue ? 'text-red-400' : 'text-green-400')
+                      (overdue ? 'text-red-700' : 'text-green-700')
                     }
                   >
                     {overdue ? '−' : ''}
@@ -174,8 +174,8 @@ export default function TenantBalanceSummary({
                       className={
                         'inline-block rounded-full border px-2 py-0.5 text-xs font-medium ' +
                         (overdue
-                          ? 'bg-[rgba(239,68,68,0.12)] text-red-400 border-[rgba(239,68,68,0.3)]'
-                          : 'bg-[rgba(34,197,94,0.12)] text-green-400 border-[rgba(34,197,94,0.3)]')
+                          ? 'bg-[rgba(239,68,68,0.12)] text-red-700 border-[rgba(239,68,68,0.3)]'
+                          : 'bg-[rgba(34,197,94,0.12)] text-green-700 border-[rgba(34,197,94,0.3)]')
                       }
                     >
                       {overdue ? 'Overdue' : 'Clear'}
@@ -187,22 +187,22 @@ export default function TenantBalanceSummary({
           </tbody>
           <tfoot className="border-t border-zinc-200 bg-zinc-50 text-sm">
             <tr>
-              <td className="px-3 py-2 font-semibold text-white" colSpan={2}>
+              <td className="px-3 py-2 font-semibold text-[#223144]" colSpan={2}>
                 Total ({rows.length} tenant{rows.length === 1 ? '' : 's'})
               </td>
-              <td className="whitespace-nowrap px-3 py-2 text-right font-semibold text-white">
+              <td className="whitespace-nowrap px-3 py-2 text-right font-semibold text-[#223144]">
                 {formatMoney(totalRent)}
               </td>
               <td
                 className={
                   'whitespace-nowrap px-3 py-2 text-right font-bold ' +
-                  (totalOutstanding < 0 ? 'text-red-400' : 'text-green-400')
+                  (totalOutstanding < 0 ? 'text-red-700' : 'text-green-700')
                 }
               >
                 {totalOutstanding < 0 ? '−' : ''}
                 {formatMoney(Math.abs(totalOutstanding))}
               </td>
-              <td className="px-3 py-2 text-xs text-[#6A6A8A]" colSpan={2}>
+              <td className="px-3 py-2 text-xs text-[#3E5560]" colSpan={2}>
                 Total Outstanding
               </td>
             </tr>
@@ -218,12 +218,12 @@ export default function TenantBalanceSummary({
           return (
             <div
               key={r.subPropertyId}
-              className="rounded-xl border border-zinc-200 bg-[#100d24] p-3"
+              className="rounded-xl border border-zinc-200 bg-[#F6FAFB] p-3"
             >
               <div className="flex items-start justify-between gap-2">
                 <Link
                   href={href}
-                  className="font-medium text-white underline-offset-2 hover:text-zinc-500 hover:underline"
+                  className="font-medium text-[#223144] underline-offset-2 hover:text-zinc-500 hover:underline"
                 >
                   {r.tenantName}
                 </Link>
@@ -231,28 +231,28 @@ export default function TenantBalanceSummary({
                   className={
                     'shrink-0 rounded-full border px-2 py-0.5 text-xs font-medium ' +
                     (overdue
-                      ? 'bg-[rgba(239,68,68,0.12)] text-red-400 border-[rgba(239,68,68,0.3)]'
-                      : 'bg-[rgba(34,197,94,0.12)] text-green-400 border-[rgba(34,197,94,0.3)]')
+                      ? 'bg-[rgba(239,68,68,0.12)] text-red-700 border-[rgba(239,68,68,0.3)]'
+                      : 'bg-[rgba(34,197,94,0.12)] text-green-700 border-[rgba(34,197,94,0.3)]')
                   }
                 >
                   {overdue ? 'Overdue' : 'Clear'}
                 </span>
               </div>
-              <p className="mt-0.5 text-xs text-[#6A6A8A]">{r.unitName}</p>
+              <p className="mt-0.5 text-xs text-[#3E5560]">{r.unitName}</p>
               <div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-sm">
-                <span className="text-[#6A6A8A]">Rent</span>
-                <span className="text-right text-white">{formatMoney(r.monthlyRent)}</span>
-                <span className="text-[#6A6A8A]">Balance</span>
+                <span className="text-[#3E5560]">Rent</span>
+                <span className="text-right text-[#223144]">{formatMoney(r.monthlyRent)}</span>
+                <span className="text-[#3E5560]">Balance</span>
                 <span
                   className={
                     'text-right font-semibold ' +
-                    (overdue ? 'text-red-400' : 'text-green-400')
+                    (overdue ? 'text-red-700' : 'text-green-700')
                   }
                 >
                   {overdue ? '−' : ''}
                   {formatMoney(Math.abs(r.currentBalance))}
                 </span>
-                <span className="text-[#6A6A8A]">Last payment</span>
+                <span className="text-[#3E5560]">Last payment</span>
                 <span className="text-right text-zinc-500">
                   {r.lastPaymentDate ? dmyFmt.format(new Date(r.lastPaymentDate)) : '—'}
                 </span>
@@ -262,15 +262,15 @@ export default function TenantBalanceSummary({
         })}
         <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-3 text-sm">
           <div className="grid grid-cols-2 gap-x-3 gap-y-1">
-            <span className="font-semibold text-white">Total Rent</span>
-            <span className="text-right font-semibold text-white">
+            <span className="font-semibold text-[#223144]">Total Rent</span>
+            <span className="text-right font-semibold text-[#223144]">
               {formatMoney(totalRent)}
             </span>
-            <span className="font-semibold text-white">Total Outstanding</span>
+            <span className="font-semibold text-[#223144]">Total Outstanding</span>
             <span
               className={
                 'text-right font-bold ' +
-                (totalOutstanding < 0 ? 'text-red-400' : 'text-green-400')
+                (totalOutstanding < 0 ? 'text-red-700' : 'text-green-700')
               }
             >
               {totalOutstanding < 0 ? '−' : ''}

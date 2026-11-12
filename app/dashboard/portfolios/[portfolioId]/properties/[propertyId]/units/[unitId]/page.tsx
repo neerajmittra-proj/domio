@@ -30,14 +30,14 @@ import UnitKpis from './unit-kpis';
 const dayMs = 1000 * 60 * 60 * 24;
 
 const glassCard =
-  'rounded-2xl border border-[rgba(91,79,232,0.15)] bg-[rgba(14,12,34,0.6)] backdrop-blur-md ' +
-  'shadow-[0_4px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.05)] ' +
+  'rounded-2xl border border-[rgba(164,71,61,0.15)] bg-[rgba(255,255,255,0.88)] backdrop-blur-md ' +
+  'shadow-[0_4px_20px_rgba(34,49,68,0.10)] ' +
   'transition-shadow duration-200 hover:shadow-[0_0_32px_rgba(91,79,232,0.2)]';
 const sectionLabel =
-  'text-[11px] font-semibold uppercase tracking-[0.12em] text-[#8B6FE8]';
-const divider = 'my-4 border-t border-[rgba(91,79,232,0.15)]';
+  'text-[11px] font-semibold uppercase tracking-[0.12em] text-[#8D3B32]';
+const divider = 'my-4 border-t border-[rgba(164,71,61,0.15)]';
 const addBtn =
-  'inline-flex min-h-[36px] items-center rounded-full border border-[#5B4FE8]/40 bg-[#5B4FE8]/15 px-3 py-1.5 text-xs font-medium text-[#8B6FE8] transition-colors hover:bg-[#5B4FE8]/25';
+  'inline-flex min-h-[36px] items-center rounded-full border border-[#A4473D]/40 bg-[#A4473D]/15 px-3 py-1.5 text-xs font-medium text-[#8D3B32] transition-colors hover:bg-[#A4473D]/25';
 
 function ordinal(n: number): string {
   const s = ['th', 'st', 'nd', 'rd'];
@@ -70,15 +70,15 @@ function InfoRow({
 }) {
   return (
     <div className="flex justify-between gap-4 py-1.5 text-sm">
-      <dt className="text-[#6A6A8A]">{label}</dt>
-      <dd className={muted ? 'text-[#4A4A6A]' : 'text-white'}>{value}</dd>
+      <dt className="text-[#3E5560]">{label}</dt>
+      <dd className={muted ? 'text-[#5B7280]' : 'text-[#223144]'}>{value}</dd>
     </div>
   );
 }
 
 function MailIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0 text-[#8B6FE8]" aria-hidden>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0 text-[#8D3B32]" aria-hidden>
       <rect x="3" y="5" width="18" height="14" rx="2" />
       <path d="m3 7 9 6 9-6" />
     </svg>
@@ -86,7 +86,7 @@ function MailIcon() {
 }
 function PhoneIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0 text-[#8B6FE8]" aria-hidden>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0 text-[#8D3B32]" aria-hidden>
       <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z" />
     </svg>
   );
@@ -150,7 +150,11 @@ export default async function UnitDetailPage({
   const directReceived = rentLedger.reduce((s, e) => s + e.amountPaid, 0);
   const totalReceived = directReceived + (detail.subunitCollection ?? 0);
   const rentOverdue = rentLedger
-    .filter((e) => e.status === 'OVERDUE')
+    .filter(
+      (e) =>
+        e.status === 'OVERDUE' ||
+        (e.status === 'PARTIAL' && new Date(e.dueDate).getTime() < Date.now()),
+    )
     .reduce((s, e) => s + (e.amountDue - e.amountPaid), 0);
   const totalOutstanding = rentOverdue + utilityPending;
 
@@ -167,14 +171,14 @@ export default async function UnitDetailPage({
       {/* Back button */}
       <Link
         href={unitsHref}
-        className="inline-flex min-h-[36px] items-center text-sm text-[#6A6A8A] transition-colors hover:text-white"
+        className="inline-flex min-h-[36px] items-center text-sm text-[#3E5560] transition-colors hover:text-[#223144]"
       >
         ← Back to {unit.propertyName}
       </Link>
 
       {/* Header: unit name + status badge */}
       <div className="mt-2 flex flex-wrap items-center gap-3">
-        <h1 className="text-[32px] font-bold leading-tight text-white">
+        <h1 className="text-[32px] font-bold leading-tight text-[#223144]">
           {unit.name}
         </h1>
         <span
@@ -186,7 +190,7 @@ export default async function UnitDetailPage({
           {subPropertyStatusLabel(unit.status)}
         </span>
         {unit.displayId && (
-          <span className="font-mono text-sm text-[#4A4A6A]">
+          <span className="font-mono text-sm text-[#5B7280]">
             {unit.displayId}
           </span>
         )}
@@ -240,22 +244,22 @@ export default async function UnitDetailPage({
           summary={
             tenancy ? (
               <div className="flex min-w-0 items-center gap-3">
-                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#5B4FE8]/20 text-sm font-semibold text-[#8B6FE8]">
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#A4473D]/20 text-sm font-semibold text-[#8D3B32]">
                   {initialsFrom(tenancy.tenant.name)}
                 </span>
                 <div className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-0.5">
-                  <span className="text-base font-bold text-white">
+                  <span className="text-base font-bold text-[#223144]">
                     {tenancy.tenant.name}
                   </span>
                   {tenancy.tenant.displayId && (
-                    <span className="font-mono text-xs text-[#4A4A6A]">
+                    <span className="font-mono text-xs text-[#5B7280]">
                       {tenancy.tenant.displayId}
                     </span>
                   )}
-                  <span className="text-xs text-[#6A6A8A]">
+                  <span className="text-xs text-[#3E5560]">
                     · Unit {unit.unitNumber}
                   </span>
-                  <span className="text-xs text-[#6A6A8A]">
+                  <span className="text-xs text-[#3E5560]">
                     · {formatMoney(tenancy.monthlyRent)}/mo
                   </span>
                 </div>
@@ -263,7 +267,7 @@ export default async function UnitDetailPage({
             ) : (
               <div>
                 <p className={sectionLabel}>Tenant Info</p>
-                <p className="mt-1 text-sm text-[#6A6A8A]">
+                <p className="mt-1 text-sm text-[#3E5560]">
                   No tenant assigned · Unit {unit.unitNumber}
                 </p>
               </div>
@@ -274,11 +278,11 @@ export default async function UnitDetailPage({
             <>
               <p className={sectionLabel}>Primary Contact</p>
               <div className="mt-2 space-y-1.5 text-sm">
-                <div className="flex items-center gap-2 text-white">
+                <div className="flex items-center gap-2 text-[#223144]">
                   <MailIcon />
                   <span className="break-all">{tenancy.tenant.email ?? 'No email'}</span>
                 </div>
-                <div className="flex items-center gap-2 text-white">
+                <div className="flex items-center gap-2 text-[#223144]">
                   <PhoneIcon />
                   <span>{tenancy.tenant.phone}</span>
                 </div>
@@ -321,7 +325,7 @@ export default async function UnitDetailPage({
               <div className="mt-5">
                 <Link
                   href={`/dashboard/tenants/${tenancy.tenant.id}/edit`}
-                  className="inline-flex min-h-[44px] items-center rounded-full border border-[rgba(139,111,232,0.4)] bg-[rgba(255,255,255,0.06)] px-4 py-2 text-sm font-medium text-[#E8E8F2] transition-colors hover:text-white"
+                  className="inline-flex min-h-[44px] items-center rounded-full border border-[rgba(141,59,50,0.4)] bg-[rgba(255,255,255,0.7)] px-4 py-2 text-sm font-medium text-[#223144] transition-colors hover:text-[#223144]"
                 >
                   Edit Tenant
                 </Link>
@@ -340,9 +344,9 @@ export default async function UnitDetailPage({
           summary={
             <div>
               <p className={sectionLabel}>Unit Info</p>
-              <p className="mt-1 text-sm text-white">
+              <p className="mt-1 text-sm text-[#223144]">
                 Unit {unit.unitNumber}
-                <span className="text-[#6A6A8A]">
+                <span className="text-[#3E5560]">
                   {' '}
                   · {formatMoney(tenancy?.monthlyRent ?? unit.rentAmount)}/mo
                 </span>
@@ -367,7 +371,7 @@ export default async function UnitDetailPage({
           <div className="flex items-center justify-between gap-2">
             <p className={sectionLabel}>Lease Details</p>
             {tenancy?.displayId && (
-              <span className="font-mono text-xs text-[#4A4A6A]">
+              <span className="font-mono text-xs text-[#5B7280]">
                 {tenancy.displayId}
               </span>
             )}
@@ -392,7 +396,7 @@ export default async function UnitDetailPage({
               </div>
             </>
           ) : (
-            <p className="mt-3 text-sm text-[#6A6A8A]">No active lease.</p>
+            <p className="mt-3 text-sm text-[#3E5560]">No active lease.</p>
           )}
         </CollapsibleCard>
       </Reveal>
@@ -411,7 +415,7 @@ export default async function UnitDetailPage({
             canEdit={canEditRent}
           />
         ) : (
-          <p className="mt-3 text-sm text-[#6A6A8A]">No active lease.</p>
+          <p className="mt-3 text-sm text-[#3E5560]">No active lease.</p>
         )}
       </Reveal>
 
@@ -452,19 +456,19 @@ export default async function UnitDetailPage({
           </Link>
         </div>
         {expenses.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-[rgba(91,79,232,0.15)] px-3 py-8 text-center">
+          <div className="rounded-xl border border-dashed border-[rgba(164,71,61,0.15)] px-3 py-8 text-center">
             <div className="text-2xl">🧾</div>
-            <p className="mt-2 text-sm text-[#6A6A8A]">
+            <p className="mt-2 text-sm text-[#3E5560]">
               No expenses recorded for this unit
             </p>
           </div>
         ) : (
           <>
-            <div className="overflow-x-auto rounded-xl border border-[rgba(91,79,232,0.15)]">
+            <div className="overflow-x-auto rounded-xl border border-[rgba(164,71,61,0.15)]">
               <table className="w-full min-w-[480px] text-left text-sm">
-                <thead className="bg-[rgba(91,79,232,0.1)] text-xs uppercase tracking-wide text-[#8B6FE8]">
+                <thead className="bg-[rgba(164,71,61,0.1)] text-xs uppercase tracking-wide text-[#8D3B32]">
                   <tr>
-                    <th className="sticky left-0 bg-[#100d24] px-3 py-2 font-medium">
+                    <th className="sticky left-0 bg-[#F6FAFB] px-3 py-2 font-medium">
                       Date
                     </th>
                     <th className="px-3 py-2 font-medium">Category</th>
@@ -472,13 +476,13 @@ export default async function UnitDetailPage({
                     <th className="px-3 py-2 text-right font-medium">Amount</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[rgba(91,79,232,0.1)]">
+                <tbody className="divide-y divide-[rgba(164,71,61,0.1)]">
                   {expenses.map((e) => (
                     <tr
                       key={e.id}
-                      className="transition-colors hover:bg-[rgba(91,79,232,0.05)]"
+                      className="transition-colors hover:bg-[rgba(164,71,61,0.05)]"
                     >
-                      <td className="sticky left-0 bg-[#0c0a1e] px-3 py-2 text-[#6A6A8A]">
+                      <td className="sticky left-0 bg-[#F6FAFB] px-3 py-2 text-[#3E5560]">
                         {formatDate(e.date)}
                       </td>
                       <td className="px-3 py-2">
@@ -491,10 +495,10 @@ export default async function UnitDetailPage({
                           {expenseCategoryLabel(e.category)}
                         </span>
                       </td>
-                      <td className="px-3 py-2 text-[#6A6A8A]">
+                      <td className="px-3 py-2 text-[#3E5560]">
                         {e.description || '—'}
                       </td>
-                      <td className="px-3 py-2 text-right font-medium text-white">
+                      <td className="px-3 py-2 text-right font-medium text-[#223144]">
                         {formatMoney(e.amount)}
                       </td>
                     </tr>
@@ -506,7 +510,7 @@ export default async function UnitDetailPage({
               <div className="mt-3 text-right">
                 <Link
                   href="/dashboard/expenses"
-                  className="text-sm text-[#8B6FE8] transition-colors hover:text-white"
+                  className="text-sm text-[#8D3B32] transition-colors hover:text-[#223144]"
                 >
                   View all expenses →
                 </Link>

@@ -39,14 +39,14 @@ export default function ExpenseExportButton({
         type="button"
         onClick={go}
         disabled={loading}
-        className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-[rgba(255,255,255,0.06)] px-4 py-2 text-sm font-medium text-[#E8E8F2] transition-colors hover:text-white disabled:opacity-60"
+        className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-[rgba(255,255,255,0.7)] px-4 py-2 text-sm font-medium text-[#223144] transition-colors hover:text-[#223144] disabled:opacity-60"
       >
         {loading && (
-          <span className="h-3 w-3 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+          <span className="h-3 w-3 animate-spin rounded-full border-2 border-[#223144]/28 border-t-white" />
         )}
         Export Report
       </button>
-      {error && <p className="mt-1 text-xs text-red-400">{error}</p>}
+      {error && <p className="mt-1 text-xs text-red-700">{error}</p>}
     </div>
   );
 }

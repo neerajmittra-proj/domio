@@ -12,7 +12,7 @@ import {
 import { CURRENCIES, DEFAULT_CURRENCY } from '@/lib/currencies';
 
 const inputClass =
-  'w-full rounded-xl border border-zinc-300 bg-white px-3.5 py-2.5 text-sm text-zinc-900 shadow-xs outline-none transition placeholder:text-zinc-400 focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10';
+  'w-full rounded-xl border border-zinc-300 bg-card px-3.5 py-2.5 text-sm text-zinc-900 shadow-xs outline-none transition placeholder:text-zinc-400 focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10';
 const labelClass = 'text-xs font-bold uppercase tracking-wider text-zinc-700';
 
 const ENTITY_TYPES: { value: RentableEntityType; label: string; description: string; icon: string }[] = [
@@ -104,17 +104,33 @@ export default function AddRentableEntityForm({
   // that parent can legally hold are even selectable — everything else
   // disappears from the picker instead of being greyed out, so there is no
   // way to pick (or land on, via the parent dropdown) an invalid pairing.
-  const targetParentNode = targetParentId ? findNode(existingEntities, targetParentId) : null;
-  const targetParentType = targetParentNode?.type;
+  //
+  // The flow chart's root card links here with a synthetic "prop-<propertyId>"
+  // parent id (it is the property itself, not an entity row). Resolve it to the
+  // property's real root entity so the same sub-unit-only rule applies.
+  const rootPropertyEntity = existingEntities.find((e) => e.type === 'PROPERTY') ?? null;
+  const targetIsPropertyRoot = targetParentId.startsWith('prop-');
+  const effectiveTargetParentId = targetIsPropertyRoot
+    ? (rootPropertyEntity?.id ?? '')
+    : targetParentId;
+  const targetParentNode = effectiveTargetParentId
+    ? findNode(existingEntities, effectiveTargetParentId)
+    : null;
+  const targetParentType: RentableEntityType | undefined =
+    targetParentNode?.type ?? (targetIsPropertyRoot ? 'PROPERTY' : undefined);
+  // "Whole Property" is the building itself and already exists as the root, so
+  // it is never offered while adding units — only sub-unit types are clickable.
   const visibleEntityTypes =
     isAddingSubUnit && targetParentType
       ? ENTITY_TYPES.filter((et) => VALID_PARENT_TYPES[et.value].includes(targetParentType))
-      : ENTITY_TYPES;
+      : rootPropertyEntity
+        ? ENTITY_TYPES.filter((et) => et.value !== 'PROPERTY')
+        : ENTITY_TYPES;
 
   // When existing entities load and a targetParentId was passed, auto-select it and set the appropriate child entityType
   useEffect(() => {
-    if (!parentApplied && targetParentId && existingEntities.length > 0) {
-      const parentNode = findNode(existingEntities, targetParentId);
+    if (!parentApplied && effectiveTargetParentId && existingEntities.length > 0) {
+      const parentNode = findNode(existingEntities, effectiveTargetParentId);
       if (parentNode) {
         if (parentNode.type === 'PROPERTY') {
           setEntityType('ROOM');
@@ -126,18 +142,18 @@ export default function AddRentableEntityForm({
         // Note: OFFICE is intentionally excluded — an Office is always
         // terminal and can never receive a Bed (or anything else) as a
         // sub-unit, so there is no valid entityType to auto-select here.
-        setParentId(targetParentId);
+        setParentId(effectiveTargetParentId);
         setParentApplied(true);
       }
     }
-  }, [targetParentId, existingEntities, parentApplied]);
+  }, [effectiveTargetParentId, existingEntities, parentApplied]);
 
   // Ensure PROPERTY is never selected when adding a sub-unit
   useEffect(() => {
-    if (isAddingSubUnit && entityType === 'PROPERTY') {
+    if ((isAddingSubUnit || rootPropertyEntity) && entityType === 'PROPERTY') {
       setEntityType('ROOM');
     }
-  }, [isAddingSubUnit, entityType]);
+  }, [isAddingSubUnit, rootPropertyEntity, entityType]);
 
   const needsParent = VALID_PARENT_TYPES[entityType].length > 0;
   const validParents = flattenTree(existingEntities).filter((e) =>
@@ -146,7 +162,7 @@ export default function AddRentableEntityForm({
 
   // Automatically select the default parent entity whenever validParents is available
   useEffect(() => {
-    if (targetParentId && !parentApplied) return;
+    if (effectiveTargetParentId && !parentApplied) return;
     if (needsParent && validParents.length > 0) {
       if (parentId && validParents.some((p) => p.id === parentId)) {
         return;
@@ -155,7 +171,7 @@ export default function AddRentableEntityForm({
     } else if (!needsParent) {
       setParentId('');
     }
-  }, [entityType, validParents, needsParent, parentId, targetParentId, parentApplied]);
+  }, [entityType, validParents, needsParent, parentId, effectiveTargetParentId, parentApplied]);
 
   function handlePropertySwitch(newPropId: string) {
     setSelectedPropertyId(newPropId);
@@ -212,7 +228,7 @@ export default function AddRentableEntityForm({
       <div className="rounded-2xl border border-zinc-200/90 bg-zinc-50/70 p-4 shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white border border-zinc-200 text-lg shadow-xs">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-card border border-zinc-200 text-lg shadow-xs">
               🏠
             </div>
             <div>
@@ -237,7 +253,7 @@ export default function AddRentableEntityForm({
                 id="propertySwitcher"
                 value={selectedPropertyId}
                 onChange={(e) => handlePropertySwitch(e.target.value)}
-                className="rounded-full border border-zinc-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-zinc-700 shadow-xs outline-none hover:border-zinc-300"
+                className="rounded-full border border-zinc-200 bg-card px-3.5 py-1.5 text-xs font-semibold text-zinc-700 shadow-xs outline-none hover:border-zinc-300"
               >
                 {properties.map((p) => (
                   <option key={p.id} value={p.id}>
@@ -279,8 +295,8 @@ export default function AddRentableEntityForm({
                   className={
                     'flex flex-col items-center gap-1.5 rounded-2xl border p-3 text-center transition-all duration-150 ' +
                     (isSelected
-                      ? 'border-zinc-900 bg-zinc-900 text-white shadow-sm ring-2 ring-zinc-900/10 cursor-pointer'
-                      : 'border-zinc-200 bg-zinc-50/60 text-zinc-700 hover:border-zinc-300 hover:bg-white cursor-pointer')
+                      ? 'border-zinc-900 bg-brand-grad text-white shadow-sm ring-2 ring-zinc-900/10 cursor-pointer'
+                      : 'border-zinc-200 bg-zinc-50/60 text-zinc-700 hover:border-zinc-300 hover:bg-card cursor-pointer')
                   }
                 >
                   <span className="text-xl sm:text-2xl">{et.icon}</span>
@@ -395,7 +411,7 @@ export default function AddRentableEntityForm({
               Listed Rent Amount <span className="text-red-500 font-bold ml-0.5">*</span>
             </label>
             {/* Currency + Amount combined input */}
-            <div className="flex overflow-hidden rounded-xl border border-zinc-300 bg-white shadow-xs focus-within:border-zinc-900 focus-within:ring-2 focus-within:ring-zinc-900/10 transition">
+            <div className="flex overflow-hidden rounded-xl border border-zinc-300 bg-card shadow-xs focus-within:border-zinc-900 focus-within:ring-2 focus-within:ring-zinc-900/10 transition">
               <select
                 id="currency"
                 name="currency"
@@ -419,7 +435,7 @@ export default function AddRentableEntityForm({
                 step="any"
                 required
                 placeholder="0.00"
-                className="min-w-0 flex-1 bg-white px-3.5 py-2.5 text-base font-semibold text-zinc-900 outline-none placeholder:text-zinc-400 placeholder:font-normal"
+                className="min-w-0 flex-1 bg-card px-3.5 py-2.5 text-base font-semibold text-zinc-900 outline-none placeholder:text-zinc-400 placeholder:font-normal"
               />
             </div>
           </div>
@@ -490,7 +506,7 @@ export default function AddRentableEntityForm({
         <button
           type="submit"
           disabled={pending || (needsParent && validParents.length === 0)}
-          className="mt-2 rounded-full bg-zinc-900 px-6 py-3 text-sm font-semibold text-white shadow-xs transition-all hover:bg-zinc-800 disabled:opacity-60"
+          className="mt-2 rounded-full bg-brand-grad px-6 py-3 text-sm font-semibold text-white shadow-xs transition-all hover:bg-brand-grad-hover disabled:opacity-60"
         >
           {pending
             ? 'Creating…'

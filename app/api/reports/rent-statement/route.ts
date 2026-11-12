@@ -27,6 +27,9 @@ export async function POST(request: Request) {
 
   const periodFrom = body.periodFrom ? new Date(body.periodFrom) : new Date(0);
   const periodTo = body.periodTo ? new Date(body.periodTo) : new Date();
+  if (Number.isNaN(periodFrom.getTime()) || Number.isNaN(periodTo.getTime())) {
+    return NextResponse.json({ error: 'Valid statement dates are required.' }, { status: 400 });
+  }
 
   const tenancy = await prisma.tenancy.findUnique({
     where: { id: body.tenancyId },

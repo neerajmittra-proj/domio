@@ -1,79 +1,57 @@
 import { NextResponse } from 'next/server';
-import bcrypt from 'bcryptjs';
+import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
-import { formatE164Phone } from '@/lib/twilio';
+import { verifyUserOtpCode } from '@/lib/user-verification';
+import { rateLimit } from '@/lib/rate-limit';
 
+// Confirms the 6-digit code for the SIGNED-IN user's own email / phone.
 export async function POST(req: Request) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const body = await req.json().catch(() => ({}));
-    const { phone, otp } = body;
+    const { otp, type } = body ?? {};
 
-    if (!phone || typeof phone !== 'string') {
-      return NextResponse.json({ error: 'Phone number is required.' }, { status: 400 });
+    if (type !== 'EMAIL_VERIFICATION' && type !== 'PHONE_VERIFICATION') {
+      return NextResponse.json({ error: 'Invalid verification type.' }, { status: 400 });
+    }
+    if (!otp || typeof otp !== 'string' || !/^\d{6}$/.test(otp.trim())) {
+      return NextResponse.json({ error: 'Please enter a valid 6-digit code.' }, { status: 400 });
     }
 
-    if (!otp || typeof otp !== 'string' || otp.trim().length !== 6) {
-      return NextResponse.json({ error: 'Please enter a valid 6-digit OTP code.' }, { status: 400 });
-    }
-
-    const formattedPhone = formatE164Phone(phone);
-    const cleanOtp = otp.trim();
-
-    // Look for active OTP record
-    const record = await prisma.userOtp.findFirst({
-      where: {
-        target: formattedPhone,
-        used: false,
-      },
-      orderBy: { createdAt: 'desc' },
-    });
-
-    if (!record) {
+    const limit = rateLimit(`verify-check:${session.user.id}:${type}`, 15, 15 * 60 * 1000);
+    if (!limit.ok) {
       return NextResponse.json(
-        { error: 'No active OTP found for this phone number. Please request a new code.' },
-        { status: 404 },
+        { error: 'Too many attempts. Please try again later.' },
+        { status: 429 },
       );
     }
 
-    if (record.expiresAt < new Date()) {
-      return NextResponse.json(
-        { error: 'This OTP has expired. Please request a new code.' },
-        { status: 400 },
-      );
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { email: true, phone: true },
+    });
+    const target = type === 'EMAIL_VERIFICATION' ? user?.email : user?.phone;
+    if (!target) {
+      return NextResponse.json({ error: 'Nothing to verify on this account.' }, { status: 400 });
     }
 
-    const isValid = await bcrypt.compare(cleanOtp, record.otpHash);
-    if (!isValid) {
-      return NextResponse.json(
-        { error: 'Incorrect OTP code. Please try again.' },
-        { status: 400 },
-      );
-    }
-
-    // Mark as used
-    await prisma.userOtp.update({
-      where: { id: record.id },
-      data: { used: true },
+    const result = await verifyUserOtpCode({
+      userId: session.user.id,
+      target,
+      rawOtp: otp,
+      type,
     });
 
-    // Mark user phone as verified if linked
-    if (record.userId) {
-      await prisma.user.update({
-        where: { id: record.userId },
-        data: { phoneVerified: true },
-      }).catch(() => {});
+    if (!result.verified) {
+      return NextResponse.json({ error: result.message }, { status: 400 });
     }
-
-    return NextResponse.json({
-      success: true,
-      verified: true,
-      message: 'Phone number verified successfully!',
-    });
-  } catch (error: any) {
+    return NextResponse.json({ success: true, verified: true, message: result.message });
+  } catch (error) {
     console.error('[POST /api/auth/otp/verify] Error:', error);
-    return NextResponse.json(
-      { error: error?.message || 'Failed to verify OTP code.' },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: 'Failed to verify code.' }, { status: 500 });
   }
 }

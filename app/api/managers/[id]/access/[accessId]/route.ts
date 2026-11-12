@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@/auth';
+import { requireOwner } from '@/lib/api-auth';
 import { prisma } from '@/lib/prisma';
 import { getOwnedManager } from '@/lib/managers';
 
@@ -7,10 +7,9 @@ export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string; accessId: string }> },
 ) {
-  const session = await auth();
-  if (!session?.user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const guard = await requireOwner();
+  if ('response' in guard) return guard.response;
+  const session = guard.session;
   const { id: managerId, accessId } = await params;
   const manager = await getOwnedManager(managerId, session.user.id);
   if (!manager) {

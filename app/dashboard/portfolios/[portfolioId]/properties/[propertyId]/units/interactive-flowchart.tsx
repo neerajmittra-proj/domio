@@ -12,6 +12,7 @@ import type { SubPropertyListItem } from '@/lib/sub-properties';
 import { useScrollLock } from '@/hooks/use-scroll-lock';
 import { useFocusTrap } from '@/hooks/use-focus-trap';
 import EditUnitModal, { type EditableUnit } from './edit-unit-modal';
+import { buildTreeFromUnits, hasRealHierarchy } from '@/lib/units-tree';
 
 const TYPE_ICONS: Record<string, string> = {
   PROPERTY: '🏢',
@@ -128,7 +129,7 @@ export default function InteractiveFlowchart({
       hasChildren: Boolean(node.children && node.children.length > 0),
       hasActiveLease: Boolean(node.activeLease),
       activeTenantName: node.activeLease?.tenantName ?? null,
-      isRentableEntity: true,
+      isRentableEntity: node.synthetic !== 'unit',
     });
   }, []);
 
@@ -151,9 +152,14 @@ export default function InteractiveFlowchart({
     setDeleting(true);
     setDeleteError(null);
     try {
-      const res = await fetch(`/api/rentable-entities/${deleteTarget.id}`, {
+      const res = await fetch(
+        deleteTarget.synthetic === 'unit'
+          ? `/api/sub-properties/${deleteTarget.id}`
+          : `/api/rentable-entities/${deleteTarget.id}`,
+        {
         method: 'DELETE',
-      });
+      },
+      );
       if (res.ok) {
         setDeleteTarget(null);
         setSelectedNode(null);
@@ -183,57 +189,12 @@ export default function InteractiveFlowchart({
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [scrollStart, setScrollStart] = useState({ left: 0, top: 0 });
 
-  // If no rentable entities exist yet but regular units do, synthesize a tree
+  // Use the real hierarchy when there is one; otherwise (flat/imported units, or
+  // just an auto-created empty root) derive Property -> Floor -> Unit from units.
   const treeRoots = useMemo<RentableEntityNode[]>(() => {
-    if (entities && entities.length > 0) return entities;
-    if (units && units.length > 0) {
-      return [
-        {
-          id: `prop-${propertyId}`,
-          displayId: null,
-          propertyId,
-          name: propertyName,
-          type: 'PROPERTY' as RentableEntityType,
-          code: 'ROOT',
-          areaSqft: null,
-          rentAmount: 0,
-          status: 'VACANT',
-          notes: null,
-          sortOrder: null,
-          parentId: null,
-          activeLease: null,
-          aggregatedRent: units.reduce((s, u) => s + (u.rentAmount || 0), 0),
-          aggregatedCollection: 0,
-          children: units.map((u): RentableEntityNode => ({
-            id: u.id,
-            displayId: null,
-            propertyId,
-            name: u.name,
-            type: 'ROOM' as RentableEntityType,
-            code: u.unitNumber || '',
-            areaSqft: u.areaSqft,
-            rentAmount: u.rentAmount || 0,
-            status: u.status,
-            notes: u.notes,
-            sortOrder: null,
-            parentId: `prop-${propertyId}`,
-            activeLease: u.currentTenantName
-              ? {
-                  tenancyId: '',
-                  tenantName: u.currentTenantName,
-                  monthlyRent: u.rentAmount || 0,
-                  startDate: new Date(),
-                  endDate: new Date(),
-                }
-              : null,
-            aggregatedRent: u.rentAmount || 0,
-            aggregatedCollection: 0,
-            children: [],
-          })),
-        },
-      ];
-    }
-    return [];
+    if (hasRealHierarchy(entities)) return entities;
+    if (units && units.length > 0) return buildTreeFromUnits(units, propertyId, propertyName);
+    return entities ?? [];
   }, [entities, units, propertyId, propertyName]);
 
   // Precompute leaf-status counts once per tree so every node can show its
@@ -309,7 +270,16 @@ export default function InteractiveFlowchart({
   // Node matcher for search & status highlighting
   const nodeMatches = useCallback(
     (node: RentableEntityNode): boolean => {
-      if (statusFilter !== 'ALL' && node.status !== statusFilter) return false;
+      // Only leaf units carry a status. A node with sub-units matches when any
+      // unit beneath it does; it never matches on a status of its own.
+      if (statusFilter !== 'ALL') {
+        const leafHas = (n: RentableEntityNode): boolean => {
+          if (n.children && n.children.length > 0) return n.children.some(leafHas);
+          const eff = n.status === 'MAINTENANCE' ? 'MAINTENANCE' : n.status === 'OCCUPIED' || n.activeLease ? 'OCCUPIED' : 'VACANT';
+          return eff === statusFilter;
+        };
+        if (!leafHas(node)) return false;
+      }
       if (searchQuery.trim()) {
         const q = searchQuery.trim().toLowerCase();
         return (
@@ -325,7 +295,7 @@ export default function InteractiveFlowchart({
 
   if (treeRoots.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-zinc-200 bg-white p-12 text-center shadow-xs">
+      <div className="rounded-2xl border border-dashed border-zinc-200 bg-card p-12 text-center shadow-xs">
         <span className="text-4xl">📊</span>
         <h3 className="mt-3 text-base font-bold text-zinc-900">No Rental Hierarchy Configured</h3>
         <p className="mt-1 text-xs text-zinc-500 max-w-md mx-auto">
@@ -334,7 +304,7 @@ export default function InteractiveFlowchart({
         {portfolioId && propertyId && (
           <Link
             href={`/dashboard/portfolios/${portfolioId}/properties/${propertyId}/units/new`}
-            className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-zinc-900 px-4 py-2 text-xs font-bold text-white shadow-xs transition hover:bg-zinc-800"
+            className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-brand-grad px-4 py-2 text-xs font-bold text-white shadow-xs transition hover:bg-brand-grad-hover"
           >
             + Add First Entity
           </Link>
@@ -344,7 +314,7 @@ export default function InteractiveFlowchart({
   }
 
   return (
-    <div className="flex flex-col rounded-2xl border border-zinc-200/90 bg-white shadow-xs overflow-hidden">
+    <div className="flex flex-col rounded-2xl border border-zinc-200/90 bg-card shadow-xs overflow-hidden">
       {/* ── Toolbar ────────────────────────────────────────────────────────── */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-200 bg-zinc-50/90 px-4 py-3">
         {/* Left: Search & Filter */}
@@ -364,7 +334,7 @@ export default function InteractiveFlowchart({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Find node or tenant..."
-              className="w-full rounded-full border border-zinc-200 bg-white py-1.5 pl-8 pr-7 text-xs text-zinc-900 shadow-2xs outline-none transition placeholder:text-zinc-400 focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
+              className="w-full rounded-full border border-zinc-200 bg-card py-1.5 pl-8 pr-7 text-xs text-zinc-900 shadow-2xs outline-none transition placeholder:text-zinc-400 focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
             />
             {searchQuery && (
               <button
@@ -378,7 +348,7 @@ export default function InteractiveFlowchart({
           </div>
 
           {/* Status filter pill buttons */}
-          <div className="flex items-center rounded-full border border-zinc-200 bg-white p-0.5 shadow-2xs text-[11px] font-semibold">
+          <div className="flex items-center rounded-full border border-zinc-200 bg-card p-0.5 shadow-2xs text-[11px] font-semibold">
             {(['ALL', 'OCCUPIED', 'VACANT', 'MAINTENANCE'] as const).map((s) => {
               const active = statusFilter === s;
               return (
@@ -388,7 +358,7 @@ export default function InteractiveFlowchart({
                   onClick={() => setStatusFilter(s)}
                   className={`rounded-full px-2.5 py-1 transition cursor-pointer ${
                     active
-                      ? 'bg-zinc-900 text-white shadow-xs font-bold'
+                      ? 'bg-brand-grad text-white shadow-xs font-bold'
                       : 'text-zinc-600 hover:text-zinc-900'
                   }`}
                 >
@@ -401,7 +371,7 @@ export default function InteractiveFlowchart({
 
         {/* Right: Zoom controls & Expand/Collapse */}
         <div className="flex items-center gap-2">
-          <div className="flex items-center rounded-full border border-zinc-200 bg-white p-0.5 shadow-2xs text-xs font-semibold text-zinc-600">
+          <div className="flex items-center rounded-full border border-zinc-200 bg-card p-0.5 shadow-2xs text-xs font-semibold text-zinc-600">
             <button
               type="button"
               onClick={() => setZoom((z) => Math.max(0.4, Number((z - 0.1).toFixed(1))))}
@@ -435,14 +405,14 @@ export default function InteractiveFlowchart({
             <button
               type="button"
               onClick={expandAll}
-              className="rounded-lg border border-zinc-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-zinc-700 shadow-2xs transition hover:bg-zinc-50 cursor-pointer"
+              className="rounded-lg border border-zinc-200 bg-card px-2.5 py-1 text-[11px] font-semibold text-zinc-700 shadow-2xs transition hover:bg-zinc-50 cursor-pointer"
             >
               Expand All
             </button>
             <button
               type="button"
               onClick={collapseAll}
-              className="rounded-lg border border-zinc-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-zinc-700 shadow-2xs transition hover:bg-zinc-50 cursor-pointer"
+              className="rounded-lg border border-zinc-200 bg-card px-2.5 py-1 text-[11px] font-semibold text-zinc-700 shadow-2xs transition hover:bg-zinc-50 cursor-pointer"
             >
               Collapse All
             </button>
@@ -503,8 +473,8 @@ export default function InteractiveFlowchart({
 
       {/* ── Node Inspector Modal / Drawer ─────────────────────────────────── */}
       {selectedNode && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-          <div className="w-full max-w-md rounded-2xl border border-zinc-200 bg-white p-6 shadow-2xl animate-in zoom-in-95 duration-150">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-navy/40 backdrop-blur-xs p-4 animate-in fade-in duration-150">
+          <div className="w-full max-w-md rounded-2xl border border-zinc-200 bg-card p-6 shadow-2xl animate-in zoom-in-95 duration-150">
             <div className="flex items-start justify-between gap-3 border-b border-zinc-100 pb-4">
               <div className="flex items-center gap-2.5">
                 <span className="text-3xl">{TYPE_ICONS[selectedNode.type] || '🏢'}</span>
@@ -537,7 +507,7 @@ export default function InteractiveFlowchart({
                     {formatRent(
                       selectedNode.children && selectedNode.children.length > 0
                         ? selectedNode.aggregatedRent
-                        : selectedNode.rentAmount
+                        : (selectedNode.activeLease?.monthlyRent ?? selectedNode.rentAmount)
                     )}
                   </p>
                 </div>
@@ -612,7 +582,7 @@ export default function InteractiveFlowchart({
 
             {/* Actions */}
             <div className="mt-6 flex flex-wrap items-center justify-end gap-2 border-t border-zinc-100 pt-4">
-              {canHaveChildren(selectedNode.type) && portfolioId && propertyId && (
+              {canHaveChildren(selectedNode.type) && (!selectedNode.synthetic || selectedNode.synthetic === 'root') && portfolioId && propertyId && (
                 <Link
                   href={`/dashboard/portfolios/${portfolioId}/properties/${propertyId}/units/new?parentId=${selectedNode.id}`}
                   className="inline-flex items-center gap-1.5 rounded-xl border border-indigo-200 bg-indigo-50 px-3.5 py-1.5 text-xs font-semibold text-indigo-700 transition hover:bg-indigo-100"
@@ -629,7 +599,7 @@ export default function InteractiveFlowchart({
                       name: selectedNode.name,
                       unitNumber: selectedNode.code,
                       rentAmount: selectedNode.rentAmount || selectedNode.aggregatedRent,
-                      isRentableEntity: true,
+                      isRentableEntity: selectedNode.synthetic !== 'unit',
                     });
                     setSelectedNode(null);
                   }}
@@ -638,12 +608,13 @@ export default function InteractiveFlowchart({
                   🔑 Assign Tenant
                 </button>
               )}
+              {(!selectedNode.synthetic || selectedNode.synthetic === 'unit') && (
               <button
                 type="button"
                 onClick={() => {
                   handleEditNode(selectedNode);
                 }}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-zinc-800 shadow-2xs transition hover:bg-zinc-50 hover:border-zinc-300 cursor-pointer"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 bg-card px-3.5 py-1.5 text-xs font-semibold text-zinc-800 shadow-2xs transition hover:bg-zinc-50 hover:border-zinc-300 cursor-pointer"
               >
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
@@ -651,23 +622,26 @@ export default function InteractiveFlowchart({
                 </svg>
                 Edit Status & Price
               </button>
+              )}
+              {(!selectedNode.synthetic || selectedNode.synthetic === 'unit') && (
               <button
                 type="button"
                 onClick={() => {
                   setDeleteError(null);
                   setDeleteTarget(selectedNode);
                 }}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-1.5 text-xs font-semibold text-rose-600 transition hover:bg-rose-600 hover:text-white cursor-pointer"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-1.5 text-xs font-semibold text-rose-600 transition hover:bg-rose-600 hover:text-[#223144] cursor-pointer"
               >
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
                 </svg>
                 Delete
               </button>
+              )}
               <button
                 type="button"
                 onClick={() => setSelectedNode(null)}
-                className="rounded-xl border border-zinc-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-zinc-600 hover:bg-zinc-50"
+                className="rounded-xl border border-zinc-200 bg-card px-3.5 py-1.5 text-xs font-semibold text-zinc-600 hover:bg-zinc-50"
               >
                 Close
               </button>
@@ -681,12 +655,12 @@ export default function InteractiveFlowchart({
           role="dialog"
           aria-modal="true"
           onClick={closeDeleteConfirm}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-navy/40 backdrop-blur-xs p-4"
         >
           <div
             ref={trapRef}
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-white p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-150"
+            className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-card p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-150"
           >
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-rose-50 text-rose-600 mb-3">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -721,7 +695,7 @@ export default function InteractiveFlowchart({
                 type="button"
                 onClick={closeDeleteConfirm}
                 disabled={deleting}
-                className="rounded-full border border-zinc-200 bg-white px-4 py-2 text-xs font-semibold text-zinc-700 transition-colors hover:bg-zinc-100 hover:text-zinc-900 disabled:opacity-60"
+                className="rounded-full border border-zinc-200 bg-card px-4 py-2 text-xs font-semibold text-zinc-700 transition-colors hover:bg-zinc-100 hover:text-zinc-900 disabled:opacity-60"
               >
                 Cancel
               </button>
@@ -790,7 +764,8 @@ function FlowNode({
 
   const colors = TYPE_COLORS[node.type] || TYPE_COLORS.ROOM;
   const isOccupied = node.status === 'OCCUPIED' || !!node.activeLease;
-  const allowSubUnit = canHaveChildren(node.type);
+  const allowSubUnit = canHaveChildren(node.type) && (!node.synthetic || node.synthetic === 'root');
+  const canModify = !node.synthetic || node.synthetic === 'unit';
   const counts = statusCounts.get(node.id) ?? { vacant: 0, occupied: 0, maintenance: 0 };
 
   const subUnitHref = portfolioId && propertyId
@@ -802,7 +777,7 @@ function FlowNode({
       {/* ── Node Card ────────────────────────────────────────────────────── */}
       <div
         onClick={() => onSelectNode(node)}
-        className={`group relative flex flex-col w-56 rounded-2xl border bg-white shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 cursor-pointer ${
+        className={`group relative flex flex-col w-56 rounded-2xl border bg-card shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 cursor-pointer ${
           colors.border
         } ${isSelected ? 'ring-3 ring-zinc-900 ring-offset-2' : ''} ${
           !isMatch ? 'opacity-40 grayscale-30' : 'opacity-100'
@@ -824,7 +799,7 @@ function FlowNode({
             {counts.vacant > 0 && (
               <span
                 title={`${counts.vacant} vacant`}
-                className="flex h-5 min-w-5 items-center justify-center rounded-full border-2 border-white bg-amber-400 px-1 text-[9px] font-bold text-white shadow-sm"
+                className="flex h-5 min-w-5 items-center justify-center rounded-full border-2 border-white bg-amber-400 px-1 text-[9px] font-bold text-[#223144] shadow-sm"
               >
                 {counts.vacant}
               </span>
@@ -882,7 +857,7 @@ function FlowNode({
                 {hasChildren ? 'Roll-up Rent:' : 'Rent:'}
               </span>
               <p className="font-mono font-bold text-zinc-900">
-                {formatRent(hasChildren ? node.aggregatedRent : node.rentAmount)}
+                {formatRent(hasChildren ? node.aggregatedRent : (node.activeLease?.monthlyRent ?? node.rentAmount))}
               </p>
             </div>
             <div className="text-right">
@@ -900,7 +875,7 @@ function FlowNode({
               <Link
                 href={subUnitHref}
                 onClick={(e) => e.stopPropagation()}
-                className="inline-flex h-6 w-6 items-center justify-center rounded-lg border border-indigo-200 bg-indigo-50 text-indigo-700 transition hover:bg-indigo-600 hover:text-white hover:scale-110 shadow-2xs"
+                className="inline-flex h-6 w-6 items-center justify-center rounded-lg border border-indigo-200 bg-indigo-50 text-indigo-700 transition hover:bg-indigo-600 hover:text-[#223144] hover:scale-110 shadow-2xs"
                 title={`Add sub-unit under ${node.name}`}
               >
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -908,7 +883,7 @@ function FlowNode({
                 </svg>
               </Link>
             ) : (
-              <span className="text-[10px] text-zinc-300 font-mono select-none">— terminal</span>
+              <span className="text-[10px] text-[#3E5560] font-mono select-none">— terminal</span>
             )}
 
             {/* Center: collapse/assign */}
@@ -931,7 +906,7 @@ function FlowNode({
                     name: node.name,
                     unitNumber: node.code,
                     rentAmount: node.rentAmount || node.aggregatedRent,
-                    isRentableEntity: true,
+                    isRentableEntity: node.synthetic !== 'unit',
                   });
                 }}
                 className="rounded-lg bg-emerald-600 px-2 py-0.5 text-[10px] font-bold text-white shadow-2xs transition hover:bg-emerald-700"
@@ -944,6 +919,7 @@ function FlowNode({
 
             {/* Right: edit & delete icons */}
             <div className="flex items-center gap-1">
+              {canModify && (
               <button
                 type="button"
                 onClick={(e) => {
@@ -959,6 +935,8 @@ function FlowNode({
                   <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                 </svg>
               </button>
+              )}
+              {canModify && (
               <button
                 type="button"
                 onClick={(e) => {
@@ -967,12 +945,13 @@ function FlowNode({
                 }}
                 title={`Delete ${node.name}`}
                 aria-label={`Delete ${node.name}`}
-                className="inline-flex h-6 w-6 items-center justify-center rounded-lg border border-rose-200 bg-rose-50 text-rose-500 shadow-2xs transition-all duration-150 hover:bg-rose-600 hover:text-white hover:border-rose-600 hover:scale-110 active:scale-95 cursor-pointer"
+                className="inline-flex h-6 w-6 items-center justify-center rounded-lg border border-rose-200 bg-rose-50 text-rose-500 shadow-2xs transition-all duration-150 hover:bg-rose-600 hover:text-[#223144] hover:border-rose-600 hover:scale-110 active:scale-95 cursor-pointer"
               >
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
                 </svg>
               </button>
+              )}
             </div>
           </div>
         </div>

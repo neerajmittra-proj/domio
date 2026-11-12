@@ -3,8 +3,8 @@ import { formatMoney } from '@/lib/tenancy-types';
 import type { DashboardData, UnitStatus } from '@/lib/dashboard';
 
 const glassCard =
-  'rounded-2xl border border-zinc-200 bg-[rgba(14,12,34,0.6)] p-5 backdrop-blur-md ' +
-  'shadow-[0_4px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.05)]';
+  'rounded-2xl border border-zinc-200 bg-[rgba(255,255,255,0.88)] p-5 backdrop-blur-md ' +
+  'shadow-[0_4px_20px_rgba(34,49,68,0.10)]';
 const label = 'text-[11px] font-semibold uppercase tracking-[0.12em] text-zinc-500';
 
 const BORDER: Record<UnitStatus['status'], string> = {
@@ -26,7 +26,7 @@ export default function UnitStatusGrid({ d }: { d: DashboardData }) {
     <div className={glassCard}>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h3 className={label}>Unit Status · {d.propertyName}</h3>
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-[#B0B0C8]">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-[#3E5560]">
           {LEGEND.map((l) => (
             <span key={l.status} className="inline-flex items-center gap-1.5">
               <span
@@ -41,7 +41,7 @@ export default function UnitStatusGrid({ d }: { d: DashboardData }) {
       </div>
 
       {d.unitStatuses.length === 0 ? (
-        <p className="mt-4 text-sm text-[#6A6A8A]">No units yet.</p>
+        <p className="mt-4 text-sm text-[#3E5560]">No units yet.</p>
       ) : (
         <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
           {d.unitStatuses.map((u) => {
@@ -50,13 +50,13 @@ export default function UnitStatusGrid({ d }: { d: DashboardData }) {
               <Link
                 key={u.unitId}
                 href={u.href}
-                className="rounded-xl border border-zinc-200 bg-[#100d24] p-3 transition-colors hover:bg-[#141130]"
+                className="rounded-xl border border-zinc-200 bg-[#F6FAFB] p-3 transition-colors hover:bg-[#EAF2F4]"
                 style={{ borderLeftColor: BORDER[u.status], borderLeftWidth: 4 }}
               >
-                <p className="truncate text-sm font-semibold text-white">
+                <p className="truncate text-sm font-semibold text-[#223144]">
                   {u.unitName}
                 </p>
-                <p className="truncate text-xs text-[#6A6A8A]">
+                <p className="truncate text-xs text-[#3E5560]">
                   {u.tenantName ?? 'Vacant'}
                 </p>
                 <p
@@ -65,8 +65,8 @@ export default function UnitStatusGrid({ d }: { d: DashboardData }) {
                     (u.status === 'vacant'
                       ? 'text-zinc-500'
                       : owed
-                        ? 'text-red-400'
-                        : 'text-green-400')
+                        ? 'text-red-700'
+                        : 'text-green-700')
                   }
                 >
                   {u.status === 'vacant'

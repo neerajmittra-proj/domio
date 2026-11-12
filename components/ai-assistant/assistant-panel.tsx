@@ -35,7 +35,7 @@ export default function AssistantPanel() {
           type="button"
           onClick={() => setOpen(true)}
           aria-label="Open Domi, the Domio Assistant"
-          className="fixed bottom-6 right-6 z-40 h-14 w-14 overflow-hidden rounded-full border border-zinc-200 bg-gradient-to-br from-[#0E0C22] to-[#1a1440] shadow-lg transition-transform hover:scale-105"
+          className="fixed bottom-6 right-6 z-40 h-14 w-14 overflow-hidden rounded-full border border-zinc-200 bg-gradient-to-br from-[#FFFFFF] to-[#7A322A] shadow-lg transition-transform hover:scale-105"
         >
           <Domi mood="happy" size={50} className="absolute left-1/2 top-1.5 -translate-x-1/2" />
         </button>
@@ -48,7 +48,7 @@ export default function AssistantPanel() {
             aria-hidden
             onClick={() => setOpen(false)}
             className={
-              'fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity duration-300 ' +
+              'fixed inset-0 z-40 bg-navy/50 backdrop-blur-sm transition-opacity duration-300 ' +
               (shown ? 'opacity-100' : 'opacity-0')
             }
           />
@@ -56,7 +56,7 @@ export default function AssistantPanel() {
             role="dialog"
             aria-label="Domi Assistant"
             className={
-              'fixed inset-y-0 right-0 z-50 flex w-full max-w-[400px] flex-col border-l border-zinc-200 bg-[#0A0A0F] shadow-2xl transition-transform duration-300 ' +
+              'fixed inset-y-0 right-0 z-50 flex w-full max-w-[400px] flex-col border-l border-zinc-200 bg-[#FFFFFF] shadow-2xl transition-transform duration-300 ' +
               (shown ? 'translate-x-0' : 'translate-x-full')
             }
           >
@@ -68,8 +68,8 @@ export default function AssistantPanel() {
                   className={mood === 'thinking' ? 'domi-bob shrink-0' : 'shrink-0'}
                 />
                 <div className="leading-tight">
-                  <p className="text-sm font-semibold text-white">Ask Domi</p>
-                  <p className="text-xs text-[#6A6A8A]">
+                  <p className="text-sm font-semibold text-[#223144]">Ask Domi</p>
+                  <p className="text-xs text-[#3E5560]">
                     Ask me anything about your portfolio
                   </p>
                 </div>
@@ -78,7 +78,7 @@ export default function AssistantPanel() {
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label="Close assistant"
-                className="flex h-8 w-8 items-center justify-center rounded-md text-[#B0B0C8] transition-colors hover:bg-zinc-50 hover:text-white"
+                className="flex h-8 w-8 items-center justify-center rounded-md text-[#3E5560] transition-colors hover:bg-zinc-50 hover:text-[#223144]"
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
                   <path d="M6 6l12 12M18 6L6 18" />

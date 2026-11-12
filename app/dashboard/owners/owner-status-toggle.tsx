@@ -45,7 +45,7 @@ export default function OwnerStatusToggle({
       className={
         'rounded-full border px-3 py-1 text-xs font-medium transition-colors disabled:opacity-60 ' +
         (active
-          ? 'border-red-500/30 text-red-400 hover:bg-red-500/10'
+          ? 'border-red-500/30 text-red-700 hover:bg-red-500/10'
           : 'border-zinc-200 text-zinc-500 hover:bg-zinc-50')
       }
     >

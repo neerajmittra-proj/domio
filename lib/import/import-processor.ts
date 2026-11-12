@@ -269,17 +269,33 @@ const ROLLBACK_ORDER = [
   'portfolio',
 ] as const;
 
+export class RollbackNotAllowedError extends Error {}
+
+// Only rows recorded in ImportedRecord for this job (and owned by `ownerId`)
+// are deleted; anything that pre-existed the import was never recorded. The
+// job is claimed atomically (COMPLETED → ROLLED_BACK) so two concurrent
+// rollbacks cannot both run. If a created row has since been referenced by
+// other data, the foreign-key error aborts the whole transaction (nothing is
+// deleted and the job stays COMPLETED).
 export async function rollbackImport(
   importJobId: string,
+  ownerId: string,
 ): Promise<{ deleted: number }> {
   const records = await prisma.importedRecord.findMany({
-    where: { importJobId },
+    where: { importJobId, importJob: { ownerId } },
     select: { id: true, entityType: true, entityId: true },
   });
 
   let deleted = 0;
   await prisma.$transaction(
     async (tx) => {
+      const claimed = await tx.importJob.updateMany({
+        where: { id: importJobId, ownerId, status: 'COMPLETED' },
+        data: { status: 'ROLLED_BACK', rolledBackAt: new Date() },
+      });
+      if (claimed.count === 0) {
+        throw new RollbackNotAllowedError('This import cannot be rolled back.');
+      }
       for (const entityType of ROLLBACK_ORDER) {
         const ids = records
           .filter((r) => r.entityType === entityType)
@@ -289,58 +305,54 @@ export async function rollbackImport(
         switch (entityType) {
           case 'utilityBill':
             deleted += (
-              await tx.utilityBill.deleteMany({ where: { id: { in: ids } } })
+              await tx.utilityBill.deleteMany({ where: { id: { in: ids }, ownerId } })
             ).count;
             break;
           case 'rentLedger':
             deleted += (
-              await tx.rentLedger.deleteMany({ where: { id: { in: ids } } })
+              await tx.rentLedger.deleteMany({ where: { id: { in: ids }, ownerId } })
             ).count;
             break;
           case 'tenancy':
             deleted += (
-              await tx.tenancy.deleteMany({ where: { id: { in: ids } } })
+              await tx.tenancy.deleteMany({ where: { id: { in: ids }, ownerId } })
             ).count;
             break;
           case 'utilityAccount':
             deleted += (
-              await tx.utilityAccount.deleteMany({ where: { id: { in: ids } } })
+              await tx.utilityAccount.deleteMany({ where: { id: { in: ids }, ownerId } })
             ).count;
             break;
           case 'expense':
             deleted += (
-              await tx.expense.deleteMany({ where: { id: { in: ids } } })
+              await tx.expense.deleteMany({ where: { id: { in: ids }, ownerId } })
             ).count;
             break;
           case 'tenant':
             deleted += (
-              await tx.tenant.deleteMany({ where: { id: { in: ids } } })
+              await tx.tenant.deleteMany({ where: { id: { in: ids }, ownerId } })
             ).count;
             break;
           case 'subProperty':
             deleted += (
-              await tx.subProperty.deleteMany({ where: { id: { in: ids } } })
+              await tx.subProperty.deleteMany({ where: { id: { in: ids }, ownerId } })
             ).count;
             break;
           case 'property':
             deleted += (
-              await tx.property.deleteMany({ where: { id: { in: ids } } })
+              await tx.property.deleteMany({ where: { id: { in: ids }, ownerId } })
             ).count;
             break;
           case 'portfolio':
             deleted += (
-              await tx.portfolio.deleteMany({ where: { id: { in: ids } } })
+              await tx.portfolio.deleteMany({ where: { id: { in: ids }, ownerId } })
             ).count;
             break;
         }
       }
 
-      // Remove the rollback ledger itself, then flag the job.
+      // Remove the rollback ledger itself.
       await tx.importedRecord.deleteMany({ where: { importJobId } });
-      await tx.importJob.update({
-        where: { id: importJobId },
-        data: { status: 'ROLLED_BACK', rolledBackAt: new Date() },
-      });
     },
     { timeout: 60000 },
   );

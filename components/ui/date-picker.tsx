@@ -230,7 +230,7 @@ export default function DatePicker({
     <div ref={containerRef} className="relative w-full">
       {/* Input container with visible calendar icon button */}
       <div
-        className={`flex items-center rounded-xl border border-zinc-200 bg-zinc-50 shadow-2xs transition-all focus-within:border-zinc-900 focus-within:bg-white focus-within:ring-2 focus-within:ring-zinc-900/10 ${
+        className={`flex items-center rounded-xl border border-zinc-200 bg-zinc-50 shadow-2xs transition-all focus-within:border-zinc-900 focus-within:bg-card focus-within:ring-2 focus-within:ring-zinc-900/10 ${
           disabled ? 'opacity-50 cursor-not-allowed' : ''
         } ${className || ''}`}
       >
@@ -254,7 +254,7 @@ export default function DatePicker({
           type="button"
           disabled={disabled}
           onClick={() => setIsOpen((prev) => !prev)}
-          className="mr-1.5 flex h-8 items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-2.5 text-xs font-semibold text-zinc-700 shadow-2xs transition hover:border-zinc-300 hover:bg-zinc-50 active:scale-95 cursor-pointer"
+          className="mr-1.5 flex h-8 items-center gap-1.5 rounded-lg border border-zinc-200 bg-card px-2.5 text-xs font-semibold text-zinc-700 shadow-2xs transition hover:border-zinc-300 hover:bg-zinc-50 active:scale-95 cursor-pointer"
           title="Open calendar to choose date (MM/DD/YYYY)"
           aria-label="Open calendar"
         >
@@ -276,7 +276,7 @@ export default function DatePicker({
 
       {/* Floating Calendar Popover */}
       {isOpen && (
-        <div className="absolute left-0 top-full z-50 mt-1.5 w-72 rounded-2xl border border-zinc-200 bg-white p-3.5 shadow-xl animate-in fade-in-50 zoom-in-95 duration-100">
+        <div className="absolute left-0 top-full z-50 mt-1.5 w-72 rounded-2xl border border-zinc-200 bg-card p-3.5 shadow-xl animate-in fade-in-50 zoom-in-95 duration-100">
           {/* Header: Month / Year Controls */}
           <div className="flex items-center justify-between gap-1 pb-2.5 border-b border-zinc-100">
             <button
@@ -343,7 +343,7 @@ export default function DatePicker({
               return (
                 <span
                   key={`prev-${i}`}
-                  className="py-1.5 text-zinc-300 select-none text-[11px]"
+                  className="py-1.5 text-[#3E5560] select-none text-[11px]"
                 >
                   {prevDayNum}
                 </span>
@@ -363,7 +363,7 @@ export default function DatePicker({
                   onClick={() => selectDate(day)}
                   className={`flex h-7 w-7 items-center justify-center rounded-lg mx-auto text-xs transition-all font-medium ${
                     selected
-                      ? 'bg-zinc-900 text-white font-bold shadow-xs'
+                      ? 'bg-brand-grad text-white font-bold shadow-xs'
                       : todayFlag
                       ? 'border border-blue-500 bg-blue-50 text-blue-800 font-bold hover:bg-blue-100'
                       : 'text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900'

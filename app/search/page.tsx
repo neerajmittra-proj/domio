@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Logo from '@/components/brand/logo';
 
 type VacantUnit = {
   id: string;
@@ -96,7 +97,7 @@ export default function PublicSearchPage() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white selection:bg-white selection:text-zinc-950">
+    <div className="min-h-screen bg-transparent text-[#223144] selection:bg-card selection:text-zinc-950">
       {/* Background ambient radial glow */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
         <div className="absolute -top-[20%] left-1/2 h-[500px] w-[800px] -translate-x-1/2 rounded-full bg-gradient-to-tr from-white/5 via-zinc-800/20 to-transparent blur-[140px]" />
@@ -104,26 +105,26 @@ export default function PublicSearchPage() {
       </div>
 
       {/* Header / Navbar */}
-      <header className="relative z-10 border-b border-white/10 bg-black/60 backdrop-blur-md">
+      <header className="relative z-10 border-b border-[#223144]/12 bg-card/85 backdrop-blur-md">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <Link href="/" className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white font-black text-zinc-950 shadow-lg">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-card font-black text-zinc-950 shadow-lg">
               D
             </div>
-            <span className="text-xl font-bold tracking-tight text-white">
-              Domio <span className="text-xs font-semibold text-zinc-400">Property Search</span>
+            <span className="text-xl font-bold tracking-tight text-[#223144]">
+              <Logo variant="horizontal" height={30} /> <span className="text-xs font-semibold text-zinc-400">Property Search</span>
             </span>
           </Link>
           <div className="flex items-center gap-4">
             <Link
               href="/login"
-              className="text-sm font-medium text-zinc-400 transition-colors hover:text-white"
+              className="text-sm font-medium text-zinc-400 transition-colors hover:text-[#223144]"
             >
               Sign In
             </Link>
             <Link
               href="/register"
-              className="rounded-full bg-white px-4 py-2 text-sm font-bold text-zinc-950 shadow-md transition-all hover:bg-zinc-200"
+              className="rounded-full bg-brand-grad px-4 py-2 text-sm font-bold text-white shadow-md transition-all hover:bg-brand-grad-hover"
             >
               Sign Up
             </Link>
@@ -134,7 +135,7 @@ export default function PublicSearchPage() {
       {/* Hero & Search Form */}
       <main className="relative z-10 mx-auto max-w-6xl px-6 py-12">
         <div className="mx-auto max-w-3xl text-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 py-1.5 text-xs font-bold text-zinc-300">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#223144]/18 bg-[#223144]/5 px-4 py-1.5 text-xs font-bold text-[#3E5560]">
             <span>🔍 Keyword Similar Property &amp; Location Finder</span>
           </div>
           <h1 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-5xl">
@@ -147,7 +148,7 @@ export default function PublicSearchPage() {
           {/* Search Form */}
           <form
             onSubmit={(e) => handleSearch(e)}
-            className="mt-8 flex flex-col gap-3 rounded-2xl border border-white/10 bg-black/40 p-3 shadow-2xl backdrop-blur-md sm:flex-row"
+            className="mt-8 flex flex-col gap-3 rounded-2xl border border-[#223144]/12 bg-card/65 p-3 shadow-2xl backdrop-blur-md sm:flex-row"
           >
             {/* Keyword / Property Type Input */}
             <div className="relative flex-1">
@@ -159,7 +160,7 @@ export default function PublicSearchPage() {
                 placeholder="Property type (e.g. flat, land, hospital, hotel)..."
                 value={keywordInput}
                 onChange={(e) => setKeywordInput(e.target.value)}
-                className="w-full rounded-xl bg-white/5 py-3 pl-10 pr-3 text-sm text-white placeholder-zinc-500 outline-none transition focus:ring-2 focus:ring-white/20"
+                className="w-full rounded-xl bg-[#223144]/5 py-3 pl-10 pr-3 text-sm text-[#223144] placeholder-zinc-500 outline-none transition focus:ring-2 focus:ring-[#223144]/18"
               />
             </div>
 
@@ -173,7 +174,7 @@ export default function PublicSearchPage() {
                 placeholder="Location / City (e.g. New York, London)..."
                 value={locationInput}
                 onChange={(e) => setLocationInput(e.target.value)}
-                className="w-full rounded-xl bg-white/5 py-3 pl-10 pr-3 text-sm text-white placeholder-zinc-500 outline-none transition focus:ring-2 focus:ring-white/20"
+                className="w-full rounded-xl bg-[#223144]/5 py-3 pl-10 pr-3 text-sm text-[#223144] placeholder-zinc-500 outline-none transition focus:ring-2 focus:ring-[#223144]/18"
               />
             </div>
 
@@ -181,7 +182,7 @@ export default function PublicSearchPage() {
             <button
               type="submit"
               disabled={loading}
-              className="inline-flex min-h-[46px] items-center justify-center gap-2 rounded-xl bg-white px-6 text-sm font-bold text-zinc-950 shadow-md transition-all hover:bg-zinc-200 disabled:opacity-60"
+              className="inline-flex min-h-[46px] items-center justify-center gap-2 rounded-xl bg-brand-grad px-6 text-sm font-bold text-white shadow-md transition-all hover:bg-brand-grad-hover disabled:opacity-60"
             >
               {loading ? 'Searching…' : 'Search Properties'}
             </button>
@@ -197,8 +198,8 @@ export default function PublicSearchPage() {
                 onClick={() => handleChipClick(t)}
                 className={`rounded-full px-3 py-1 text-xs font-semibold transition-all ${
                   selectedType.toLowerCase() === t.toLowerCase()
-                    ? 'bg-white text-zinc-950 font-bold shadow-md'
-                    : 'border border-white/15 bg-white/5 text-zinc-400 hover:border-white/40 hover:text-white'
+                    ? 'bg-card text-zinc-950 font-bold shadow-md'
+                    : 'border border-[#223144]/18 bg-[#223144]/5 text-zinc-400 hover:border-[#223144]/28 hover:text-[#223144]'
                 }`}
               >
                 {t}
@@ -210,7 +211,7 @@ export default function PublicSearchPage() {
         {/* Results Section */}
         <div className="mt-12">
           <div className="mb-6 flex items-center justify-between">
-            <h2 className="text-xl font-bold tracking-tight text-white">
+            <h2 className="text-xl font-bold tracking-tight text-[#223144]">
               {loading
                 ? 'Searching properties…'
                 : `${properties.length} Available Properties Found`}
@@ -224,7 +225,7 @@ export default function PublicSearchPage() {
                   setSelectedType('All');
                   handleSearch(undefined, 'All');
                 }}
-                className="text-xs font-semibold text-zinc-400 hover:text-white hover:underline"
+                className="text-xs font-semibold text-zinc-400 hover:text-[#223144] hover:underline"
               >
                 Clear All Filters
               </button>
@@ -236,16 +237,16 @@ export default function PublicSearchPage() {
               {[1, 2, 3].map((i) => (
                 <div
                   key={i}
-                  className="h-64 animate-pulse rounded-2xl border border-white/10 bg-white/5"
+                  className="h-64 animate-pulse rounded-2xl border border-[#223144]/12 bg-[#223144]/5"
                 />
               ))}
             </div>
           ) : properties.length === 0 && hasSearched ? (
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-12 text-center">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-white/5 text-2xl">
+            <div className="rounded-2xl border border-[#223144]/12 bg-[#223144]/5 p-12 text-center">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#223144]/5 text-2xl">
                 🏠
               </div>
-              <h3 className="mt-4 text-lg font-bold text-white">
+              <h3 className="mt-4 text-lg font-bold text-[#223144]">
                 No matching properties found
               </h3>
               <p className="mt-1 text-sm text-zinc-400">
@@ -294,9 +295,9 @@ function PublicPropertyCard({
   };
 
   return (
-    <div className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-xl transition-all hover:border-white/40 hover:bg-white/[0.08] hover:shadow-2xl">
+    <div className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-[#223144]/12 bg-[#223144]/5 shadow-xl transition-all hover:border-[#223144]/28 hover:bg-[#223144]/[0.05] hover:shadow-2xl">
       {/* Photo Carousel */}
-      <div className="relative h-48 w-full overflow-hidden bg-black/40 select-none">
+      <div className="relative h-48 w-full overflow-hidden bg-card/65 select-none">
         <img
           src={photos[currentIdx]}
           alt={p.name}
@@ -305,11 +306,11 @@ function PublicPropertyCard({
 
         {/* Top Badges */}
         <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
-          <span className="rounded-md bg-black/60 backdrop-blur-sm px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-zinc-300">
+          <span className="rounded-md bg-card/85 backdrop-blur-sm px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#3E5560]">
             {p.type}
           </span>
           {p.customType && (
-            <span className="rounded-md bg-white px-2 py-0.5 text-[10px] font-bold text-zinc-950 shadow-xs">
+            <span className="rounded-md bg-card px-2 py-0.5 text-[10px] font-bold text-zinc-950 shadow-xs">
               🏷️ {p.customType}
             </span>
           )}
@@ -321,7 +322,7 @@ function PublicPropertyCard({
             <button
               type="button"
               onClick={prevImage}
-              className="absolute left-2 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/90"
+              className="absolute left-2 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded-full bg-card/85 text-[#223144] opacity-0 group-hover:opacity-100 transition-opacity hover:bg-card/95"
               aria-label="Previous photo"
             >
               ‹
@@ -329,7 +330,7 @@ function PublicPropertyCard({
             <button
               type="button"
               onClick={nextImage}
-              className="absolute right-2 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded-full bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/90"
+              className="absolute right-2 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded-full bg-card/85 text-[#223144] opacity-0 group-hover:opacity-100 transition-opacity hover:bg-card/95"
               aria-label="Next photo"
             >
               ›
@@ -344,7 +345,7 @@ function PublicPropertyCard({
               <span
                 key={i}
                 className={`h-1.5 rounded-full transition-all ${
-                  i === currentIdx ? 'w-4 bg-white shadow-sm' : 'w-1.5 bg-white/50'
+                  i === currentIdx ? 'w-4 bg-card shadow-sm' : 'w-1.5 bg-card/50'
                 }`}
               />
             ))}
@@ -356,7 +357,7 @@ function PublicPropertyCard({
       <div className="p-5 flex flex-col justify-between flex-1">
         <div>
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-bold text-white group-hover:text-zinc-200 transition-colors truncate">
+            <h3 className="text-lg font-bold text-[#223144] group-hover:text-[#3E5560] transition-colors truncate">
               {p.name}
             </h3>
             {p.displayId && (
@@ -374,17 +375,17 @@ function PublicPropertyCard({
           </p>
 
           {/* Pricing & Units */}
-          <div className="mt-3 rounded-xl border border-white/5 bg-white/[0.03] p-3 flex items-center justify-between text-xs">
+          <div className="mt-3 rounded-xl border border-[#223144]/12 bg-[#223144]/[0.05] p-3 flex items-center justify-between text-xs">
             <div>
               <span className="text-zinc-500 block text-[10px]">Rent From</span>
-              <span className="font-mono font-bold text-white text-base">
+              <span className="font-mono font-bold text-[#223144] text-base">
                 {formatCurrency(p.minRentAmount)}
                 <span className="text-[10px] text-zinc-500 font-sans">/mo</span>
               </span>
             </div>
             <div className="text-right">
               <span className="text-zinc-500 block text-[10px]">Availability</span>
-              <span className="font-bold text-emerald-400">
+              <span className="font-bold text-emerald-700">
                 {p.vacantUnitCount > 0
                   ? `${p.vacantUnitCount} Vacant Unit${p.vacantUnitCount > 1 ? 's' : ''}`
                   : `${p.totalUnitCount} Total Units`}
@@ -395,16 +396,16 @@ function PublicPropertyCard({
           {/* Owner contact */}
           {p.ownerName && (
             <p className="mt-2 text-[11px] text-zinc-500">
-              Listing by: <strong className="text-zinc-300">{p.ownerName}</strong>
+              Listing by: <strong className="text-[#3E5560]">{p.ownerName}</strong>
             </p>
           )}
         </div>
 
         {/* Action CTA */}
-        <div className="mt-4 border-t border-white/10 pt-3">
+        <div className="mt-4 border-t border-[#223144]/12 pt-3">
           <Link
             href={`/register`}
-            className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-white/20 bg-white/5 py-2.5 text-xs font-bold text-white transition-all hover:bg-white/10 hover:border-white/40"
+            className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-[#223144]/18 bg-[#223144]/5 py-2.5 text-xs font-bold text-[#223144] transition-all hover:bg-[#223144]/8 hover:border-[#223144]/28"
           >
             <span>🤝</span> Inquire / Apply as Tenant →
           </Link>

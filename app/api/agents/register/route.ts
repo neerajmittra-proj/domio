@@ -55,30 +55,57 @@ export async function POST(req: Request) {
     const randomSuffix = Math.floor(1000 + Math.random() * 9000);
     const inviteCode = `AGT-${cleanName}${randomSuffix}`;
 
-    const agentCount = await prisma.agent.count();
-    const displayId = `AG-${String(agentCount + 1).padStart(4, '0')}`;
-
     const parsedSkills = Array.isArray(skills) && skills.length > 0
-      ? skills.map((s: string) => String(s).trim()).filter(Boolean)
+      ? skills.map((s: string) => String(s).trim().slice(0, 60)).filter(Boolean).slice(0, 15)
       : ['Residential Leasing', 'Tenant Placement'];
 
-    const newAgent = await prisma.agent.create({
-      data: {
-        displayId,
-        userId,
-        agencyName: agencyName ? String(agencyName).trim() : null,
-        location: location.trim(),
-        skills: parsedSkills,
-        commissionRate: commissionRate ? String(commissionRate).trim() : '5% per deal',
-        bio: bio ? String(bio).trim() : null,
-        inviteCode,
-        phone: phone ? String(phone).trim() : user.phone,
-        email: email ? String(email).trim() : user.email,
-        rating: 5.0,
-        reviewCount: 0,
-        totalDeals: 0,
-      },
-    });
+    // displayId (count-based) and inviteCode (random) are both unique columns, so
+    // a concurrent registration can collide: retry with fresh values.
+    let newAgent;
+    for (let attempt = 0; ; attempt++) {
+      const agentCount = await prisma.agent.count();
+      const displayId =
+        attempt === 0
+          ? `AG-${String(agentCount + 1).padStart(4, '0')}`
+          : `AG-${String(agentCount + 1 + Math.floor(Math.random() * 1000)).padStart(4, '0')}`;
+      const code =
+        attempt === 0
+          ? inviteCode
+          : `AGT-${cleanName}${Math.floor(10000 + Math.random() * 90000)}`;
+      try {
+        newAgent = await prisma.agent.create({
+          data: {
+            displayId,
+            userId,
+            agencyName: agencyName ? String(agencyName).trim().slice(0, 120) : null,
+            location: location.trim().slice(0, 120),
+            skills: parsedSkills,
+            commissionRate: commissionRate ? String(commissionRate).trim().slice(0, 60) : '5% per deal',
+            bio: bio ? String(bio).trim().slice(0, 1000) : null,
+            inviteCode: code,
+            phone: phone ? String(phone).trim().slice(0, 30) : user.phone,
+            email: email ? String(email).trim().slice(0, 200) : user.email,
+            rating: 5.0,
+            reviewCount: 0,
+            totalDeals: 0,
+          },
+        });
+        break;
+      } catch (e) {
+        if ((e as { code?: string })?.code === 'P2002' && attempt < 4) {
+          // userId collision means the profile was just created in a parallel request.
+          const again = await prisma.agent.findUnique({ where: { userId } });
+          if (again) {
+            return NextResponse.json(
+              { error: 'You are already registered as an Agent.', agent: again },
+              { status: 409 },
+            );
+          }
+          continue;
+        }
+        throw e;
+      }
+    }
 
     return NextResponse.json(
       {
@@ -91,7 +118,7 @@ export async function POST(req: Request) {
   } catch (error: any) {
     console.error('Agent register error:', error);
     return NextResponse.json(
-      { error: error?.message || 'Failed to register as Agent' },
+      { error: 'Failed to register as Agent. Please try again.' },
       { status: 500 },
     );
   }

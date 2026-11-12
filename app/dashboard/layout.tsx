@@ -27,7 +27,7 @@ export default async function DashboardLayout({
       },
     },
   });
-  const initialTheme: Theme = me?.themePreference === 'dark' ? 'dark' : 'light';
+  const initialTheme: Theme = 'light'; // single brand theme (beige + terracotta + navy)
 
   async function signOutAction() {
     'use server';
@@ -36,7 +36,7 @@ export default async function DashboardLayout({
 
   return (
     <ThemeProvider initialTheme={initialTheme}>
-      <div className="theme-root min-h-screen flex flex-col bg-white text-zinc-900">
+      <div className="theme-root min-h-screen flex flex-col text-zinc-900">
         {/* Top Header */}
         <DomioHeader
           role={session.user.role}

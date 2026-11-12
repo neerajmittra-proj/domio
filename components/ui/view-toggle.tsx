@@ -4,7 +4,7 @@ export type View = 'card' | 'table';
 
 const baseBtn =
   'flex h-8 w-8 items-center justify-center rounded-md transition-all';
-const activeBtn = 'bg-zinc-900 text-white shadow-sm';
+const activeBtn = 'bg-brand-grad text-white shadow-sm';
 const inactiveBtn = 'text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100';
 
 export default function ViewToggle({
@@ -15,7 +15,7 @@ export default function ViewToggle({
   onChange: (view: View) => void;
 }) {
   return (
-    <div className="inline-flex items-center gap-1 rounded-lg border border-zinc-200 bg-white p-1 shadow-sm">
+    <div className="inline-flex items-center gap-1 rounded-lg border border-zinc-200 bg-card p-1 shadow-sm">
       <button
         type="button"
         onClick={() => onChange('card')}

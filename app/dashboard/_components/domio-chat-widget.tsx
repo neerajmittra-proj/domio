@@ -69,6 +69,9 @@ export default function DomioChatWidget() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          // The floating widget has no confirmation UI, so it is read-only;
+          // changes are made from the full Ask Domi page.
+          readOnly: true,
           messages: [...messages, userMsg].map((m) => ({
             role: m.role,
             content: m.content,
@@ -108,10 +111,10 @@ export default function DomioChatWidget() {
         <button
           type="button"
           onClick={() => setIsOpen((v) => !v)}
-          className="group flex items-center gap-3 rounded-full border border-[#e1e2e3] bg-white p-2 pr-5 text-black shadow-2xl transition-all hover:scale-105 active:scale-95 hover:border-black"
+          className="group flex items-center gap-3 rounded-full border border-[#DCE9EC] bg-card p-2 pr-5 text-ink shadow-2xl transition-all hover:scale-105 active:scale-95 hover:border-ink"
           aria-label="Open Domi AI Assistant"
         >
-          <div className="relative flex h-10 w-10 items-center justify-center rounded-full bg-zinc-900 text-white shadow-md">
+          <div className="relative flex h-10 w-10 items-center justify-center rounded-full bg-brand-grad text-white shadow-md">
             <Domi mood="happy" size={24} />
             <span className="absolute -top-0.5 -right-0.5 flex h-3 w-3">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
@@ -120,7 +123,7 @@ export default function DomioChatWidget() {
           </div>
 
           <div className="text-left">
-            <p className="text-xs font-bold text-black leading-tight">Chat with Domi</p>
+            <p className="text-xs font-bold text-ink leading-tight">Chat with Domi</p>
             <p className="text-[10px] text-zinc-500 leading-tight">AI Assistant</p>
           </div>
         </button>
@@ -128,20 +131,20 @@ export default function DomioChatWidget() {
 
       {/* Slide-over Chat Modal */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-end p-0 sm:p-6 bg-black/40 backdrop-blur-xs animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-end p-0 sm:p-6 bg-navy/40 backdrop-blur-xs animate-in fade-in duration-200">
           <div
-            className="flex h-[85vh] sm:h-[650px] w-full sm:max-w-md flex-col rounded-t-3xl sm:rounded-3xl border border-[#e1e2e3] bg-white shadow-2xl overflow-hidden animate-in slide-in-from-bottom-6 duration-300"
+            className="flex h-[85vh] sm:h-[650px] w-full sm:max-w-md flex-col rounded-t-3xl sm:rounded-3xl border border-[#DCE9EC] bg-card shadow-2xl overflow-hidden animate-in slide-in-from-bottom-6 duration-300"
             role="dialog"
             aria-modal="true"
           >
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-[#e1e2e3] bg-zinc-950 px-5 py-4 text-white">
+            <div className="flex items-center justify-between border-b border-[#DCE9EC] bg-transparent px-5 py-4 text-[#223144]">
               <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white border border-white/20">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#223144]/8 text-[#223144] border border-[#223144]/18">
                   <Domi mood="thinking" size={22} />
                 </div>
                 <div>
-                  <h3 className="font-bold text-sm text-white">Domi AI Co-Pilot</h3>
+                  <h3 className="font-bold text-sm text-[#223144]">Domi AI Co-Pilot</h3>
                   <p className="text-[10px] text-zinc-400">Online · Connected to Live Ledger</p>
                 </div>
               </div>
@@ -149,7 +152,7 @@ export default function DomioChatWidget() {
               <div className="flex items-center gap-1">
                 <Link
                   href="/dashboard/ai-assistant"
-                  className="rounded-lg p-1.5 text-zinc-400 hover:bg-white/10 hover:text-white transition-colors"
+                  className="rounded-lg p-1.5 text-zinc-400 hover:bg-[#223144]/8 hover:text-[#223144] transition-colors"
                   title="Expand to Full Screen"
                 >
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -159,7 +162,7 @@ export default function DomioChatWidget() {
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
-                  className="rounded-lg p-1.5 text-zinc-400 hover:bg-white/10 hover:text-white transition-colors"
+                  className="rounded-lg p-1.5 text-zinc-400 hover:bg-[#223144]/8 hover:text-[#223144] transition-colors"
                   aria-label="Close chat"
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -171,13 +174,13 @@ export default function DomioChatWidget() {
             </div>
 
             {/* Quick Prompts Bar */}
-            <div className="border-b border-zinc-100 bg-[#fafaf9] px-4 py-2 overflow-x-auto no-scrollbar flex items-center gap-1.5">
+            <div className="border-b border-zinc-100 bg-[#FFFFFF] px-4 py-2 overflow-x-auto no-scrollbar flex items-center gap-1.5">
               {QUICK_PROMPTS.map((qp) => (
                 <button
                   key={qp.label}
                   type="button"
                   onClick={() => handleSend(qp.query)}
-                  className="shrink-0 inline-flex items-center gap-1 rounded-full border border-zinc-200 bg-white px-2.5 py-1 text-[11px] font-medium text-zinc-700 hover:border-black hover:bg-zinc-50 transition-all shadow-2xs"
+                  className="shrink-0 inline-flex items-center gap-1 rounded-full border border-zinc-200 bg-card px-2.5 py-1 text-[11px] font-medium text-zinc-700 hover:border-ink hover:bg-zinc-50 transition-all shadow-2xs"
                 >
                   <span>{qp.icon}</span>
                   <span>{qp.label}</span>
@@ -186,7 +189,7 @@ export default function DomioChatWidget() {
             </div>
 
             {/* Message Stream */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-3.5 bg-white">
+            <div className="flex-1 overflow-y-auto p-4 space-y-3.5 bg-card">
               {messages.map((m) => (
                 <div
                   key={m.id}
@@ -195,8 +198,8 @@ export default function DomioChatWidget() {
                   <div
                     className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-xs sm:text-sm leading-relaxed ${
                       m.role === 'user'
-                        ? 'bg-black text-white rounded-br-none'
-                        : 'bg-[#f5f5f7] border border-[#e1e2e3] text-zinc-900 rounded-bl-none'
+                        ? 'bg-brand-grad text-white rounded-br-none'
+                        : 'bg-[#F6FAFB] border border-[#DCE9EC] text-zinc-900 rounded-bl-none'
                     }`}
                   >
                     {m.content}
@@ -206,7 +209,7 @@ export default function DomioChatWidget() {
 
               {isLoading && (
                 <div className="flex justify-start">
-                  <div className="flex items-center gap-1.5 rounded-2xl rounded-bl-none border border-[#e1e2e3] bg-[#f5f5f7] px-4 py-3 text-xs text-zinc-500">
+                  <div className="flex items-center gap-1.5 rounded-2xl rounded-bl-none border border-[#DCE9EC] bg-[#F6FAFB] px-4 py-3 text-xs text-zinc-500">
                     <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-zinc-400" />
                     <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-zinc-400 [animation-delay:0.2s]" />
                     <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-zinc-400 [animation-delay:0.4s]" />
@@ -223,19 +226,19 @@ export default function DomioChatWidget() {
                 e.preventDefault();
                 handleSend();
               }}
-              className="border-t border-[#e1e2e3] bg-white p-3 flex items-center gap-2"
+              className="border-t border-[#DCE9EC] bg-card p-3 flex items-center gap-2"
             >
               <input
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Ask Domi anything about your rent or tenants..."
-                className="flex-1 rounded-xl border border-zinc-200 bg-zinc-50 px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 placeholder-zinc-400 focus:border-black focus:bg-white focus:outline-none"
+                className="flex-1 rounded-xl border border-zinc-200 bg-zinc-50 px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 placeholder-zinc-400 focus:border-ink focus:bg-card focus:outline-none"
               />
               <button
                 type="submit"
                 disabled={!input.trim() || isLoading}
-                className="rounded-xl bg-black p-2.5 text-white transition-all hover:bg-zinc-800 disabled:opacity-40"
+                className="rounded-xl bg-brand-grad p-2.5 text-white transition-all hover:bg-brand-grad-hover disabled:opacity-40"
                 aria-label="Send query"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">

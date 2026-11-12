@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { auth } from '@/auth';
-import { getOwnedTenant } from '@/lib/tenants';
+import { getOwnedTenant, managerCanEditTenant } from '@/lib/tenants';
+import { resolveDataScope } from '@/lib/manager-access';
 import TenantForm from '../../tenant-form';
 
 export default async function EditTenantPage({
@@ -13,21 +14,24 @@ export default async function EditTenantPage({
   if (!session?.user) redirect('/login');
 
   const { tenantId } = await params;
-  const tenant = await getOwnedTenant(tenantId, session.user.id, session.user.role);
+  // Managers act on their owner's data (session.user.id is the manager's own id).
+  const ds = await resolveDataScope(session.user);
+  const tenant = await getOwnedTenant(tenantId, ds.ownerId, session.user.role);
   if (!tenant) notFound();
+  if (ds.isManager && !(await managerCanEditTenant(ds.scope, tenantId))) notFound();
 
   return (
-    <div className="min-h-full bg-[#fafaf9] px-4 py-8 sm:px-6">
+    <div className="min-h-full px-4 py-8 sm:px-6">
       <div className="mx-auto max-w-2xl">
         <Link
           href={`/dashboard/tenants/${tenant.id}`}
-          className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-zinc-700 transition-colors hover:bg-zinc-100 hover:text-zinc-900 shadow-xs"
+          className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-card px-3.5 py-1.5 text-xs font-semibold text-zinc-700 transition-colors hover:bg-zinc-100 hover:text-zinc-900 shadow-xs"
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
           Back to {tenant.name}
         </Link>
 
-        <div className="mt-4 rounded-2xl border border-zinc-200 bg-white p-6 sm:p-8 shadow-sm">
+        <div className="mt-4 rounded-2xl border border-zinc-200 bg-card p-6 sm:p-8 shadow-sm">
           <h1 className="mb-6 text-2xl font-bold tracking-tight text-zinc-900">
             Edit Tenant
           </h1>

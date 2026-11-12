@@ -16,6 +16,7 @@ import NotesIcon from '@/components/ui/notes-icon';
 import UnitUtilities from '@/components/utilities/unit-utilities';
 import RentableEntityTreeView from './rentable-entity-tree-view';
 import InteractiveFlowchart from './interactive-flowchart';
+import { buildTreeFromUnits, hasRealHierarchy, countTreeNodes } from '@/lib/units-tree';
 import { useScrollLock } from '@/hooks/use-scroll-lock';
 import { useFocusTrap } from '@/hooks/use-focus-trap';
 import { ButtonLink } from '@/components/ui/button';
@@ -33,9 +34,9 @@ const STATUS_FILTERS: { value: StatusFilter; label: string }[] = [
 ];
 
 const ghostBtn =
-  'inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-3 py-1 text-xs font-semibold text-zinc-700 shadow-xs transition-all hover:bg-zinc-50 hover:border-zinc-300 hover:text-zinc-900';
+  'inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-card px-3 py-1 text-xs font-semibold text-zinc-700 shadow-xs transition-all hover:bg-zinc-50 hover:border-zinc-300 hover:text-zinc-900';
 const primaryBtn =
-  'inline-flex items-center gap-1.5 rounded-full bg-zinc-900 px-3.5 py-1 text-xs font-semibold text-white shadow-xs transition-all hover:bg-zinc-800';
+  'inline-flex items-center gap-1.5 rounded-full bg-brand-grad px-3.5 py-1 text-xs font-semibold text-white shadow-xs transition-all hover:bg-brand-grad-hover';
 const dangerBtn =
   'inline-flex items-center gap-1.5 rounded-full border border-rose-200 bg-rose-50/60 px-3 py-1 text-xs font-semibold text-rose-600 shadow-xs transition-all hover:bg-rose-100 hover:border-rose-300';
 
@@ -196,6 +197,16 @@ export default function UnitsGrid({
     });
   }, [items, filter, search]);
 
+  // Hierarchy shown in the tree tab: the real entity hierarchy when it exists,
+  // otherwise one derived from the flat units (e.g. imported data).
+  const treeEntities = useMemo(
+    () =>
+      hasRealHierarchy(rentableEntities)
+        ? rentableEntities
+        : buildTreeFromUnits(items, propertyId, propertyName),
+    [rentableEntities, items, propertyId, propertyName],
+  );
+
   const vacantFlatUnits: VacantUnit[] = useMemo(
     () =>
       items
@@ -247,7 +258,7 @@ export default function UnitsGrid({
       {/* 2. Key Metrics Snapshot Cards */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
         {/* Total Units */}
-        <div className="rounded-2xl border border-zinc-200/80 bg-white p-4 shadow-xs">
+        <div className="rounded-2xl border border-zinc-200/80 bg-card p-4 shadow-xs">
           <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
             Units
           </p>
@@ -258,7 +269,7 @@ export default function UnitsGrid({
         </div>
 
         {/* Occupancy */}
-        <div className="rounded-2xl border border-zinc-200/80 bg-white p-4 shadow-xs">
+        <div className="rounded-2xl border border-zinc-200/80 bg-card p-4 shadow-xs">
           <div className="flex items-center justify-between">
             <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
               Occupancy
@@ -279,7 +290,7 @@ export default function UnitsGrid({
         </div>
 
         {/* Monthly Expected Rent */}
-        <div className="rounded-2xl border border-zinc-200/80 bg-white p-4 shadow-xs">
+        <div className="rounded-2xl border border-zinc-200/80 bg-card p-4 shadow-xs">
           <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
             Expected Rent
           </p>
@@ -290,7 +301,7 @@ export default function UnitsGrid({
         </div>
 
         {/* Vacancy & Maintenance */}
-        <div className="rounded-2xl border border-zinc-200/80 bg-white p-4 shadow-xs">
+        <div className="rounded-2xl border border-zinc-200/80 bg-card p-4 shadow-xs">
           <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
             Available Spaces
           </p>
@@ -312,8 +323,8 @@ export default function UnitsGrid({
             className={
               'rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all cursor-pointer ' +
               (displayTab === 'flowchart'
-                ? 'bg-zinc-900 text-white shadow-xs'
-                : 'border border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:text-zinc-900')
+                ? 'bg-brand-grad text-white shadow-xs'
+                : 'border border-zinc-200 bg-card text-zinc-600 hover:border-zinc-300 hover:text-zinc-900')
             }
           >
             📊 Flow Chart
@@ -324,11 +335,11 @@ export default function UnitsGrid({
             className={
               'rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all cursor-pointer ' +
               (displayTab === 'hierarchy'
-                ? 'bg-zinc-900 text-white shadow-xs'
-                : 'border border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:text-zinc-900')
+                ? 'bg-brand-grad text-white shadow-xs'
+                : 'border border-zinc-200 bg-card text-zinc-600 hover:border-zinc-300 hover:text-zinc-900')
             }
           >
-            Hierarchy Tree ({rentableEntities.length})
+            Hierarchy Tree ({countTreeNodes(treeEntities)})
           </button>
         </div>
 
@@ -353,7 +364,7 @@ export default function UnitsGrid({
       ) : displayTab === 'hierarchy' ? (
         <div className="mt-4">
           <RentableEntityTreeView
-            entities={rentableEntities}
+            entities={treeEntities}
             portfolioId={portfolioId}
             propertyId={propertyId}
             onAssignTenant={(u) => setAssignModal({ open: true, unit: u })}
@@ -380,8 +391,8 @@ export default function UnitsGrid({
                     className={
                       'inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all ' +
                       (isSelected
-                        ? 'bg-zinc-900 text-white shadow-xs'
-                        : 'border border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:text-zinc-900')
+                        ? 'bg-brand-grad text-white shadow-xs'
+                        : 'border border-zinc-200 bg-card text-zinc-600 hover:border-zinc-300 hover:text-zinc-900')
                     }
                   >
                     <span>{f.label}</span>
@@ -389,7 +400,7 @@ export default function UnitsGrid({
                       className={
                         'rounded-full px-1.5 py-0.2 text-[10px] font-bold ' +
                         (isSelected
-                          ? 'bg-white/20 text-white'
+                          ? 'bg-[#223144]/8 text-[#223144]'
                           : 'bg-zinc-100 text-zinc-500')
                       }
                     >
@@ -420,14 +431,14 @@ export default function UnitsGrid({
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search units or tenants..."
-                className="w-full rounded-full border border-zinc-200 bg-white py-1.5 pl-9 pr-3 text-xs text-zinc-900 shadow-xs outline-none transition placeholder:text-zinc-400 focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
+                className="w-full rounded-full border border-zinc-200 bg-card py-1.5 pl-9 pr-3 text-xs text-zinc-900 shadow-xs outline-none transition placeholder:text-zinc-400 focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
               />
             </div>
           </div>
 
           {/* 5. Units Cards / Table */}
           {items.length === 0 ? (
-            <div className="rounded-3xl border border-dashed border-zinc-300 bg-white p-12 text-center shadow-xs">
+            <div className="rounded-3xl border border-dashed border-zinc-300 bg-card p-12 text-center shadow-xs">
               <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-zinc-100 text-3xl">
                 🚪
               </div>
@@ -447,7 +458,7 @@ export default function UnitsGrid({
               </ButtonLink>
             </div>
           ) : filtered.length === 0 ? (
-            <div className="rounded-2xl border border-zinc-200 bg-white p-8 text-center shadow-xs">
+            <div className="rounded-2xl border border-zinc-200 bg-card p-8 text-center shadow-xs">
               <p className="text-sm font-medium text-zinc-500">
                 No units match your current search or filter criteria.
               </p>
@@ -477,7 +488,7 @@ export default function UnitsGrid({
                   <div
                     key={u.id}
                     style={{ borderLeft: `4px solid ${statusBorder}` }}
-                    className="flex flex-col rounded-2xl border border-zinc-200/90 bg-white p-5 shadow-xs transition-all hover:border-zinc-300 hover:shadow-md"
+                    className="flex flex-col rounded-2xl border border-zinc-200/90 bg-card p-5 shadow-xs transition-all hover:border-zinc-300 hover:shadow-md"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0 flex-1">
@@ -586,7 +597,7 @@ export default function UnitsGrid({
               })}
             </div>
           ) : (
-            <div className="overflow-x-auto rounded-2xl border border-zinc-200 bg-white shadow-xs">
+            <div className="overflow-x-auto rounded-2xl border border-zinc-200 bg-card shadow-xs">
               <table className="w-full min-w-[720px] text-left text-sm">
                 <thead className="border-b border-zinc-200 bg-zinc-50 text-[11px] font-bold uppercase tracking-wider text-zinc-600">
                   <tr>
@@ -702,12 +713,12 @@ export default function UnitsGrid({
           role="dialog"
           aria-modal="true"
           onClick={closeConfirm}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-navy/40 backdrop-blur-xs p-4"
         >
           <div
             ref={trapRef}
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-white p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-150"
+            className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-card p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-150"
           >
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-rose-50 text-rose-600 mb-3">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -735,7 +746,7 @@ export default function UnitsGrid({
                 type="button"
                 onClick={closeConfirm}
                 disabled={deleting}
-                className="rounded-full border border-zinc-200 bg-white px-4 py-2 text-xs font-semibold text-zinc-700 transition-colors hover:bg-zinc-100 hover:text-zinc-900 disabled:opacity-60"
+                className="rounded-full border border-zinc-200 bg-card px-4 py-2 text-xs font-semibold text-zinc-700 transition-colors hover:bg-zinc-100 hover:text-zinc-900 disabled:opacity-60"
               >
                 Cancel
               </button>

@@ -88,7 +88,7 @@ export default function GlobalSearchBar() {
         <div
           className={`flex items-center gap-2 rounded-full border transition-all px-3 py-2 text-sm ${
             open
-              ? 'border-zinc-900 bg-white shadow-lg'
+              ? 'border-zinc-900 bg-card shadow-lg'
               : 'border-zinc-200 bg-zinc-50 hover:border-zinc-300'
           }`}
         >
@@ -134,9 +134,9 @@ export default function GlobalSearchBar() {
 
         {/* Dropdown Results */}
         {open && results && (
-          <div className="absolute right-0 top-full mt-2 w-[360px] rounded-2xl border border-zinc-200 bg-white shadow-2xl z-50 overflow-hidden max-h-[480px] overflow-y-auto">
+          <div className="absolute right-0 top-full mt-2 w-[360px] rounded-2xl border border-zinc-200 bg-card shadow-2xl z-50 overflow-hidden max-h-[480px] overflow-y-auto">
             {/* Header */}
-            <div className="sticky top-0 bg-white border-b border-zinc-100 px-4 py-2.5 flex items-center justify-between">
+            <div className="sticky top-0 bg-card border-b border-zinc-100 px-4 py-2.5 flex items-center justify-between">
               <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">
                 {totalResults === 0 ? 'No results found' : `${totalResults} Result${totalResults !== 1 ? 's' : ''}`}
               </p>
@@ -205,7 +205,7 @@ export default function GlobalSearchBar() {
                               defaultRequestType: 'HIRE_AGENT',
                             })
                           }
-                          className="shrink-0 rounded-xl border border-zinc-200 bg-zinc-900 px-2.5 py-1.5 text-[10px] font-bold text-white transition-all hover:bg-zinc-800 whitespace-nowrap"
+                          className="shrink-0 rounded-xl border border-zinc-200 bg-brand-grad px-2.5 py-1.5 text-[10px] font-bold text-white transition-all hover:bg-brand-grad-hover whitespace-nowrap"
                         >
                           Send Request
                         </button>
@@ -254,7 +254,7 @@ export default function GlobalSearchBar() {
                               defaultRequestType: 'RENT_REQUEST',
                             })
                           }
-                          className="shrink-0 rounded-xl border border-zinc-200 bg-zinc-900 px-2.5 py-1.5 text-[10px] font-bold text-white transition-all hover:bg-zinc-800 whitespace-nowrap"
+                          className="shrink-0 rounded-xl border border-zinc-200 bg-brand-grad px-2.5 py-1.5 text-[10px] font-bold text-white transition-all hover:bg-brand-grad-hover whitespace-nowrap"
                         >
                           Send Request
                         </button>
@@ -266,7 +266,7 @@ export default function GlobalSearchBar() {
             )}
 
             {/* Footer links */}
-            <div className="sticky bottom-0 border-t border-zinc-100 bg-white px-4 py-2.5 flex items-center justify-between">
+            <div className="sticky bottom-0 border-t border-zinc-100 bg-card px-4 py-2.5 flex items-center justify-between">
               <button
                 type="button"
                 onClick={() => {

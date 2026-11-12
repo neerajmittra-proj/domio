@@ -6,6 +6,7 @@ import { useState, useRef, useEffect } from 'react';
 import type { Role } from '@prisma/client';
 import GlobalSearchBar from '@/components/search/global-search-bar';
 import VerifyAccountModal from '@/components/auth/verify-account-modal';
+import Logo from '@/components/brand/logo';
 
 function getInitials(name: string, email: string): string {
   if (name?.trim()) {
@@ -69,13 +70,11 @@ export default function DomioHeader({
   }, [pathname]);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-[#e1e2e3] bg-white">
+    <header className="sticky top-0 z-50 w-full border-b border-[#DCE9EC] bg-card">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
         {/* Left: Brand Logo */}
-        <Link href="/dashboard" className="flex shrink-0 items-center gap-1 group">
-          <span className="font-sans text-2xl font-bold tracking-tight text-black transition-colors group-hover:text-zinc-700">
-            Domio
-          </span>
+        <Link href="/dashboard" className="flex shrink-0 items-center" aria-label="Domio home">
+          <Logo variant="horizontal" height={36} priority />
         </Link>
 
         {/* Center: Global Owner & Agent Search Bar */}
@@ -88,7 +87,7 @@ export default function DomioHeader({
           {/* Requests Inbox Bell */}
           <Link
             href="/dashboard/requests"
-            className="relative flex h-9 w-9 items-center justify-center rounded-full border border-zinc-200 bg-zinc-50 text-zinc-500 transition-all hover:border-zinc-300 hover:bg-white hover:text-zinc-900"
+            className="relative flex h-9 w-9 items-center justify-center rounded-full border border-zinc-200 bg-zinc-50 text-zinc-500 transition-all hover:border-zinc-300 hover:bg-card hover:text-zinc-900"
             aria-label="Privacy Requests Inbox"
             title="Requests Inbox"
           >
@@ -108,7 +107,7 @@ export default function DomioHeader({
             <button
               type="button"
               onClick={() => setDropdownOpen((v) => !v)}
-              className="flex items-center gap-2.5 rounded-full border border-[#e1e2e3] bg-white p-1.5 pl-3.5 transition-shadow hover:shadow-md active:scale-95"
+              className="flex items-center gap-2.5 rounded-full border border-[#DCE9EC] bg-card p-1.5 pl-3.5 transition-shadow hover:shadow-md active:scale-95"
               aria-label="User menu"
               aria-expanded={dropdownOpen}
             >
@@ -119,14 +118,14 @@ export default function DomioHeader({
                 <line x1="3" y1="18" x2="21" y2="18" />
               </svg>
               {/* Circular Avatar */}
-              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-900 font-sans text-xs font-semibold text-white">
+              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-grad font-sans text-xs font-semibold text-white">
                 {initials}
               </div>
             </button>
 
             {/* Dropdown Menu */}
             {dropdownOpen && (
-              <div className="absolute right-0 mt-2 w-64 overflow-hidden rounded-2xl border border-[#e1e2e3] bg-white p-2 shadow-2xl z-50">
+              <div className="absolute right-0 mt-2 w-64 overflow-hidden rounded-2xl border border-[#DCE9EC] bg-card p-2 shadow-2xl z-50">
                 <div className="border-b border-zinc-100 px-3.5 py-3">
                   <p className="font-semibold text-sm text-zinc-900 truncate">
                     {name || email.split('@')[0]}
@@ -143,6 +142,18 @@ export default function DomioHeader({
                     className="flex items-center gap-2.5 rounded-xl px-3.5 py-2 text-sm text-zinc-700 hover:bg-zinc-100 transition-colors"
                   >
                     <span>🏠</span> Home Overview
+                  </Link>
+<Link
+                    href="/dashboard/rent"
+                    className="flex items-center gap-2.5 rounded-xl px-3.5 py-2 text-sm text-zinc-700 hover:bg-zinc-100 transition-colors"
+                  >
+                    <span>💰</span> Rent Ledger
+                  </Link>
+                  <Link
+                    href="/dashboard/tenants"
+                    className="flex items-center gap-2.5 rounded-xl px-3.5 py-2 text-sm text-zinc-700 hover:bg-zinc-100 transition-colors"
+                  >
+                    <span>👥</span> Tenants
                   </Link>
                   <Link
                     href="/dashboard/requests"
@@ -205,21 +216,57 @@ export default function DomioHeader({
                   >
                     <span>🤖</span> Ask Domi AI
                   </Link>
-                  {(role === 'OWNER' || role === 'SUPER_ADMIN') && (
+                  <Link
+                    href="/dashboard/agents"
+                    className="flex items-center gap-2.5 rounded-xl px-3.5 py-2 text-sm text-zinc-700 hover:bg-zinc-100 transition-colors"
+                  >
+                    <span>🤝</span> Hire an Agent
+                  </Link>
+                  <Link
+                    href="/dashboard/agent"
+                    className="flex items-center gap-2.5 rounded-xl px-3.5 py-2 text-sm text-zinc-700 hover:bg-zinc-100 transition-colors"
+                  >
+                    <span>🧑‍💼</span> Work as Agent
+                  </Link>
+                  {role === 'OWNER' && (
+                    <Link
+                      href="/dashboard/managers"
+                      className="flex items-center gap-2.5 rounded-xl px-3.5 py-2 text-sm text-zinc-700 hover:bg-zinc-100 transition-colors"
+                    >
+                      <span>🧑‍🔧</span> Managers
+                    </Link>
+                  )}
+                  {role === 'SUPER_ADMIN' && (
                     <>
                       <Link
-                        href="/dashboard/audit-log"
+                        href="/dashboard/owners"
                         className="flex items-center gap-2.5 rounded-xl px-3.5 py-2 text-sm text-zinc-700 hover:bg-zinc-100 transition-colors"
                       >
-                        <span>🕒</span> Audit Log
+                        <span>🏠</span> Property Owners
                       </Link>
                       <Link
-                        href="/dashboard/settings/notifications"
+                        href="/dashboard/admin/managers"
                         className="flex items-center gap-2.5 rounded-xl px-3.5 py-2 text-sm text-zinc-700 hover:bg-zinc-100 transition-colors"
                       >
-                        <span>⚙️</span> Settings
+                        <span>🧑‍🔧</span> Managers
                       </Link>
                     </>
+                  )}
+                  {(role === 'OWNER' || role === 'SUPER_ADMIN' || role === 'MANAGER') && (
+                    <Link
+                      href="/dashboard/audit-log"
+                      className="flex items-center gap-2.5 rounded-xl px-3.5 py-2 text-sm text-zinc-700 hover:bg-zinc-100 transition-colors"
+                    >
+                      <span>🕒</span> Audit Log
+                    </Link>
+                  )}
+                  {role === 'OWNER' && (
+                    <Link
+                      href="/dashboard/settings/notifications"
+                      className="flex items-center gap-2.5 rounded-xl px-3.5 py-2 text-sm text-zinc-700 hover:bg-zinc-100 transition-colors"
+                    >
+                      <span>⚙️</span> Settings
+                    </Link>
                   )}
                   <button
                     type="button"

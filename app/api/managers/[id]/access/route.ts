@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@/auth';
+import { requireOwner } from '@/lib/api-auth';
 import { prisma } from '@/lib/prisma';
 import { getOwnedManager } from '@/lib/managers';
 
@@ -7,10 +7,9 @@ export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const session = await auth();
-  if (!session?.user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const guard = await requireOwner();
+  if ('response' in guard) return guard.response;
+  const session = guard.session;
   const { id: managerId } = await params;
   const manager = await getOwnedManager(managerId, session.user.id);
   if (!manager) {
@@ -39,6 +38,18 @@ export async function POST(
     return NextResponse.json({ error: 'A valid access level is required.' }, { status: 400 });
   }
 
+  // A grant targets either a whole property or a single unit, never both
+  // (the unit id would otherwise skip the ownership check below).
+  if (
+    typeof propertyId === 'string' && propertyId &&
+    typeof subPropertyId === 'string' && subPropertyId
+  ) {
+    return NextResponse.json(
+      { error: 'Provide either a property or a unit, not both.' },
+      { status: 400 },
+    );
+  }
+
   const ownerId = session.user.id;
   if (typeof propertyId === 'string' && propertyId) {
     const property = await prisma.property.findFirst({ where: { id: propertyId, ownerId } });
@@ -58,7 +69,7 @@ export async function POST(
       ownerId,
       propertyId: typeof propertyId === 'string' && propertyId ? propertyId : null,
       subPropertyId: typeof subPropertyId === 'string' && subPropertyId ? subPropertyId : null,
-      accessLevel,
+      accessLevel: accessLevel as 'VIEW' | 'EDIT',
       canEditRentLedger: Boolean(canEditRentLedger),
     };
     // Upsert on whichever unique constraint applies (managerId+propertyId or
@@ -92,10 +103,9 @@ export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const session = await auth();
-  if (!session?.user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const guard = await requireOwner();
+  if ('response' in guard) return guard.response;
+  const session = guard.session;
   const { id: managerId } = await params;
   const manager = await getOwnedManager(managerId, session.user.id);
   if (!manager) {

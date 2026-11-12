@@ -1,5 +1,44 @@
 import type { TenancyStatus } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
+import type { ManagerScope } from '@/lib/manager-access';
+
+// Tenants a manager may see: those with a tenancy in a unit / property they
+// were granted, plus (when they hold any EDIT grant, so they can assign) the
+// owner's tenants that have no tenancy yet.
+export function managerTenantWhere(scope: ManagerScope): Prisma.TenantWhereInput {
+  const canEdit = scope.editSubPropertyIds.size > 0 || scope.editPropertyIds.size > 0;
+  return {
+    OR: [
+      { id: { in: scope.tenantIds } },
+      { tenancies: { some: { rentableEntity: { propertyId: { in: scope.propertyIds } } } } },
+      ...(canEdit ? [{ tenancies: { none: {} } }] : []),
+    ],
+  };
+}
+
+// A manager may edit a tenant only if the tenant leases a unit they can EDIT.
+export async function managerCanEditTenant(
+  scope: ManagerScope,
+  tenantId: string,
+): Promise<boolean> {
+  const editSubs = [...scope.editSubPropertyIds];
+  const editProps = [...scope.editPropertyIds];
+  if (!editSubs.length && !editProps.length) return false;
+  const hit = await prisma.tenancy.findFirst({
+    where: {
+      tenantId,
+      OR: [
+        ...(editSubs.length ? [{ subPropertyId: { in: editSubs } }] : []),
+        ...(editProps.length
+          ? [{ rentableEntity: { propertyId: { in: editProps } } }]
+          : []),
+      ],
+    },
+    select: { id: true },
+  });
+  return !!hit;
+}
 
 export type TenantPaymentStatus =
   | 'PAID'
@@ -231,7 +270,8 @@ export async function getOwnedTenant(id: string, ownerId: string, role?: string)
     },
   });
   if (!tenant) return null;
-  if (role !== 'SUPER_ADMIN' && tenant.ownerId && tenant.ownerId !== ownerId) return null;
+  // Unclaimed tenants (ownerId null) belong to nobody's directory yet.
+  if (role !== 'SUPER_ADMIN' && tenant.ownerId !== ownerId) return null;
   return tenant;
 }
 
@@ -285,7 +325,7 @@ export async function getOwnedTenantDetail(id: string, ownerId: string, role?: s
     },
   });
   if (!tenant) return null;
-  if (role !== 'SUPER_ADMIN' && tenant.ownerId && tenant.ownerId !== ownerId) return null;
+  if (role !== 'SUPER_ADMIN' && tenant.ownerId !== ownerId) return null;
   return tenant;
 }
 

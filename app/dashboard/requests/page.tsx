@@ -76,47 +76,48 @@ export default function RequestsInboxPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status }),
       });
-      if (res.ok) fetchData();
-    } catch {/* ignore */}
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        alert(data?.error ?? 'Could not update this request. Please try again.');
+      }
+      // Refresh either way so a stale status (e.g. already answered) is corrected.
+      await fetchData();
+    } catch {
+      alert('Connection error. Please try again.');
+    }
     finally { setActioning(null); }
   }
 
   const pendingCount = received.filter((r) => r.status === 'PENDING').length;
 
   return (
-    <div className="min-h-full bg-[#fafaf9]">
+    <div className="min-h-full">
       {/* ── Hero ── */}
-      <section className="relative overflow-hidden bg-zinc-950 py-10 sm:py-14 text-white">
-        <div
-          className="absolute inset-0 opacity-20 mix-blend-luminosity"
-          style={{
-            backgroundImage: `radial-gradient(circle at 60% 40%, rgba(30,41,59,0.9), rgba(9,9,11,1))`,
-          }}
-        />
+      <section className="relative overflow-hidden bg-transparent py-10 sm:py-14 text-[#223144]">
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium backdrop-blur-md">
+              <div className="inline-flex items-center gap-2 rounded-full border border-[#223144]/18 bg-[#223144]/8 px-3 py-1 text-xs font-medium backdrop-blur-md">
                 <span>🔒</span>
                 <span>Privacy-Preserving Request System</span>
               </div>
-              <h1 className="mt-3 text-3xl sm:text-4xl font-black tracking-tight text-white">
+              <h1 className="mt-3 text-3xl sm:text-4xl font-black tracking-tight text-[#223144]">
                 Requests Inbox
               </h1>
-              <p className="mt-2 text-sm text-zinc-300 max-w-2xl">
+              <p className="mt-2 text-sm text-[#3E5560] max-w-2xl">
                 Securely exchange rental, lease, and agent-hire requests. Contact details stay hidden until you accept — protecting your privacy at every step.
               </p>
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
               {pendingCount > 0 && (
-                <div className="inline-flex items-center gap-2 rounded-full border border-rose-400/40 bg-rose-500/20 px-4 py-2 text-sm font-bold text-rose-200">
+                <div className="inline-flex items-center gap-2 rounded-full border border-rose-300 bg-rose-500/20 px-4 py-2 text-sm font-bold text-rose-200">
                   🔔 {pendingCount} Pending
                 </div>
               )}
               <Link
                 href="/search"
-                className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-xs font-bold text-black shadow-sm transition-all hover:bg-zinc-100"
+                className="inline-flex items-center gap-2 rounded-xl bg-brand-grad px-4 py-2.5 text-xs font-bold text-white shadow-sm transition-all hover:bg-brand-grad-hover"
               >
                 🔍 Find Properties
               </Link>
@@ -125,23 +126,23 @@ export default function RequestsInboxPage() {
 
           {/* Stats */}
           <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <div className="rounded-xl border border-white/15 bg-black/40 p-4 backdrop-blur-md">
+            <div className="rounded-xl border border-[#223144]/18 bg-card/65 p-4 backdrop-blur-md">
               <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Received</p>
-              <p className="mt-1 font-mono text-2xl font-bold text-white">{received.length}</p>
+              <p className="mt-1 font-mono text-2xl font-bold text-[#223144]">{received.length}</p>
             </div>
-            <div className="rounded-xl border border-white/15 bg-black/40 p-4 backdrop-blur-md">
+            <div className="rounded-xl border border-[#223144]/18 bg-card/65 p-4 backdrop-blur-md">
               <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Pending</p>
-              <p className="mt-1 font-mono text-2xl font-bold text-amber-400">{pendingCount}</p>
+              <p className="mt-1 font-mono text-2xl font-bold text-amber-800">{pendingCount}</p>
             </div>
-            <div className="rounded-xl border border-white/15 bg-black/40 p-4 backdrop-blur-md">
+            <div className="rounded-xl border border-[#223144]/18 bg-card/65 p-4 backdrop-blur-md">
               <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Accepted</p>
-              <p className="mt-1 font-mono text-2xl font-bold text-emerald-400">
+              <p className="mt-1 font-mono text-2xl font-bold text-emerald-700">
                 {received.filter((r) => r.status === 'ACCEPTED').length}
               </p>
             </div>
-            <div className="rounded-xl border border-white/15 bg-black/40 p-4 backdrop-blur-md">
+            <div className="rounded-xl border border-[#223144]/18 bg-card/65 p-4 backdrop-blur-md">
               <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Sent</p>
-              <p className="mt-1 font-mono text-2xl font-bold text-white">{sent.length}</p>
+              <p className="mt-1 font-mono text-2xl font-bold text-[#223144]">{sent.length}</p>
             </div>
           </div>
         </div>
@@ -195,7 +196,7 @@ export default function RequestsInboxPage() {
         {loading ? (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-44 animate-pulse rounded-2xl border border-zinc-200 bg-white" />
+              <div key={i} className="h-44 animate-pulse rounded-2xl border border-zinc-200 bg-card" />
             ))}
           </div>
         ) : tab === 'received' ? (
@@ -280,7 +281,7 @@ function ReceivedCard({
   const isAccepted = r.status === 'ACCEPTED';
 
   return (
-    <div className={`flex flex-col justify-between rounded-2xl border bg-white p-5 shadow-xs transition-all ${r.status === 'PENDING' ? 'border-amber-300/60' : 'border-zinc-200'}`}>
+    <div className={`flex flex-col justify-between rounded-2xl border bg-card p-5 shadow-xs transition-all ${r.status === 'PENDING' ? 'border-amber-300/60' : 'border-zinc-200'}`}>
       <div>
         {/* Header row */}
         <div className="flex items-center justify-between gap-2 flex-wrap">
@@ -333,7 +334,7 @@ function ReceivedCard({
             type="button"
             onClick={onAccept}
             disabled={actioning === r.id}
-            className="flex-1 rounded-xl bg-zinc-900 py-2 text-xs font-bold text-white hover:bg-zinc-800 disabled:opacity-50 transition-all"
+            className="flex-1 rounded-xl bg-brand-grad py-2 text-xs font-bold text-white hover:bg-brand-grad-hover disabled:opacity-50 transition-all"
           >
             ✓ Accept & Reveal Contact
           </button>
@@ -375,7 +376,7 @@ function SentCard({
   const isAccepted = r.status === 'ACCEPTED';
 
   return (
-    <div className="flex flex-col justify-between rounded-2xl border border-zinc-200 bg-white p-5 shadow-xs">
+    <div className="flex flex-col justify-between rounded-2xl border border-zinc-200 bg-card p-5 shadow-xs">
       <div>
         <div className="flex items-center justify-between gap-2 flex-wrap">
           <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-bold ${typeInfo.color}`}>
@@ -439,7 +440,7 @@ function SentCard({
 
 function EmptyState({ icon, title, description }: { icon: string; title: string; description: string }) {
   return (
-    <div className="rounded-3xl border border-dashed border-zinc-200 bg-white p-12 text-center">
+    <div className="rounded-3xl border border-dashed border-zinc-200 bg-card p-12 text-center">
       <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-zinc-100 text-2xl">
         {icon}
       </div>

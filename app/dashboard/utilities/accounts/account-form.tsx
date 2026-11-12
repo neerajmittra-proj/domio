@@ -10,8 +10,8 @@ import {
 } from '@/lib/utility-types';
 
 const inputClass =
-  'rounded-lg border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-3 py-2 text-sm text-white outline-none transition placeholder:text-[#B0B0C8] focus:border-zinc-700 focus:ring-2 focus:ring-zinc-500/20';
-const labelClass = 'text-sm font-medium text-[#E8E8F2]';
+  'rounded-lg border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-3 py-2 text-sm text-[#223144] outline-none transition placeholder:text-[#7A929C] focus:border-zinc-700 focus:ring-2 focus:ring-zinc-500/20';
+const labelClass = 'text-sm font-medium text-[#223144]';
 
 export type AccountFormInitial = {
   level: UtilityLevel;
@@ -95,7 +95,7 @@ export default function AccountForm({
 
   if (structure.length === 0) {
     return (
-      <p className="rounded-lg border border-[#312D58] bg-[rgba(255,255,255,0.04)] px-4 py-3 text-sm text-[#B0B0C8]">
+      <p className="rounded-lg border border-[#C2D9E0] bg-[rgba(255,255,255,0.5)] px-4 py-3 text-sm text-[#3E5560]">
         Create a portfolio first before adding utility accounts.
       </p>
     );
@@ -133,7 +133,7 @@ export default function AccountForm({
 
       <div className="flex flex-col gap-1.5">
         <label htmlFor="notes" className={labelClass}>
-          Notes <span className="text-[#B0B0C8]">(optional)</span>
+          Notes <span className="text-[#3E5560]">(optional)</span>
         </label>
         <input id="notes" name="notes" type="text" className={inputClass} />
       </div>
@@ -150,8 +150,8 @@ export default function AccountForm({
               className={
                 'rounded-full border px-4 py-1.5 text-sm font-medium transition-colors ' +
                 (level === l.value
-                  ? 'border-zinc-300 bg-zinc-900 text-white'
-                  : 'border-[#312D58] bg-[rgba(255,255,255,0.06)] text-[#B0B0C8] hover:text-white')
+                  ? 'border-zinc-300 bg-brand-grad text-white'
+                  : 'border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] text-[#3E5560] hover:text-[#223144]')
               }
             >
               {l.label}
@@ -208,7 +208,7 @@ export default function AccountForm({
       )}
 
       {error && (
-        <p role="alert" className="rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-400">
+        <p role="alert" className="rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-700">
           {error}
         </p>
       )}
@@ -216,7 +216,7 @@ export default function AccountForm({
       <button
         type="submit"
         disabled={pending}
-        className="mt-2 rounded-full bg-zinc-900 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90 disabled:opacity-60"
+        className="mt-2 rounded-full bg-brand-grad px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90 disabled:opacity-60"
       >
         {pending ? 'Saving…' : 'Create Account'}
       </button>

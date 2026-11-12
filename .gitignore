@@ -56,3 +56,7 @@ tmp/
 /.last-run.json
 /tests/e2e/screenshots/
 tests/e2e/.rent-fixtures.json
+
+.vercel
+.env*
+Claude outputs/

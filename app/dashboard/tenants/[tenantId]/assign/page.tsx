@@ -20,21 +20,27 @@ export default async function AssignTenantPage({
   const tenant = await getOwnedTenant(tenantId, ds.ownerId, session.user.role);
   if (!tenant) notFound();
 
-  // Query vacant units scoped to the effective owner so managers see the right properties
-  const properties = await listVacantUnitsByProperty(ds.ownerId, session.user.role);
+  // Query vacant units scoped to the effective owner so managers see the right properties.
+  // Pass tenantId to exclude units this tenant is already actively occupying.
+  const properties = await listVacantUnitsByProperty(
+    ds.ownerId,
+    session.user.role,
+    tenantId,
+    ds.isManager ? ds.scope : undefined,
+  );
 
   return (
-    <div className="min-h-full bg-[#fafaf9] px-4 py-8 sm:px-6">
+    <div className="min-h-full px-4 py-8 sm:px-6">
       <div className="mx-auto max-w-2xl">
         <Link
           href={`/dashboard/tenants/${tenantId}`}
-          className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-zinc-700 transition-colors hover:bg-zinc-100 hover:text-zinc-900 shadow-xs"
+          className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-card px-3.5 py-1.5 text-xs font-semibold text-zinc-700 transition-colors hover:bg-zinc-100 hover:text-zinc-900 shadow-xs"
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
           Back to {tenant.name}
         </Link>
 
-        <div className="mt-4 rounded-2xl border border-zinc-200 bg-white p-6 sm:p-8 shadow-sm">
+        <div className="mt-4 rounded-2xl border border-zinc-200 bg-card p-6 sm:p-8 shadow-sm">
           <h1 className="text-2xl font-bold tracking-tight text-zinc-900">
             Assign to Unit
           </h1>

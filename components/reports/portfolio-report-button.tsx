@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { downloadReport, todayStr, monthsAgoStr } from './download';
 
 const inputClass =
-  'w-full rounded-xl border border-zinc-300 bg-white px-3.5 py-2 text-sm text-zinc-900 shadow-xs outline-none focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10 transition';
+  'w-full rounded-xl border border-zinc-300 bg-card px-3.5 py-2 text-sm text-zinc-900 shadow-xs outline-none focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10 transition';
 
 // "📊 Report" on a portfolio accordion row → portfolio summary PDF.
 export default function PortfolioReportButton({
@@ -40,7 +40,7 @@ export default function PortfolioReportButton({
           setError(null);
           setOpen(true);
         }}
-        className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-zinc-700 shadow-xs transition-all hover:bg-zinc-50 hover:border-zinc-300 hover:text-zinc-900"
+        className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-card px-3.5 py-1.5 text-xs font-semibold text-zinc-700 shadow-xs transition-all hover:bg-zinc-50 hover:border-zinc-300 hover:text-zinc-900"
       >
         <span>📊</span> Report
       </button>
@@ -53,11 +53,11 @@ export default function PortfolioReportButton({
             e.stopPropagation();
             if (!loading) setOpen(false);
           }}
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 backdrop-blur-xs p-4"
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-navy/40 backdrop-blur-xs p-4"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-white p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-150"
+            className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-card p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-150"
           >
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-bold tracking-tight text-zinc-900">
@@ -95,7 +95,7 @@ export default function PortfolioReportButton({
                 type="button"
                 onClick={() => !loading && setOpen(false)}
                 disabled={loading}
-                className="rounded-full border border-zinc-200 bg-white px-4 py-2 text-xs font-semibold text-zinc-700 transition-colors hover:bg-zinc-100 hover:text-zinc-900 disabled:opacity-60"
+                className="rounded-full border border-zinc-200 bg-card px-4 py-2 text-xs font-semibold text-zinc-700 transition-colors hover:bg-zinc-100 hover:text-zinc-900 disabled:opacity-60"
               >
                 Cancel
               </button>
@@ -103,7 +103,7 @@ export default function PortfolioReportButton({
                 type="button"
                 onClick={go}
                 disabled={loading}
-                className="inline-flex items-center gap-2 rounded-full bg-zinc-900 px-4 py-2 text-xs font-semibold text-white shadow-sm transition-all hover:bg-zinc-800 disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-full bg-brand-grad px-4 py-2 text-xs font-semibold text-white shadow-sm transition-all hover:bg-brand-grad-hover disabled:opacity-60"
               >
                 {loading && (
                   <span className="h-3 w-3 animate-spin rounded-full border-2 border-white/40 border-t-white" />

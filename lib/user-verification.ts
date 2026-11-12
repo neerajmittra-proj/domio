@@ -96,8 +96,22 @@ export async function verifyUserOtpCode({
     return { verified: false, message: 'This code has expired. Please request a new one.' };
   }
 
+  if (record.attempts >= 5) {
+    await prisma.userOtp.update({ where: { id: record.id }, data: { used: true } });
+    return { verified: false, message: 'Too many incorrect attempts. Please request a new code.' };
+  }
+
   const matches = await bcrypt.compare(rawOtp.trim(), record.otpHash);
   if (!matches) {
+    const bumped = await prisma.userOtp.update({
+      where: { id: record.id },
+      data: { attempts: { increment: 1 } },
+      select: { attempts: true },
+    });
+    if (bumped.attempts >= 5) {
+      await prisma.userOtp.update({ where: { id: record.id }, data: { used: true } });
+      return { verified: false, message: 'Too many incorrect attempts. Please request a new code.' };
+    }
     return { verified: false, message: 'Incorrect verification code. Please try again.' };
   }
 

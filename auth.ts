@@ -3,6 +3,7 @@ import Credentials from 'next-auth/providers/credentials';
 import Google from 'next-auth/providers/google';
 import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
+import { rateLimit } from '@/lib/rate-limit';
 import { authConfig } from '@/auth.config';
 
 // Thrown when a valid-credential user is deactivated. The `code` surfaces to
@@ -86,9 +87,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (token.sub) {
         const dbUser = await prisma.user.findUnique({
           where: { id: token.sub },
-          select: { active: true, role: true },
+          select: { active: true, role: true, owner: { select: { active: true } } },
         });
         if (!dbUser || !dbUser.active) return null;
+        // A manager is locked out together with the owner who created them.
+        if (dbUser.role === 'MANAGER' && dbUser.owner && !dbUser.owner.active) return null;
         token.role = dbUser.role; // keep role in sync if it changed
       }
       return token;
@@ -111,6 +114,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (!identifier || !password) return null;
 
         const normalised = identifier.toLowerCase();
+
+        // Brute-force speed bump per identifier (best-effort, per instance).
+        if (!rateLimit(`login:${normalised}`, 10, 15 * 60 * 1000).ok) return null;
         const cleanDigits = identifier.replace(/\D/g, '');
         const formattedPhone = identifier.startsWith('+') ? identifier : `+${cleanDigits}`;
 

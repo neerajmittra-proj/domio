@@ -8,12 +8,12 @@ export default async function OwnersPage() {
   return (
     <div className="mx-auto max-w-4xl">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold tracking-tight text-white">
+        <h1 className="text-2xl font-semibold tracking-tight text-[#223144]">
           Property Owners
         </h1>
         <Link
           href="/dashboard/owners/new"
-          className="rounded-full border border-zinc-300 bg-zinc-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-zinc-800"
+          className="rounded-full border border-zinc-300 bg-brand-grad px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-brand-grad-hover"
         >
           Add Owner
         </Link>

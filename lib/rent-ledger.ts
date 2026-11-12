@@ -1,7 +1,74 @@
-import type { RentStatus, PaymentMethod } from '@prisma/client';
+import type { Prisma, RentStatus, PaymentMethod } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { isRentStatus } from '@/lib/rent-types';
 import { isPaymentMethod } from '@/lib/payment-method-types';
+import { normalizeLedgerAmount } from '@/lib/ledger';
+import { recordAudit, type AuditActor, type AuditContext } from '@/lib/audit';
+
+// Round a money value to 2 decimals (avoids float drift when summing payments).
+export function round2(n: number): number {
+  return Math.round((n + Number.EPSILON) * 100) / 100;
+}
+
+function startOfTodayUtc(now: Date = new Date()): Date {
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+}
+
+// RentLedger rows are generated up-front as DUE for the whole lease, and nothing
+// else ever flips them. Flip DUE rows whose due date has passed to OVERDUE so
+// arrears, alerts and the status filter are truthful. Called on every read path
+// that surfaces rent status (rent page, dashboard, portfolio overview).
+export async function markOverdueRent(ownerId: string): Promise<void> {
+  await prisma.rentLedger.updateMany({
+    where: { ownerId, status: 'DUE', dueDate: { lt: startOfTodayUtc() } },
+    data: { status: 'OVERDUE' },
+  });
+}
+
+// Keep the LedgerEntry journal (which feeds the dashboard, collection report,
+// rent statement and tenant balances) in step with RentLedger payments. Called
+// inside the same transaction as the RentLedger write. Whole-currency journal
+// amounts are derived from the rounded before/after totals so no drift builds up.
+export async function mirrorRentPaymentToJournal(
+  tx: Prisma.TransactionClient,
+  args: {
+    tenancyId: string;
+    previousPaid: number;
+    newPaid: number;
+    date: Date;
+    rentFor: Date | null;
+    description: string;
+    actor: AuditActor;
+    ctx: AuditContext;
+  },
+): Promise<void> {
+  const delta = Math.round(args.newPaid) - Math.round(args.previousPaid);
+  if (delta === 0) return;
+  const type = delta > 0 ? 'PAYMENT' : 'ADJUSTMENT';
+  const created = await tx.ledgerEntry.create({
+    data: {
+      tenancyId: args.tenancyId,
+      type,
+      amount: normalizeLedgerAmount(type, delta),
+      date: args.date,
+      rentFor: args.rentFor,
+      description: args.description,
+      createdById: args.actor.id,
+      updatedById: args.actor.id,
+    },
+    select: { id: true, type: true, amount: true, date: true, rentFor: true, description: true },
+  });
+  await recordAudit(tx, {
+    entity: 'LEDGER_ENTRY',
+    entityId: created.id,
+    action: 'CREATE',
+    actor: args.actor,
+    ctx: args.ctx,
+    before: null,
+    after: created,
+    reason: 'Mirrored from rent record',
+  });
+}
 
 // ── Ledger schedule generation ──────────────────────────────────────────────
 
@@ -81,6 +148,7 @@ export async function listRentLedgerForOwner(
   ownerId: string,
   filters: RentLedgerFilters = {},
 ): Promise<RentLedgerItem[]> {
+  await markOverdueRent(ownerId);
   const range = monthRange(filters.month);
   // Combine property/unit filters under a single `tenancy` clause.
   const tenancyFilter: {
@@ -236,13 +304,12 @@ export async function getRentSummary(
   ownerId: string,
   scope?: { subPropertyIds: string[] },
 ): Promise<RentSummary> {
+  await markOverdueRent(ownerId);
   const now = new Date();
   const start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
   const end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1));
   // Start of today (UTC midnight) — a due date equal to today is NOT yet overdue.
-  const todayStart = new Date(
-    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
-  );
+  const todayStart = startOfTodayUtc(now);
   const s = scope
     ? { tenancy: { subPropertyId: { in: scope.subPropertyIds } } }
     : {};
@@ -257,17 +324,26 @@ export async function getRentSummary(
       _sum: { amountPaid: true },
       where: { ownerId, paidDate: { gte: start, lt: end }, ...s },
     }),
-    // Overdue: strictly past due date and flagged OVERDUE.
+    // Arrears: strictly past due date and not fully paid (OVERDUE, or PARTIAL
+    // with a balance still outstanding) — outstanding = amountDue - amountPaid.
     prisma.rentLedger.aggregate({
       _sum: { amountDue: true, amountPaid: true },
-      where: { ownerId, status: 'OVERDUE', dueDate: { lt: todayStart }, ...s },
+      where: {
+        ownerId,
+        status: { in: ['OVERDUE', 'PARTIAL'] },
+        dueDate: { lt: todayStart },
+        ...s,
+      },
     }),
   ]);
 
   return {
-    dueThisMonth: due._sum.amountDue ?? 0,
-    collectedThisMonth: collected._sum.amountPaid ?? 0,
-    overdue: (overdue._sum.amountDue ?? 0) - (overdue._sum.amountPaid ?? 0),
+    dueThisMonth: round2(due._sum.amountDue ?? 0),
+    collectedThisMonth: round2(collected._sum.amountPaid ?? 0),
+    overdue: Math.max(
+      0,
+      round2((overdue._sum.amountDue ?? 0) - (overdue._sum.amountPaid ?? 0)),
+    ),
   };
 }
 
@@ -334,14 +410,14 @@ export function parseRentLedgerPatch(
     if (!Number.isFinite(n) || n <= 0) {
       return { error: 'A valid amount due is required.' };
     }
-    out.amountDue = n;
+    out.amountDue = round2(n);
   }
   if (b.amountPaid !== undefined) {
     const n = typeof b.amountPaid === 'number' ? b.amountPaid : Number(b.amountPaid);
     if (!Number.isFinite(n) || n < 0) {
       return { error: 'A valid amount paid is required.' };
     }
-    out.amountPaid = n;
+    out.amountPaid = round2(n);
   }
   if (b.paymentDate !== undefined || b.paidDate !== undefined) {
     const raw = (b.paymentDate ?? b.paidDate) as unknown;
@@ -407,8 +483,8 @@ export function parsePaymentInput(
 
   const amount =
     typeof amountPaid === 'number' ? amountPaid : Number(amountPaid);
-  if (!Number.isFinite(amount) || amount < 0) {
-    return { error: 'A valid amount paid is required.' };
+  if (!Number.isFinite(amount) || amount <= 0) {
+    return { error: 'Payment amount must be greater than zero.' };
   }
 
   if (typeof paymentDate !== 'string' || !paymentDate.trim()) {
@@ -437,7 +513,7 @@ export function parsePaymentInput(
 
   return {
     data: {
-      amountPaid: amount,
+      amountPaid: round2(amount),
       paidDate,
       rentFor: rentForDate,
       reference:

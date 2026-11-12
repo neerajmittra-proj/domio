@@ -3,7 +3,7 @@ import { auth } from '@/auth';
 import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
 import { resolveDataScope } from '@/lib/manager-access';
-import { parseTenantInput } from '@/lib/tenants';
+import { parseTenantInput, managerTenantWhere } from '@/lib/tenants';
 import { generateTenantId } from '@/lib/display-ids';
 
 // GET /api/tenants?q=<search> — list owner's tenants for modal selection
@@ -19,6 +19,7 @@ export async function GET(request: Request) {
   const tenants = await prisma.tenant.findMany({
     where: {
       ownerId: ds.ownerId,
+      ...(ds.isManager ? { AND: [managerTenantWhere(ds.scope)] } : {}),
       ...(q
         ? {
             OR: [
@@ -88,9 +89,18 @@ export async function POST(request: Request) {
       );
     }
 
+    // Never take over a tenant that another owner has already linked.
+    if (existing.ownerId && existing.ownerId !== ds.ownerId) {
+      return NextResponse.json(
+        { error: `@${clean} is already linked to another owner.` },
+        { status: 409 },
+      );
+    }
+
     const updated = await prisma.tenant.update({
       where: { id: existing.id },
       data: { ownerId: ds.ownerId },
+      omit: { password: true },
     });
 
     return NextResponse.json(updated, { status: 200 });
@@ -133,6 +143,7 @@ export async function POST(request: Request) {
         portalEnabled: true,
         ...(passwordHash ? { password: passwordHash } : {}),
       },
+      omit: { password: true },
     });
 
     return NextResponse.json(tenant, { status: 201 });

@@ -25,8 +25,8 @@ const dmyFmt = new Intl.DateTimeFormat('en-US', {
 });
 
 const inputClass =
-  'rounded-lg border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-3 py-2 text-sm text-white outline-none transition placeholder:text-[#B0B0C8] focus:border-zinc-700 focus:ring-2 focus:ring-zinc-500/20';
-const labelClass = 'text-sm font-medium text-[#E8E8F2]';
+  'rounded-lg border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-3 py-2 text-sm text-[#223144] outline-none transition placeholder:text-[#7A929C] focus:border-zinc-700 focus:ring-2 focus:ring-zinc-500/20';
+const labelClass = 'text-sm font-medium text-[#223144]';
 
 function today() {
   return new Date().toISOString().slice(0, 10);
@@ -145,7 +145,7 @@ export default function RentLedgerTable({
               setAddError(null);
               setAddOpen(true);
             }}
-            className="rounded-full border border-zinc-300 bg-zinc-900 px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-zinc-800"
+            className="rounded-full border border-zinc-300 bg-brand-grad px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-brand-grad-hover"
           >
             Add Entry
           </button>
@@ -160,14 +160,14 @@ export default function RentLedgerTable({
       onClick={() => {
         if (!pending) setAddOpen(false);
       }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-navy/60 p-4"
     >
       <form
         onClick={(e) => e.stopPropagation()}
         onSubmit={submitAdd}
-        className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-[rgba(14,12,34,0.9)] p-6 shadow-2xl backdrop-blur-xl"
+        className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-[rgba(255,255,255,0.95)] p-6 shadow-2xl backdrop-blur-xl"
       >
-        <h2 className="text-lg font-semibold tracking-tight text-white">
+        <h2 className="text-lg font-semibold tracking-tight text-[#223144]">
           Add Rent Entry
         </h2>
         <div className="mt-4 flex flex-col gap-4">
@@ -202,7 +202,7 @@ export default function RentLedgerTable({
         {addError && (
           <p
             role="alert"
-            className="mt-4 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-400"
+            className="mt-4 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-700"
           >
             {addError}
           </p>
@@ -214,14 +214,14 @@ export default function RentLedgerTable({
               if (!pending) setAddOpen(false);
             }}
             disabled={pending}
-            className="rounded-full border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-4 py-2 text-sm font-medium text-[#E8E8F2] transition-colors hover:text-white disabled:opacity-60"
+            className="rounded-full border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-4 py-2 text-sm font-medium text-[#223144] transition-colors hover:text-[#223144] disabled:opacity-60"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={pending}
-            className="rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90 disabled:opacity-60"
+            className="rounded-full bg-brand-grad px-4 py-2 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90 disabled:opacity-60"
           >
             {pending ? 'Saving…' : 'Add Entry'}
           </button>
@@ -234,7 +234,7 @@ export default function RentLedgerTable({
     return (
       <>
         {header}
-        <p className="px-1 py-3 text-sm text-[#B0B0C8]">Loading rent entries…</p>
+        <p className="px-1 py-3 text-sm text-[#3E5560]">Loading rent entries…</p>
         {addModal}
       </>
     );
@@ -244,7 +244,7 @@ export default function RentLedgerTable({
     return (
       <>
         {header}
-        <p className="px-1 py-3 text-sm text-red-400">{loadError}</p>
+        <p className="px-1 py-3 text-sm text-red-700">{loadError}</p>
         {addModal}
       </>
     );
@@ -254,7 +254,7 @@ export default function RentLedgerTable({
     return (
       <>
         {header}
-        <p className="rounded-lg border border-dashed border-[#312D58] bg-[#0E0C22] px-3 py-4 text-center text-sm text-[#B0B0C8]">
+        <p className="rounded-lg border border-dashed border-[#C2D9E0] bg-[#FFFFFF] px-3 py-4 text-center text-sm text-[#3E5560]">
           No rent entries yet
         </p>
         {addModal}
@@ -280,7 +280,7 @@ export default function RentLedgerTable({
         <table className="w-full min-w-[820px] text-left text-sm">
           <thead className="bg-zinc-50 text-xs uppercase tracking-wide text-zinc-500">
             <tr>
-              <th className="sticky left-0 bg-[#100d24] px-3 py-2 font-medium">
+              <th className="sticky left-0 bg-[#F6FAFB] px-3 py-2 font-medium">
                 Month
               </th>
               <th className="px-3 py-2 font-medium">Rent Projected</th>
@@ -313,17 +313,17 @@ export default function RentLedgerTable({
                       : '')
                   }
                 >
-                  <td className="sticky left-0 bg-[#0c0a1e] px-3 py-2 text-white">
+                  <td className="sticky left-0 bg-[#F6FAFB] px-3 py-2 text-[#223144]">
                     {monthFmt.format(new Date(e.dueDate))}
                   </td>
                   {/* Rent Projected — always shown (contracted rent) */}
-                  <td className="px-3 py-2 text-white">
+                  <td className="px-3 py-2 text-[#223144]">
                     {formatMoney(e.monthlyRent)}
                   </td>
                   {/* Rent Due — only past/current months */}
-                  <td className="px-3 py-2 text-[#E8A020]">
+                  <td className="px-3 py-2 text-[#B26A0B]">
                     {future ? (
-                      <span className="text-[#4A4A6A]">—</span>
+                      <span className="text-[#5B7280]">—</span>
                     ) : (
                       formatMoney(e.amountDue)
                     )}
@@ -331,23 +331,23 @@ export default function RentLedgerTable({
                   {/* Rent Paid */}
                   <td className="px-3 py-2">
                     {future ? (
-                      <span className="text-[#4A4A6A]">—</span>
+                      <span className="text-[#5B7280]">—</span>
                     ) : e.amountPaid > 0 ? (
                       <span className="text-zinc-500">
                         {formatMoney(e.amountPaid)}
                       </span>
                     ) : (
-                      <span className="text-[#4A4A6A]">—</span>
+                      <span className="text-[#5B7280]">—</span>
                     )}
                   </td>
                   {/* Balance */}
                   <td className="px-3 py-2 font-medium">
                     {future ? (
-                      <span className="text-[#4A4A6A]">—</span>
+                      <span className="text-[#5B7280]">—</span>
                     ) : (
                       <span
                         className={
-                          balance > 0 ? 'text-[#ef4444]' : 'text-zinc-500'
+                          balance > 0 ? 'text-[#B91C1C]' : 'text-zinc-500'
                         }
                       >
                         {formatMoney(balance)}
@@ -355,11 +355,11 @@ export default function RentLedgerTable({
                     )}
                   </td>
                   {/* Payment Date */}
-                  <td className="px-3 py-2 text-[#6A6A8A]">
+                  <td className="px-3 py-2 text-[#3E5560]">
                     {e.paidDate ? dmyFmt.format(new Date(e.paidDate)) : '—'}
                   </td>
                   {/* Method */}
-                  <td className="px-3 py-2 text-[#6A6A8A]">
+                  <td className="px-3 py-2 text-[#3E5560]">
                     {e.paymentMethod ? (
                       <span title={paymentMethodLabel(e.paymentMethod)}>
                         {paymentMethodIcon(e.paymentMethod)}{' '}
@@ -372,7 +372,7 @@ export default function RentLedgerTable({
                   {/* Status */}
                   <td className="px-3 py-2">
                     {future ? (
-                      <span className="inline-flex rounded-full bg-[rgba(255,255,255,0.06)] px-2.5 py-0.5 text-xs font-medium text-[#4A4A6A]">
+                      <span className="inline-flex rounded-full bg-[rgba(255,255,255,0.7)] px-2.5 py-0.5 text-xs font-medium text-[#5B7280]">
                         Future
                       </span>
                     ) : (
@@ -391,7 +391,7 @@ export default function RentLedgerTable({
                     {e.notes ? (
                       <NotesIcon notes={e.notes} />
                     ) : (
-                      <span className="text-xs text-[#4A4A6A]">—</span>
+                      <span className="text-xs text-[#5B7280]">—</span>
                     )}
                   </td>
                   {/* Actions */}
@@ -403,12 +403,12 @@ export default function RentLedgerTable({
                           setPayError(null);
                           setTarget(e);
                         }}
-                        className="rounded-full border border-zinc-300 bg-zinc-900 px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-zinc-800"
+                        className="rounded-full border border-zinc-300 bg-brand-grad px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-brand-grad-hover"
                       >
                         Record Payment
                       </button>
                     ) : (
-                      <span className="text-xs text-[#4A4A6A]">—</span>
+                      <span className="text-xs text-[#5B7280]">—</span>
                     )}
                   </td>
                 </tr>
@@ -417,13 +417,13 @@ export default function RentLedgerTable({
           </tbody>
           <tfoot>
             <tr className="border-t border-zinc-200 bg-zinc-50 font-semibold">
-              <td className="sticky left-0 bg-[#100d24] px-3 py-2 text-white">
+              <td className="sticky left-0 bg-[#F6FAFB] px-3 py-2 text-[#223144]">
                 Total
               </td>
-              <td className="px-3 py-2 text-white">
+              <td className="px-3 py-2 text-[#223144]">
                 {formatMoney(totalProjected)}
               </td>
-              <td className="px-3 py-2 text-[#E8A020]">
+              <td className="px-3 py-2 text-[#B26A0B]">
                 {formatMoney(totalDue)}
               </td>
               <td className="px-3 py-2 text-zinc-500">
@@ -432,7 +432,7 @@ export default function RentLedgerTable({
               <td
                 className={
                   'px-3 py-2 ' +
-                  (totalBalance > 0 ? 'text-[#ef4444]' : 'text-zinc-500')
+                  (totalBalance > 0 ? 'text-[#B91C1C]' : 'text-zinc-500')
                 }
               >
                 {formatMoney(totalBalance)}
@@ -448,17 +448,17 @@ export default function RentLedgerTable({
           role="dialog"
           aria-modal="true"
           onClick={closeModal}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-navy/60 p-4"
         >
           <form
             onClick={(e) => e.stopPropagation()}
             onSubmit={submitPayment}
-            className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-[rgba(14,12,34,0.9)] p-6 shadow-2xl backdrop-blur-xl"
+            className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-[rgba(255,255,255,0.95)] p-6 shadow-2xl backdrop-blur-xl"
           >
-            <h2 className="text-lg font-semibold tracking-tight text-white">
+            <h2 className="text-lg font-semibold tracking-tight text-[#223144]">
               Record Payment
             </h2>
-            <p className="mt-1 mb-4 text-sm text-[#B0B0C8]">
+            <p className="mt-1 mb-4 text-sm text-[#3E5560]">
               {monthFmt.format(new Date(target.dueDate))} ·{' '}
               {formatMoney(target.amountDue)} due
             </p>
@@ -512,7 +512,7 @@ export default function RentLedgerTable({
               <div className="flex flex-col gap-1.5">
                 <label htmlFor="rlt-ref" className={labelClass}>
                   Reference Number{' '}
-                  <span className="text-[#B0B0C8]">(optional)</span>
+                  <span className="text-[#3E5560]">(optional)</span>
                 </label>
                 <input
                   id="rlt-ref"
@@ -523,7 +523,7 @@ export default function RentLedgerTable({
               </div>
               <div className="flex flex-col gap-1.5">
                 <label htmlFor="rlt-notes" className={labelClass}>
-                  Notes <span className="text-[#B0B0C8]">(optional)</span>
+                  Notes <span className="text-[#3E5560]">(optional)</span>
                 </label>
                 <textarea
                   id="rlt-notes"
@@ -538,7 +538,7 @@ export default function RentLedgerTable({
             {payError && (
               <p
                 role="alert"
-                className="mt-4 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-400"
+                className="mt-4 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-700"
               >
                 {payError}
               </p>
@@ -549,14 +549,14 @@ export default function RentLedgerTable({
                 type="button"
                 onClick={closeModal}
                 disabled={pending}
-                className="rounded-full border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-4 py-2 text-sm font-medium text-[#E8E8F2] transition-colors hover:text-white disabled:opacity-60"
+                className="rounded-full border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-4 py-2 text-sm font-medium text-[#223144] transition-colors hover:text-[#223144] disabled:opacity-60"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={pending}
-                className="rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90 disabled:opacity-60"
+                className="rounded-full bg-brand-grad px-4 py-2 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90 disabled:opacity-60"
               >
                 {pending ? 'Saving…' : 'Save Payment'}
               </button>

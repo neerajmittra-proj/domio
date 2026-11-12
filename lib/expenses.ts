@@ -1,4 +1,4 @@
-import type { ExpenseCategory } from '@prisma/client';
+import type { ExpenseCategory, Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import {
   isExpenseCategory,
@@ -17,6 +17,23 @@ function yearBounds(d = new Date()) {
   return {
     start: new Date(Date.UTC(d.getUTCFullYear(), 0, 1)),
     end: new Date(Date.UTC(d.getUTCFullYear() + 1, 0, 1)),
+  };
+}
+
+// Manager visibility for expenses. Unit-level expenses also store the parent
+// propertyId, and a unit-only grant puts that parent in scope.propertyIds — so
+// matching on propertyId alone would expose every OTHER unit's expenses.
+// A unit expense is visible only via its own unit; a property-level expense
+// (no unit) is visible via the property.
+export function expenseScopeWhere(
+  scope?: { propertyIds: string[]; subPropertyIds: string[] },
+): Prisma.ExpenseWhereInput {
+  if (!scope) return {};
+  return {
+    OR: [
+      { subPropertyId: { in: scope.subPropertyIds } },
+      { subPropertyId: null, propertyId: { in: scope.propertyIds } },
+    ],
   };
 }
 
@@ -84,14 +101,7 @@ export async function listExpensesForOwner(
         : {}),
       ...(filters.propertyId ? { propertyId: filters.propertyId } : {}),
       ...(range ? { date: { gte: range.gte, lt: range.lt } } : {}),
-      ...(filters.scope
-        ? {
-            OR: [
-              { propertyId: { in: filters.scope.propertyIds } },
-              { subPropertyId: { in: filters.scope.subPropertyIds } },
-            ],
-          }
-        : {}),
+      ...expenseScopeWhere(filters.scope),
     },
     orderBy: { date: 'desc' },
     select: {
@@ -193,7 +203,7 @@ export function parseExpenseFields(
   return {
     data: {
       category,
-      amount: amt,
+      amount: Math.round((amt + Number.EPSILON) * 100) / 100,
       date: parsedDate,
       description:
         typeof description === 'string' && description.trim()
@@ -265,7 +275,11 @@ export type OwnerStructure = {
   }[];
 }[];
 
-export async function getOwnerStructure(ownerId: string): Promise<OwnerStructure> {
+export async function getOwnerStructure(
+  ownerId: string,
+  // Manager scope: only the properties/units they may log expenses against.
+  scope?: { propertyIds: string[]; subPropertyIds: string[] },
+): Promise<OwnerStructure> {
   const portfolios = await prisma.portfolio.findMany({
     where: { ownerId },
     orderBy: { name: 'asc' },
@@ -273,11 +287,13 @@ export async function getOwnerStructure(ownerId: string): Promise<OwnerStructure
       id: true,
       name: true,
       properties: {
+        where: scope ? { id: { in: scope.propertyIds } } : undefined,
         orderBy: { name: 'asc' },
         select: {
           id: true,
           name: true,
           subProperties: {
+            where: scope ? { id: { in: scope.subPropertyIds } } : undefined,
             orderBy: { unitNumber: 'asc' },
             select: { id: true, name: true, unitNumber: true },
           },
@@ -285,15 +301,17 @@ export async function getOwnerStructure(ownerId: string): Promise<OwnerStructure
       },
     },
   });
-  return portfolios.map((p) => ({
-    id: p.id,
-    name: p.name,
-    properties: p.properties.map((pr) => ({
-      id: pr.id,
-      name: pr.name,
-      units: pr.subProperties,
-    })),
-  }));
+  return portfolios
+    .map((p) => ({
+      id: p.id,
+      name: p.name,
+      properties: p.properties.map((pr) => ({
+        id: pr.id,
+        name: pr.name,
+        units: pr.subProperties,
+      })),
+    }))
+    .filter((p) => !scope || p.properties.length > 0);
 }
 
 // ── Portfolio "this month" totals (for portfolio cards) ──────────────────────
@@ -332,14 +350,7 @@ export async function getExpensePageSummary(
 ): Promise<ExpensePageSummary> {
   const month = monthBounds();
   const year = yearBounds();
-  const s = scope
-    ? {
-        OR: [
-          { propertyId: { in: scope.propertyIds } },
-          { subPropertyId: { in: scope.subPropertyIds } },
-        ],
-      }
-    : {};
+  const s = expenseScopeWhere(scope);
   const [monthAgg, yearAgg, byCat] = await Promise.all([
     prisma.expense.aggregate({
       _sum: { amount: true },

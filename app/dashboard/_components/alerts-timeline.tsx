@@ -15,7 +15,7 @@ type Item = {
 };
 
 const actionClass =
-  'shrink-0 rounded-full border border-[#71717a]/40 bg-zinc-900/15 px-3 py-1 text-xs font-medium text-zinc-500 transition-colors hover:bg-zinc-900/25';
+  'shrink-0 rounded-full border border-[#8FA3AC]/40 bg-zinc-900/15 px-3 py-1 text-xs font-medium text-zinc-500 transition-colors hover:bg-zinc-900/25';
 
 export default function AlertsTimeline({
   alerts,
@@ -31,24 +31,24 @@ export default function AlertsTimeline({
       dot: 'bg-red-500',
       body: (
         <span>
-          <span className="font-medium text-white">{a.tenantName}</span>
-          <span className="text-[#6A6A8A]"> · {a.unitLabel} · </span>
-          <span className="font-medium text-red-400">
+          <span className="font-medium text-[#223144]">{a.tenantName}</span>
+          <span className="text-[#3E5560]"> · {a.unitLabel} · </span>
+          <span className="font-medium text-red-700">
             {formatMoney(a.amount)} overdue
           </span>
-          <span className="text-[#6A6A8A]"> · {a.daysOverdue}d</span>
+          <span className="text-[#3E5560]"> · {a.daysOverdue}d</span>
         </span>
       ),
       action: { label: 'Record Payment →', href: '/dashboard/rent' },
     })),
     ...alerts.expiring.map((a) => ({
       key: `e-${a.tenancyId}`,
-      dot: 'bg-[#E8A020]',
+      dot: 'bg-[#D08A1A]',
       body: (
         <span>
-          <span className="font-medium text-white">{a.tenantName}</span>
-          <span className="text-[#6A6A8A]"> · {a.unitLabel} · </span>
-          <span className="text-[#E8A020]">
+          <span className="font-medium text-[#223144]">{a.tenantName}</span>
+          <span className="text-[#3E5560]"> · {a.unitLabel} · </span>
+          <span className="text-[#B26A0B]">
             Lease expiring in {a.daysRemaining}d
           </span>
         </span>
@@ -57,12 +57,12 @@ export default function AlertsTimeline({
     })),
     ...alerts.vacant.map((a) => ({
       key: `v-${a.unitId}`,
-      dot: 'bg-[#E8A020]',
+      dot: 'bg-[#D08A1A]',
       body: (
         <span>
-          <span className="font-medium text-white">{a.unitLabel}</span>
-          <span className="text-[#6A6A8A]"> · {a.propertyName} · Vacant · </span>
-          <span className="text-[#E8E8F2]">{formatMoney(a.rent)}/mo potential</span>
+          <span className="font-medium text-[#223144]">{a.unitLabel}</span>
+          <span className="text-[#3E5560]"> · {a.propertyName} · Vacant · </span>
+          <span className="text-[#223144]">{formatMoney(a.rent)}/mo potential</span>
         </span>
       ),
       action: { label: 'Assign Tenant →', href: a.href },
@@ -72,11 +72,11 @@ export default function AlertsTimeline({
       dot: 'bg-orange-500',
       body: (
         <span>
-          <span className="font-medium text-white">
+          <span className="font-medium text-[#223144]">
             {utilityTypeLabel(a.type)}
           </span>
-          <span className="text-[#6A6A8A]"> · {a.propertyName} · </span>
-          <span className="text-orange-400">{formatMoney(a.amount)} due</span>
+          <span className="text-[#3E5560]"> · {a.propertyName} · </span>
+          <span className="text-orange-700">{formatMoney(a.amount)} due</span>
         </span>
       ),
       action: { label: 'View Bill →', href: '/dashboard/utilities' },
@@ -86,8 +86,8 @@ export default function AlertsTimeline({
       dot: 'bg-zinc-400',
       body: (
         <span>
-          📄 <span className="font-medium text-white">{a.name}</span>
-          <span className="text-[#6A6A8A]"> · {a.entityLabel} · </span>
+          📄 <span className="font-medium text-[#223144]">{a.name}</span>
+          <span className="text-[#3E5560]"> · {a.entityLabel} · </span>
           <span className="text-zinc-500">
             expires in {a.daysRemaining} days
           </span>
@@ -109,7 +109,7 @@ export default function AlertsTimeline({
         </div>
       ) : (
         <>
-          <ul className="relative mt-4 space-y-1 border-l border-[#1A1A2A] pl-6">
+          <ul className="relative mt-4 space-y-1 border-l border-[#DCE9EC] pl-6">
             <AnimatePresence initial={false}>
               {(showAll ? items : items.slice(0, 5)).map((it) => (
                 <motion.li
@@ -123,7 +123,7 @@ export default function AlertsTimeline({
                 >
                   <span
                     className={
-                      'absolute -left-[1.625rem] top-1/2 h-2.5 w-2.5 -translate-y-1/2 rounded-full ring-4 ring-[#0A0A0F] ' +
+                      'absolute -left-[1.625rem] top-1/2 h-2.5 w-2.5 -translate-y-1/2 rounded-full ring-4 ring-[#FFFFFF] ' +
                       it.dot
                     }
                   />
@@ -138,7 +138,7 @@ export default function AlertsTimeline({
                       onClick={() =>
                         setDismissed((prev) => new Set(prev).add(it.key))
                       }
-                      className="rounded-full px-1.5 text-sm text-[#4A4A6A] transition-colors hover:text-[#B0B0C8]"
+                      className="rounded-full px-1.5 text-sm text-[#5B7280] transition-colors hover:text-[#3E5560]"
                     >
                       ✕
                     </button>
@@ -152,7 +152,7 @@ export default function AlertsTimeline({
             <button
               type="button"
               onClick={() => setShowAll((s) => !s)}
-              className="mt-2 text-sm font-medium text-zinc-500 transition-colors hover:text-white"
+              className="mt-2 text-sm font-medium text-zinc-500 transition-colors hover:text-[#223144]"
             >
               {showAll
                 ? 'Show fewer'

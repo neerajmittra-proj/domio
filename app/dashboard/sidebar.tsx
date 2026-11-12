@@ -216,7 +216,7 @@ export default function DashboardSidebar({
       (collapsed ? 'lg:justify-center lg:gap-0 lg:px-2 ' : '');
     // AI items use the same zinc styling — no special blue treatment.
     return base + (active
-      ? 'bg-zinc-900 text-white font-semibold'
+      ? 'bg-brand-grad text-white font-semibold'
       : 'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900');
   }
 
@@ -230,37 +230,37 @@ export default function DashboardSidebar({
   return (
     <>
       {/* ── Mobile Top Bar ────────────────────────────────────────────── */}
-      <div className="fixed inset-x-0 top-0 z-30 flex h-14 items-center justify-between border-b border-zinc-200 bg-white/95 backdrop-blur-md px-4 lg:hidden shadow-sm">
+      <div className="fixed inset-x-0 top-0 z-30 flex h-14 items-center justify-between border-b border-zinc-200 bg-card/95 backdrop-blur-md px-4 lg:hidden shadow-sm">
         <div className="flex items-center gap-3">
           <button
             type="button"
             aria-label="Open menu"
             onClick={() => setMobileOpen(true)}
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-500 active:scale-95 hover:border-zinc-300 hover:text-zinc-800 transition-all"
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-200 bg-card text-zinc-500 active:scale-95 hover:border-zinc-300 hover:text-zinc-800 transition-all"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
               <path d="M4 6h16M4 12h16M4 18h16"/>
             </svg>
           </button>
           <Link href="/dashboard" className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-zinc-900 font-bold text-white text-sm">
+            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-brand-grad font-bold text-white text-sm">
               D
             </div>
             <span className="font-bold text-base text-zinc-900 tracking-tight">Domio</span>
           </Link>
         </div>
         <div className="flex items-center gap-2">
-          <button type="button" onClick={toggleTheme} aria-label="Toggle theme" className="flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-500">
+          <button type="button" onClick={toggleTheme} aria-label="Toggle theme" className="flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-200 bg-card text-zinc-500">
             {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
           </button>
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-900 font-semibold text-xs text-white">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-grad font-semibold text-xs text-white">
             {initials}
           </div>
         </div>
       </div>
 
       {/* ── Mobile Bottom Navigation Dock ─────────────────────────────── */}
-      <nav className="fixed inset-x-0 bottom-0 z-40 flex h-16 items-center justify-around border-t border-zinc-200 bg-white/95 backdrop-blur-lg px-2 lg:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-40 flex h-16 items-center justify-around border-t border-zinc-200 bg-card/95 backdrop-blur-lg px-2 lg:hidden">
         {mobileDockItems.map((item) => {
           const active = isActive(item.href);
           return (
@@ -292,14 +292,14 @@ export default function DashboardSidebar({
       {/* Backdrop */}
       {mobileOpen && (
         <div aria-hidden onClick={() => setMobileOpen(false)}
-          className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-50 bg-navy/30 backdrop-blur-sm lg:hidden"
         />
       )}
 
       {/* ── Main Sidebar ──────────────────────────────────────────────── */}
       <aside
         className={
-          'flex shrink-0 flex-col justify-between border-r border-zinc-200 bg-white transition-all duration-250 ' +
+          'flex shrink-0 flex-col justify-between border-r border-zinc-200 bg-card transition-all duration-250 ' +
           'fixed inset-y-0 left-0 z-50 lg:static lg:z-auto lg:translate-x-0 ' +
           (mobileOpen ? 'translate-x-0 ' : '-translate-x-full ') +
           (collapsed ? 'w-64 p-3 lg:w-[60px] lg:p-2' : 'w-64 p-4')
@@ -310,7 +310,7 @@ export default function DashboardSidebar({
           {/* Logo + Collapse */}
           <div className={`flex items-center justify-between pb-4 border-b border-zinc-100 ${collapsed ? 'lg:flex-col lg:items-center lg:gap-2' : ''}`}>
             <Link href="/dashboard" className="flex items-center gap-2.5">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-zinc-900 font-bold text-white text-base">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-grad font-bold text-white text-base">
                 D
               </div>
               <div className={collapsed ? 'lg:hidden' : ''}>
@@ -370,7 +370,7 @@ export default function DashboardSidebar({
         <div className="mt-auto pt-4 border-t border-zinc-100">
           <div className={`flex items-center justify-between gap-2 rounded-lg border border-zinc-200 bg-zinc-50 p-2.5 ${collapsed ? 'lg:justify-center lg:p-1.5' : ''}`}>
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-zinc-900 font-semibold text-xs text-white">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-grad font-semibold text-xs text-white">
                 {initials}
               </div>
               <div className={`min-w-0 ${showLabel}`}>

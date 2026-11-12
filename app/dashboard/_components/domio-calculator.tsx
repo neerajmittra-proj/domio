@@ -10,12 +10,12 @@ export default function DomioCalculator() {
   const automatedSavings = Math.round(annualCollected * 0.08); // 8% avg agent fee saved
 
   return (
-    <section className="border-b border-[#e1e2e3] bg-white py-16 sm:py-20">
+    <section className="border-b border-[#DCE9EC] bg-card py-16 sm:py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
           {/* Left Column: Heading & Copy */}
           <div>
-            <h2 className="text-3xl font-extrabold tracking-tight text-black sm:text-4xl lg:text-5xl">
+            <h2 className="text-3xl font-extrabold tracking-tight text-ink sm:text-4xl lg:text-5xl">
               See how much you can save with Domio.
             </h2>
             <p className="mt-4 text-base sm:text-lg text-zinc-600 leading-relaxed">
@@ -24,7 +24,7 @@ export default function DomioCalculator() {
             <div className="mt-6">
               <Link
                 href="/dashboard/rent"
-                className="inline-flex items-center gap-2 rounded-xl bg-black px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-zinc-800 active:scale-95 shadow-md"
+                className="inline-flex items-center gap-2 rounded-xl bg-brand-grad px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-brand-grad-hover active:scale-95 shadow-md"
               >
                 Launch Rent Ledger →
               </Link>
@@ -32,15 +32,15 @@ export default function DomioCalculator() {
           </div>
 
           {/* Right Column: Interactive Slider & Calculation Box */}
-          <div className="rounded-2xl border border-[#e1e2e3] bg-[#fafaf9] p-6 sm:p-8 text-center shadow-sm">
+          <div className="rounded-2xl border border-[#DCE9EC] bg-[#FFFFFF] p-6 sm:p-8 text-center shadow-sm">
             <p className="text-xs font-bold uppercase tracking-widest text-zinc-500">
               Estimated Annual Rent Collection
             </p>
-            <p className="mt-2 text-4xl sm:text-6xl font-black text-black tracking-tight font-mono">
+            <p className="mt-2 text-4xl sm:text-6xl font-black text-ink tracking-tight font-mono">
               ${annualCollected.toLocaleString()}
             </p>
             <p className="mt-1 text-sm font-medium text-zinc-600">
-              Monthly rental <strong className="text-black font-bold">${monthlyRent.toLocaleString()}</strong> · ${automatedSavings.toLocaleString()} avg savings/yr
+              Monthly rental <strong className="text-ink font-bold">${monthlyRent.toLocaleString()}</strong> · ${automatedSavings.toLocaleString()} avg savings/yr
             </p>
 
             {/* Slider Control */}
@@ -72,7 +72,7 @@ export default function DomioCalculator() {
 
         {/* Governing / Security Banner */}
         <div className="mt-16 text-center border-t border-zinc-100 pt-12">
-          <h3 className="text-2xl font-bold text-black sm:text-3xl">
+          <h3 className="text-2xl font-bold text-ink sm:text-3xl">
             You’re in safe hands
           </h3>
           <p className="mt-2 text-sm sm:text-base text-zinc-600">

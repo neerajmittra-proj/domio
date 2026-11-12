@@ -28,10 +28,18 @@ export async function GET(request: Request) {
   }
 
   const ds = await resolveDataScope(session.user);
+  // Managers may only read properties they were granted.
+  if (ds.isManager && !ds.scope.propertyIds.includes(propertyId)) {
+    return NextResponse.json(
+      { error: 'Property not found or unauthorized' },
+      { status: 404 },
+    );
+  }
   let entities = await listRentableEntitiesForProperty(propertyId, ds.ownerId);
 
-  // Auto-provision root PROPERTY entity if none exists so users are never blocked
-  if (entities.length === 0) {
+  // Auto-provision root PROPERTY entity if none exists so users are never
+  // blocked (owners only: a read by a manager must not write).
+  if (entities.length === 0 && !ds.isManager) {
     const prop = await prisma.property.findFirst({
       where: { id: propertyId, ownerId: ds.ownerId },
     });

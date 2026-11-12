@@ -210,6 +210,10 @@ export type RentableEntityNode = {
   aggregatedRent: number;
   // Aggregated collection (amount paid) from this node + all descendants
   aggregatedCollection: number;
+  // Set only on nodes derived on the fly from flat SubProperty units (no
+  // RentableEntity row behind them): 'root' = the property, 'floor' = a floor
+  // grouping, 'unit' = a flat unit (its id is a SubProperty id).
+  synthetic?: 'root' | 'floor' | 'unit';
   children: RentableEntityNode[];
 };
 
@@ -486,6 +490,11 @@ export async function cascadeVacantToDescendants(
     UPDATE "RentableEntity"
     SET status = 'VACANT', "updatedAt" = NOW()
     WHERE id IN (SELECT id FROM descendants WHERE id <> ${nodeId})
+      AND NOT EXISTS (
+        SELECT 1 FROM "Tenancy" t
+        WHERE t."rentableEntityId" = "RentableEntity".id
+          AND t.status = 'ACTIVE'
+      )
   `;
 }
 
@@ -626,9 +635,11 @@ export async function handleMaintenanceStatusCascade(
       const names = subEntities.map((s) => s.name).filter(Boolean);
 
       if (codes.length > 0 || names.length > 0) {
+        const propertyIds = [...new Set(subEntities.map((s) => s.propertyId))];
         await prisma.subProperty.updateMany({
           where: {
             ownerId,
+            propertyId: { in: propertyIds },
             OR: [
               { unitNumber: { in: codes } },
               { name: { in: names } },
@@ -667,15 +678,17 @@ export async function handleMaintenanceStatusCascade(
 
       const ancestorEntities = await prisma.rentableEntity.findMany({
         where: { id: { in: maintenanceAncestorIds }, ownerId },
-        select: { code: true, name: true },
+        select: { code: true, name: true, propertyId: true },
       });
       const codes = ancestorEntities.map((s) => s.code).filter(Boolean);
       const names = ancestorEntities.map((s) => s.name).filter(Boolean);
 
       if (codes.length > 0 || names.length > 0) {
+        const propertyIds = [...new Set(ancestorEntities.map((s) => s.propertyId))];
         await prisma.subProperty.updateMany({
           where: {
             ownerId,
+            propertyId: { in: propertyIds },
             OR: [
               { unitNumber: { in: codes } },
               { name: { in: names } },

@@ -81,15 +81,15 @@ export default function SendPrivacyRequestModal({
   }
 
   const inputClass =
-    'w-full rounded-xl border border-zinc-300 bg-white px-3.5 py-2.5 text-xs text-zinc-900 shadow-xs outline-none transition placeholder:text-zinc-400 focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10';
+    'w-full rounded-xl border border-zinc-300 bg-card px-3.5 py-2.5 text-xs text-zinc-900 shadow-xs outline-none transition placeholder:text-zinc-400 focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10';
 
   return (
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-navy/60 backdrop-blur-xs p-4"
     >
-      <div className="relative w-full max-w-lg rounded-3xl border border-zinc-200 bg-white p-6 sm:p-8 shadow-2xl">
+      <div className="relative w-full max-w-lg rounded-3xl border border-zinc-200 bg-card p-6 sm:p-8 shadow-2xl">
         <button
           type="button"
           onClick={onClose}
@@ -100,7 +100,7 @@ export default function SendPrivacyRequestModal({
 
         {/* Modal Header */}
         <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-zinc-900 text-xl text-white">
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-grad text-xl text-white">
             🔒
           </div>
           <div>
@@ -133,7 +133,7 @@ export default function SendPrivacyRequestModal({
                 onClick={() => setRequestType('RENT_REQUEST')}
                 className={`rounded-xl border p-2 text-xs font-bold transition-all ${
                   requestType === 'RENT_REQUEST'
-                    ? 'border-zinc-900 bg-zinc-900 text-white'
+                    ? 'border-zinc-900 bg-brand-grad text-white'
                     : 'border-zinc-200 bg-zinc-50 text-zinc-600 hover:bg-zinc-100'
                 }`}
               >
@@ -144,7 +144,7 @@ export default function SendPrivacyRequestModal({
                 onClick={() => setRequestType('OFFER_RENT')}
                 className={`rounded-xl border p-2 text-xs font-bold transition-all ${
                   requestType === 'OFFER_RENT'
-                    ? 'border-zinc-900 bg-zinc-900 text-white'
+                    ? 'border-zinc-900 bg-brand-grad text-white'
                     : 'border-zinc-200 bg-zinc-50 text-zinc-600 hover:bg-zinc-100'
                 }`}
               >
@@ -155,7 +155,7 @@ export default function SendPrivacyRequestModal({
                 onClick={() => setRequestType('HIRE_AGENT')}
                 className={`rounded-xl border p-2 text-xs font-bold transition-all ${
                   requestType === 'HIRE_AGENT'
-                    ? 'border-zinc-900 bg-zinc-900 text-white'
+                    ? 'border-zinc-900 bg-brand-grad text-white'
                     : 'border-zinc-200 bg-zinc-50 text-zinc-600 hover:bg-zinc-100'
                 }`}
               >
@@ -222,7 +222,7 @@ export default function SendPrivacyRequestModal({
           <button
             type="submit"
             disabled={submitting}
-            className="mt-2 w-full rounded-2xl bg-zinc-900 py-3 text-xs font-bold text-white shadow-md hover:bg-zinc-800 disabled:opacity-50"
+            className="mt-2 w-full rounded-2xl bg-brand-grad py-3 text-xs font-bold text-white shadow-md hover:bg-brand-grad-hover disabled:opacity-50"
           >
             {submitting ? 'Sending Request…' : 'Send Privacy Request →'}
           </button>

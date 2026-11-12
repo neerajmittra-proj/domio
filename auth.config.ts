@@ -1,9 +1,10 @@
 import type { NextAuthConfig } from 'next-auth';
 
-// Edge-safe shared config. Imported by BOTH auth.ts (Node runtime, where the
-// Credentials provider adds Prisma + bcrypt) and proxy.ts (Edge runtime, which
-// only reads the session cookie). Keep this file free of Prisma/bcrypt/Node-only
-// imports so it can run on the Edge.
+// Edge-safe shared config, imported by auth.ts (Node runtime, where the
+// Credentials provider adds Prisma + bcrypt). There is currently no proxy.ts:
+// route protection is enforced server-side by app/dashboard/layout.tsx and by
+// each API route. Keep this file free of Prisma/bcrypt/Node-only imports so it
+// stays usable from an Edge proxy if one is added later.
 export const authConfig = {
   // Credentials sessions can't use a DB-session adapter — store them as JWTs.
   session: { strategy: 'jwt' },

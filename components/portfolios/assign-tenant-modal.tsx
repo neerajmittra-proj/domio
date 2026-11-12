@@ -48,7 +48,7 @@ function nextYearISO() {
 }
 
 const inputClass =
-  'w-full rounded-xl border border-zinc-200 bg-zinc-50 px-3.5 py-2.5 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-zinc-900 focus:bg-white focus:ring-2 focus:ring-zinc-900/10';
+  'w-full rounded-xl border border-zinc-200 bg-zinc-50 px-3.5 py-2.5 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-zinc-900 focus:bg-card focus:ring-2 focus:ring-zinc-900/10';
 const labelClass = 'block text-xs font-semibold text-zinc-700 mb-1';
 const optionalTag = <span className="text-[11px] font-normal text-zinc-400">(optional)</span>;
 
@@ -362,13 +362,13 @@ export default function AssignTenantModal({
       role="dialog"
       aria-modal="true"
       aria-label="Assign Tenant"
-      className="fixed inset-0 z-[70] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-150"
+      className="fixed inset-0 z-[70] flex items-center justify-center bg-navy/50 backdrop-blur-sm p-4 animate-in fade-in duration-150"
       onClick={(e) => {
         if (e.target === e.currentTarget && !pending) onClose();
       }}
     >
       <div
-        className="w-full max-w-xl rounded-2xl border border-zinc-200 bg-white shadow-2xl overflow-hidden animate-in zoom-in-95 duration-150"
+        className="w-full max-w-xl rounded-2xl border border-zinc-200 bg-card shadow-2xl overflow-hidden animate-in zoom-in-95 duration-150"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -473,7 +473,7 @@ export default function AssignTenantModal({
                 )}
 
                 {showDropdown && tenantResults.length > 0 && (
-                  <div className="absolute z-30 mt-1 w-full rounded-xl border border-zinc-200 bg-white shadow-xl max-h-52 overflow-y-auto">
+                  <div className="absolute z-30 mt-1 w-full rounded-xl border border-zinc-200 bg-card shadow-xl max-h-52 overflow-y-auto">
                     {tenantResults.map((t) => (
                       <button
                         key={t.id}
@@ -499,7 +499,7 @@ export default function AssignTenantModal({
                 )}
 
                 {showDropdown && tenantResults.length === 0 && !tenantLoading && tenantSearch.length >= 1 && (
-                  <div className="absolute z-30 mt-1 w-full rounded-xl border border-zinc-200 bg-white shadow-xl px-4 py-3 text-sm text-zinc-600">
+                  <div className="absolute z-30 mt-1 w-full rounded-xl border border-zinc-200 bg-card shadow-xl px-4 py-3 text-sm text-zinc-600">
                     No tenants found.{' '}
                     <button
                       type="button"
@@ -556,8 +556,8 @@ export default function AssignTenantModal({
                     className={
                       'rounded-full px-2.5 py-1 text-[11px] font-semibold transition ' +
                       (newTenantSubMode === 'manual'
-                        ? 'bg-zinc-900 text-white'
-                        : 'bg-white border border-zinc-200 text-zinc-600 hover:text-zinc-900')
+                        ? 'bg-brand-grad text-white'
+                        : 'bg-card border border-zinc-200 text-zinc-600 hover:text-zinc-900')
                     }
                   >
                     Enter Manually
@@ -568,8 +568,8 @@ export default function AssignTenantModal({
                     className={
                       'rounded-full px-2.5 py-1 text-[11px] font-semibold transition ' +
                       (newTenantSubMode === 'username'
-                        ? 'bg-zinc-900 text-white'
-                        : 'bg-white border border-zinc-200 text-zinc-600 hover:text-zinc-900')
+                        ? 'bg-brand-grad text-white'
+                        : 'bg-card border border-zinc-200 text-zinc-600 hover:text-zinc-900')
                     }
                   >
                     Link @username
@@ -594,7 +594,7 @@ export default function AssignTenantModal({
                       type="button"
                       onClick={handleLookupUsername}
                       disabled={lookingUpUsername || !usernameInput.trim()}
-                      className="rounded-xl bg-zinc-900 px-4 py-2 text-xs font-semibold text-white transition hover:bg-zinc-800 disabled:opacity-50"
+                      className="rounded-xl bg-brand-grad px-4 py-2 text-xs font-semibold text-white transition hover:bg-brand-grad-hover disabled:opacity-50"
                     >
                       {lookingUpUsername ? 'Searching…' : 'Lookup'}
                     </button>
@@ -770,7 +770,7 @@ export default function AssignTenantModal({
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className={labelClass}>Monthly Rent *</label>
-                <div className="flex overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50 shadow-xs focus-within:border-zinc-900 focus-within:bg-white focus-within:ring-2 focus-within:ring-zinc-900/10 transition">
+                <div className="flex overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50 shadow-xs focus-within:border-zinc-900 focus-within:bg-card focus-within:ring-2 focus-within:ring-zinc-900/10 transition">
                   <span className="shrink-0 flex items-center justify-center border-r border-zinc-200 bg-zinc-100/70 px-3 text-sm font-bold text-zinc-600 select-none">
                     ₹
                   </span>
@@ -788,7 +788,7 @@ export default function AssignTenantModal({
               </div>
               <div>
                 <label className={labelClass}>Security Deposit</label>
-                <div className="flex overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50 shadow-xs focus-within:border-zinc-900 focus-within:bg-white focus-within:ring-2 focus-within:ring-zinc-900/10 transition">
+                <div className="flex overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50 shadow-xs focus-within:border-zinc-900 focus-within:bg-card focus-within:ring-2 focus-within:ring-zinc-900/10 transition">
                   <span className="shrink-0 flex items-center justify-center border-r border-zinc-200 bg-zinc-100/70 px-3 text-sm font-bold text-zinc-600 select-none">
                     ₹
                   </span>
@@ -839,7 +839,7 @@ export default function AssignTenantModal({
               type="button"
               onClick={onClose}
               disabled={pending}
-              className="rounded-full border border-zinc-200 bg-white px-5 py-2 text-sm font-semibold text-zinc-700 transition hover:bg-zinc-50 disabled:opacity-60"
+              className="rounded-full border border-zinc-200 bg-card px-5 py-2 text-sm font-semibold text-zinc-700 transition hover:bg-zinc-50 disabled:opacity-60"
             >
               Cancel
             </button>

@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { resolveDataScope, resolveRentLedgerAccess } from '@/lib/manager-access';
-import { computeRentStatus } from '@/lib/rent-ledger';
+import { computeRentStatus, round2 } from '@/lib/rent-ledger';
 import { loadActor, recordAudit } from '@/lib/audit';
 
 export async function POST(request: Request) {
@@ -24,10 +24,11 @@ export async function POST(request: Request) {
   if (!due || Number.isNaN(due.getTime())) {
     return NextResponse.json({ error: 'A valid due date is required.' }, { status: 400 });
   }
-  const amt = typeof amountDue === 'number' ? amountDue : Number(amountDue);
-  if (!Number.isFinite(amt) || amt <= 0) {
+  const amtRaw = typeof amountDue === 'number' ? amountDue : Number(amountDue);
+  if (!Number.isFinite(amtRaw) || amtRaw <= 0) {
     return NextResponse.json({ error: 'A valid amount due is required.' }, { status: 400 });
   }
+  const amt = round2(amtRaw);
 
   const tenancy = await prisma.tenancy.findUnique({
     where: { id: tenancyId },
@@ -42,6 +43,21 @@ export async function POST(request: Request) {
   });
   if ('error' in access) {
     return NextResponse.json({ error: access.error }, { status: access.status });
+  }
+
+  // The lease schedule already pre-generates one row per month; refuse to
+  // double-bill the same tenancy for the same calendar month.
+  const monthStart = new Date(Date.UTC(due.getUTCFullYear(), due.getUTCMonth(), 1));
+  const monthEnd = new Date(Date.UTC(due.getUTCFullYear(), due.getUTCMonth() + 1, 1));
+  const existing = await prisma.rentLedger.findFirst({
+    where: { tenancyId, dueDate: { gte: monthStart, lt: monthEnd } },
+    select: { id: true },
+  });
+  if (existing) {
+    return NextResponse.json(
+      { error: 'A rent entry for this tenant already exists for that month. Edit it instead.' },
+      { status: 409 },
+    );
   }
 
   try {

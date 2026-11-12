@@ -112,7 +112,7 @@ export default function AppHubGrid({ role }: { role: Role }) {
           <Link
             key={block.href}
             href={block.href}
-            className="group relative flex flex-col rounded-xl border border-zinc-200 bg-white p-4 transition-all hover:border-zinc-300 hover:shadow-md active:scale-[0.98] sm:p-5"
+            className="group relative flex flex-col rounded-xl border border-zinc-200 bg-card p-4 transition-all hover:border-zinc-300 hover:shadow-md active:scale-[0.98] sm:p-5"
             style={{ boxShadow: 'inset 0 0 0 1px transparent' }}
           >
             {/* Icon + badge row */}

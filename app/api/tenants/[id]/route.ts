@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { resolveDataScope } from '@/lib/manager-access';
-import { parseTenantInput } from '@/lib/tenants';
+import { parseTenantInput, managerCanEditTenant } from '@/lib/tenants';
+import { deleteTenanciesCascade } from '@/lib/cascade-delete';
 
 export async function PATCH(
   request: Request,
@@ -21,6 +22,13 @@ export async function PATCH(
   });
 
   if (!existing) {
+    return NextResponse.json(
+      { error: 'Tenant not found or unauthorized' },
+      { status: 404 },
+    );
+  }
+
+  if (ds.isManager && !(await managerCanEditTenant(ds.scope, id))) {
     return NextResponse.json(
       { error: 'Tenant not found or unauthorized' },
       { status: 404 },
@@ -51,6 +59,7 @@ export async function PATCH(
         bankAccountNumber: parsed.data.bankAccountNumber,
         bankName: parsed.data.bankName,
       },
+      omit: { password: true },
     });
 
     return NextResponse.json(updated);
@@ -74,6 +83,13 @@ export async function DELETE(
   const { id } = await params;
   const ds = await resolveDataScope(session.user);
 
+  if (ds.isManager) {
+    return NextResponse.json(
+      { error: 'Managers cannot delete tenants.' },
+      { status: 403 },
+    );
+  }
+
   const existing = await prisma.tenant.findFirst({
     where: { id, ownerId: ds.ownerId },
   });
@@ -85,9 +101,35 @@ export async function DELETE(
     );
   }
 
+  // A tenant with a live lease must have it ended first (otherwise the unit
+  // would stay OCCUPIED with no tenant).
+  const activeLease = await prisma.tenancy.findFirst({
+    where: { tenantId: id, status: 'ACTIVE' },
+    select: { id: true },
+  });
+  if (activeLease) {
+    return NextResponse.json(
+      { error: 'This tenant has an active lease. Terminate the lease before deleting the tenant.' },
+      { status: 409 },
+    );
+  }
+
   try {
-    await prisma.tenant.delete({
-      where: { id },
+    if (existing.selfRegistered || existing.userId) {
+      // The tenant registered their own account: don't destroy it, just
+      // unlink it from this owner.
+      await prisma.tenant.update({ where: { id }, data: { ownerId: null } });
+      return NextResponse.json({ success: true, unlinked: true });
+    }
+
+    // Tenancy history (ledgers etc.) has no ON DELETE CASCADE: remove it first.
+    await prisma.$transaction(async (tx) => {
+      const tenancies = await tx.tenancy.findMany({
+        where: { tenantId: id },
+        select: { id: true },
+      });
+      await deleteTenanciesCascade(tx, tenancies.map((t) => t.id));
+      await tx.tenant.delete({ where: { id } });
     });
     return NextResponse.json({ success: true });
   } catch (error: any) {

@@ -18,7 +18,7 @@ type Initial = {
 };
 
 const inputClass =
-  'w-full rounded-xl border border-zinc-300 bg-white px-3.5 py-2.5 text-sm text-zinc-900 shadow-xs outline-none transition placeholder:text-zinc-400 focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10';
+  'w-full rounded-xl border border-zinc-300 bg-card px-3.5 py-2.5 text-sm text-zinc-900 shadow-xs outline-none transition placeholder:text-zinc-400 focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10';
 const labelClass = 'text-xs font-bold uppercase tracking-wider text-zinc-700';
 
 export default function UnitForm({
@@ -122,7 +122,7 @@ export default function UnitForm({
             Rent Amount <span className="text-red-500 font-bold ml-0.5">*</span>
           </label>
           {/* Currency + Amount combined input */}
-          <div className="flex overflow-hidden rounded-xl border border-zinc-300 bg-white shadow-xs focus-within:border-zinc-900 focus-within:ring-2 focus-within:ring-zinc-900/10 transition">
+          <div className="flex overflow-hidden rounded-xl border border-zinc-300 bg-card shadow-xs focus-within:border-zinc-900 focus-within:ring-2 focus-within:ring-zinc-900/10 transition">
             <select
               id="currency"
               name="currency"
@@ -147,7 +147,7 @@ export default function UnitForm({
               required
               placeholder="0.00"
               defaultValue={unit?.rentAmount ?? ''}
-              className="min-w-0 flex-1 bg-white px-3.5 py-2.5 text-base font-semibold text-zinc-900 outline-none placeholder:text-zinc-400 placeholder:font-normal"
+              className="min-w-0 flex-1 bg-card px-3.5 py-2.5 text-base font-semibold text-zinc-900 outline-none placeholder:text-zinc-400 placeholder:font-normal"
             />
           </div>
         </div>
@@ -188,7 +188,7 @@ export default function UnitForm({
       <button
         type="submit"
         disabled={pending}
-        className="mt-2 rounded-full bg-zinc-900 px-6 py-3 text-sm font-semibold text-white shadow-xs transition-all hover:bg-zinc-800 disabled:opacity-60"
+        className="mt-2 rounded-full bg-brand-grad px-6 py-3 text-sm font-semibold text-white shadow-xs transition-all hover:bg-brand-grad-hover disabled:opacity-60"
       >
         {pending ? 'Saving…' : mode === 'edit' ? 'Save Changes' : 'Create Unit'}
       </button>

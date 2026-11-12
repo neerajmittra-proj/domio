@@ -34,7 +34,7 @@ export default function UnitFloorEditor({
   if (editing) {
     return (
       <div className="flex items-center justify-between gap-2 py-1.5 text-sm">
-        <span className="text-[#6A6A8A]">Floor / Section</span>
+        <span className="text-[#3E5560]">Floor / Section</span>
         <span className="flex items-center gap-1.5">
           <input
             value={value}
@@ -46,14 +46,14 @@ export default function UnitFloorEditor({
             }}
             placeholder="e.g. Ground"
             data-testid="floor-input"
-            className="w-28 rounded-md border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-2 py-1 text-sm text-white outline-none focus:border-[#5B4FE8]"
+            className="w-28 rounded-md border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-2 py-1 text-sm text-[#223144] outline-none focus:border-[#A4473D]"
           />
           <button
             type="button"
             onClick={save}
             disabled={pending}
             data-testid="floor-save"
-            className="rounded-md bg-[#5B4FE8] px-2 py-1 text-xs font-medium text-white hover:bg-[#4A3FD0] disabled:opacity-60"
+            className="rounded-md bg-[#A4473D] px-2 py-1 text-xs font-medium text-white hover:bg-[#8D3B32] disabled:opacity-60"
           >
             {pending ? '…' : 'Save'}
           </button>
@@ -64,9 +64,9 @@ export default function UnitFloorEditor({
 
   return (
     <div className="flex items-center justify-between gap-2 py-1.5 text-sm">
-      <span className="text-[#6A6A8A]">Floor / Section</span>
+      <span className="text-[#3E5560]">Floor / Section</span>
       <span className="flex items-center gap-2">
-        <span className={floor ? 'text-white' : 'text-[#4A4A6A]'}>
+        <span className={floor ? 'text-[#223144]' : 'text-[#5B7280]'}>
           {floor || '—'}
         </span>
         <button
@@ -76,7 +76,7 @@ export default function UnitFloorEditor({
             setEditing(true);
           }}
           data-testid="floor-edit"
-          className="text-xs font-medium text-[#8B6FE8] transition-colors hover:text-white"
+          className="text-xs font-medium text-[#8D3B32] transition-colors hover:text-[#223144]"
         >
           Edit
         </button>

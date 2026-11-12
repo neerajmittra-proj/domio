@@ -5,9 +5,20 @@ import { resolveDataScope, resolveRentLedgerAccess } from '@/lib/manager-access'
 import {
   RENT_LEDGER_MUTABLE_SELECT,
   computeRentStatus,
+  mirrorRentPaymentToJournal,
   parsePaymentInput,
+  round2,
 } from '@/lib/rent-ledger';
 import { loadActor, recordAudit } from '@/lib/audit';
+
+class PaymentError extends Error {
+  constructor(
+    message: string,
+    public status: number,
+  ) {
+    super(message);
+  }
+}
 
 export async function PATCH(
   request: Request,
@@ -44,20 +55,41 @@ export async function PATCH(
     return NextResponse.json({ error: parsed.error }, { status: 400 });
   }
 
-  // Payments accumulate rather than replace — a partial payment followed by
-  // another partial payment should add up, not overwrite.
-  const newAmountPaid = entry.amountPaid + parsed.data.amountPaid;
-  const status = computeRentStatus({
-    amountDue: entry.amountDue,
-    amountPaid: newAmountPaid,
-    dueDate: entry.dueDate,
-  });
-
   try {
     const actor = await loadActor(session.user.id);
     const updated = await prisma.$transaction(async (tx) => {
-      const row = await tx.rentLedger.update({
+      // Re-read inside the transaction so two concurrent payments can't both
+      // be added to the same stale total (and the cap check sees the truth).
+      const fresh = await tx.rentLedger.findUnique({
         where: { id },
+        select: RENT_LEDGER_MUTABLE_SELECT,
+      });
+      if (!fresh || fresh.ownerId !== ds.ownerId) {
+        throw new PaymentError('Rent ledger entry not found.', 404);
+      }
+
+      // Payments accumulate rather than replace — a partial payment followed by
+      // another partial payment should add up, not overwrite.
+      const outstanding = round2(fresh.amountDue - fresh.amountPaid);
+      if (outstanding <= 0) {
+        throw new PaymentError('This rent record is already fully paid.', 409);
+      }
+      if (parsed.data.amountPaid > outstanding) {
+        throw new PaymentError(
+          `Payment exceeds the outstanding balance of ${outstanding}.`,
+          400,
+        );
+      }
+      const newAmountPaid = round2(fresh.amountPaid + parsed.data.amountPaid);
+      const status = computeRentStatus({
+        amountDue: fresh.amountDue,
+        amountPaid: newAmountPaid,
+        dueDate: fresh.dueDate,
+      });
+
+      // Optimistic guard: only apply if nobody changed the paid total meanwhile.
+      const res = await tx.rentLedger.updateMany({
+        where: { id, amountPaid: fresh.amountPaid },
         data: {
           amountPaid: newAmountPaid,
           paidDate: parsed.data.paidDate,
@@ -68,25 +100,46 @@ export async function PATCH(
           status,
         },
       });
+      if (res.count === 0) {
+        throw new PaymentError('This record was just updated. Please retry.', 409);
+      }
+      const row = await tx.rentLedger.findUniqueOrThrow({ where: { id } });
+
+      const ctx = {
+        ownerId: ds.ownerId,
+        subPropertyId: fresh.tenancy.subPropertyId,
+        rentableEntityId: fresh.tenancy.rentableEntityId,
+        tenancyId: fresh.tenancyId,
+      };
       await recordAudit(tx, {
         entity: 'RENT_LEDGER',
         entityId: id,
         action: 'UPDATE',
         actor,
-        ctx: {
-          ownerId: ds.ownerId,
-          subPropertyId: entry.tenancy.subPropertyId,
-          rentableEntityId: entry.tenancy.rentableEntityId,
-          tenancyId: entry.tenancyId,
-        },
-        before: entry,
+        ctx,
+        before: fresh,
         after: row,
         reason: 'Payment recorded',
+      });
+      await mirrorRentPaymentToJournal(tx, {
+        tenancyId: fresh.tenancyId,
+        previousPaid: fresh.amountPaid,
+        newPaid: newAmountPaid,
+        date: parsed.data.paidDate,
+        rentFor: parsed.data.rentFor,
+        description: parsed.data.reference
+          ? `Rent payment (ref ${parsed.data.reference})`
+          : 'Rent payment',
+        actor,
+        ctx,
       });
       return row;
     });
     return NextResponse.json({ entry: updated });
   } catch (err) {
+    if (err instanceof PaymentError) {
+      return NextResponse.json({ error: err.message }, { status: err.status });
+    }
     console.error('Failed to record payment:', err);
     return NextResponse.json(
       { error: 'Failed to record payment. Please try again.' },

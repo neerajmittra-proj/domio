@@ -6,10 +6,10 @@ import Link from 'next/link';
 import { authenticate, authenticateWithGoogle } from './actions';
 
 const inputClass =
-  'rounded-lg border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-3 py-2 text-sm text-white outline-none transition placeholder:text-[#B0B0C8] focus:border-zinc-700 focus:ring-2 focus:ring-zinc-500/20';
+  'rounded-lg border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-3 py-2 text-sm text-[#223144] outline-none transition placeholder:text-[#7A929C] focus:border-zinc-700 focus:ring-2 focus:ring-zinc-500/20';
 const labelClass = 'text-sm font-medium text-zinc-500';
 const submitClass =
-  'mt-2 rounded-lg border border-zinc-300 bg-zinc-900 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-zinc-800 disabled:opacity-60';
+  'mt-2 rounded-lg border border-zinc-300 bg-brand-grad px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-brand-grad-hover disabled:opacity-60';
 
 export default function LoginForm() {
   const searchParams = useSearchParams();
@@ -44,10 +44,10 @@ export default function LoginForm() {
 
   const header = (
     <div className="mb-6 flex flex-col gap-1.5">
-      <h1 className="text-2xl font-semibold tracking-tight text-white">
+      <h1 className="text-2xl font-semibold tracking-tight text-[#223144]">
         {mode === 'forgot' ? 'Forgot password' : 'Sign in'}
       </h1>
-      <p className="text-sm text-[#E8E8F2]">
+      <p className="text-sm text-[#223144]">
         {mode === 'forgot'
           ? "Enter your email and we'll send you a reset link."
           : 'Enter your email and password to continue.'}
@@ -82,7 +82,7 @@ export default function LoginForm() {
           <p
             role="status"
             data-testid="forgot-message"
-            className="rounded-lg bg-emerald-500/10 px-3 py-2 text-sm text-emerald-400"
+            className="rounded-lg bg-emerald-500/10 px-3 py-2 text-sm text-emerald-700"
           >
             {forgotMessage}
           </p>
@@ -97,7 +97,7 @@ export default function LoginForm() {
             setMode('login');
             setForgotMessage(null);
           }}
-          className="self-start text-xs font-medium text-zinc-500 transition-colors hover:text-white"
+          className="self-start text-xs font-medium text-zinc-500 transition-colors hover:text-[#223144]"
         >
           ← Back to login
         </button>
@@ -141,7 +141,7 @@ export default function LoginForm() {
           type="button"
           data-testid="forgot-password-link"
           onClick={() => setMode('forgot')}
-          className="mt-1 self-end text-xs font-medium text-zinc-500 transition-colors hover:text-white"
+          className="mt-1 self-end text-xs font-medium text-zinc-500 transition-colors hover:text-[#223144]"
         >
           Forgot password?
         </button>
@@ -150,7 +150,7 @@ export default function LoginForm() {
       {errorMessage && (
         <p
           role="alert"
-          className="rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-400"
+          className="rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-700"
         >
           {errorMessage}
         </p>
@@ -159,22 +159,22 @@ export default function LoginForm() {
       {justRegistered && (
         <p
           role="status"
-          className="rounded-lg bg-emerald-500/10 px-3 py-2 text-sm text-emerald-400"
+          className="rounded-lg bg-emerald-500/10 px-3 py-2 text-sm text-emerald-700"
         >
           Account created! You can now sign in.
         </p>
       )}
 
-      <button type="submit" disabled={isPending} className="mt-2 rounded-xl bg-gradient-to-r from-[#E8A020] to-[#FFC453] px-5 py-3 text-sm font-bold text-zinc-950 shadow-lg shadow-[#E8A020]/20 transition-all hover:brightness-110 active:scale-[0.99] disabled:opacity-50 cursor-pointer">
+      <button type="submit" disabled={isPending} className="mt-2 rounded-xl bg-brand-grad px-5 py-3 text-sm font-bold text-white shadow-lg shadow-[#8D3B32]/25 transition-all hover:brightness-110 active:scale-[0.99] disabled:opacity-50 cursor-pointer">
         {isPending ? 'Signing in…' : 'Sign In to Domio'}
       </button>
 
       {/* Social Divider */}
       <div className="relative my-2 flex items-center justify-center">
         <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-[#312D58]" />
+          <div className="w-full border-t border-[#C2D9E0]" />
         </div>
-        <div className="relative bg-[#17152F] px-3 text-[11px] font-semibold uppercase tracking-wider text-[#8E8EA8]">
+        <div className="relative bg-[#FFFFFF] px-3 text-[11px] font-semibold uppercase tracking-wider text-[#5B7280]">
           Or continue with
         </div>
       </div>
@@ -183,7 +183,7 @@ export default function LoginForm() {
       <button
         type="button"
         onClick={() => authenticateWithGoogle()}
-        className="flex w-full items-center justify-center gap-3 rounded-xl border border-zinc-300 bg-white px-4 py-2.5 text-sm font-semibold text-zinc-900 shadow-sm transition-all hover:bg-zinc-100 active:scale-[0.99] cursor-pointer"
+        className="flex w-full items-center justify-center gap-3 rounded-xl border border-zinc-300 bg-card px-4 py-2.5 text-sm font-semibold text-zinc-900 shadow-sm transition-all hover:bg-zinc-100 active:scale-[0.99] cursor-pointer"
       >
         <svg width="18" height="18" viewBox="0 0 24 24">
           <path
@@ -206,13 +206,13 @@ export default function LoginForm() {
         <span>Continue with Google</span>
       </button>
 
-      <div className="mt-2 border-t border-[#312D58]/60 pt-4 text-center">
-        <p className="text-xs text-[#B0B0C8]">
+      <div className="mt-2 border-t border-[#C2D9E0]/60 pt-4 text-center">
+        <p className="text-xs text-[#3E5560]">
           Don&apos;t have an account yet?
         </p>
         <Link
           href="/register"
-          className="mt-2 inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-[#E8A020]/40 bg-[#E8A020]/10 px-4 py-2.5 text-xs font-bold text-[#E8A020] transition-all hover:bg-[#E8A020]/20 hover:border-[#E8A020]"
+          className="mt-2 inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-[#A4473D]/40 bg-[#A4473D]/10 px-4 py-2.5 text-xs font-bold text-[#8D3B32] transition-all hover:bg-[#A4473D]/20 hover:border-[#A4473D]"
         >
           <span>✨</span> Create New Account (Owner / Renter)
         </Link>

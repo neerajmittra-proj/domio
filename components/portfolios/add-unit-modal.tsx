@@ -12,7 +12,7 @@ export type AddUnitModalProps = {
   parentEntityType?: string;
 };
 
-const input = 'w-full rounded-xl border border-zinc-200 bg-zinc-50 px-3.5 py-2.5 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-zinc-900 focus:bg-white focus:ring-2 focus:ring-zinc-900/10';
+const input = 'w-full rounded-xl border border-zinc-200 bg-zinc-50 px-3.5 py-2.5 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-zinc-900 focus:bg-card focus:ring-2 focus:ring-zinc-900/10';
 const lbl = 'block text-xs font-semibold text-zinc-700 mb-1';
 
 const VALID_CHILD_TYPES: Record<string, string[]> = {
@@ -119,11 +119,11 @@ export default function AddUnitModal({
   return (
     <div
       role="dialog" aria-modal="true" aria-label="Add Unit"
-      className="fixed inset-0 z-[70] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-[70] flex items-center justify-center bg-navy/50 backdrop-blur-sm p-4"
       onClick={(e) => { if (e.target === e.currentTarget && !pending) onClose(); }}
     >
       <div
-        className="w-full max-w-md rounded-2xl border border-zinc-200 bg-white shadow-2xl overflow-hidden"
+        className="w-full max-w-md rounded-2xl border border-zinc-200 bg-card shadow-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -154,7 +154,7 @@ export default function AddUnitModal({
               <label className={lbl}>Unit Type</label>
               <div className="flex gap-2">
                 <button type="button" onClick={() => setMode('flat')}
-                  className={`flex-1 rounded-xl border py-2.5 text-sm font-semibold transition ${mode === 'flat' ? 'border-zinc-900 bg-zinc-900 text-white' : 'border-zinc-200 bg-zinc-50 text-zinc-600 hover:border-zinc-300'}`}>
+                  className={`flex-1 rounded-xl border py-2.5 text-sm font-semibold transition ${mode === 'flat' ? 'border-zinc-900 bg-brand-grad text-white' : 'border-zinc-200 bg-zinc-50 text-zinc-600 hover:border-zinc-300'}`}>
                   {FLAT_UNIT_LABEL}
                 </button>
                 <button type="button" onClick={() => setMode('entity')}
@@ -230,7 +230,7 @@ export default function AddUnitModal({
               <label className={lbl}>
                 Listed Rent <span className="text-red-500 font-bold ml-0.5">*</span>
               </label>
-              <div className="flex overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50 shadow-xs focus-within:border-zinc-900 focus-within:bg-white focus-within:ring-2 focus-within:ring-zinc-900/10 transition">
+              <div className="flex overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50 shadow-xs focus-within:border-zinc-900 focus-within:bg-card focus-within:ring-2 focus-within:ring-zinc-900/10 transition">
                 <span className="shrink-0 flex items-center justify-center border-r border-zinc-200 bg-zinc-100/70 px-3 text-sm font-bold text-zinc-600 select-none">
                   ?
                 </span>
@@ -271,7 +271,7 @@ export default function AddUnitModal({
 
           <div className="flex justify-end gap-2.5 pt-2">
             <button type="button" onClick={onClose} disabled={pending}
-              className="rounded-full border border-zinc-200 bg-white px-5 py-2 text-sm font-semibold text-zinc-700 transition hover:bg-zinc-50 disabled:opacity-60">
+              className="rounded-full border border-zinc-200 bg-card px-5 py-2 text-sm font-semibold text-zinc-700 transition hover:bg-zinc-50 disabled:opacity-60">
               Cancel
             </button>
             <button type="submit" disabled={pending || success}

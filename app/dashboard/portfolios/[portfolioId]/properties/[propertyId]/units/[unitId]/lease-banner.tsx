@@ -7,12 +7,12 @@ export type LeaseBannerState = 'vacant' | 'active' | 'expiring' | 'expired';
 
 const STYLES: Record<LeaseBannerState, string> = {
   active:
-    'border-[rgba(91,79,232,0.3)] bg-[rgba(91,79,232,0.1)] text-[#8B6FE8]',
+    'border-[rgba(164,71,61,0.3)] bg-[rgba(164,71,61,0.1)] text-[#8D3B32]',
   expiring:
-    'border-[rgba(232,160,32,0.3)] bg-[rgba(232,160,32,0.1)] text-[#E8A020]',
-  expired: 'border-[rgba(239,68,68,0.3)] bg-[rgba(239,68,68,0.1)] text-red-400',
+    'border-[rgba(232,160,32,0.3)] bg-[rgba(232,160,32,0.1)] text-[#B26A0B]',
+  expired: 'border-[rgba(239,68,68,0.3)] bg-[rgba(239,68,68,0.1)] text-red-700',
   vacant:
-    'border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.04)] text-[#B0B0C8]',
+    'border-[rgba(34,49,68,0.12)] bg-[rgba(255,255,255,0.5)] text-[#3E5560]',
 };
 
 export default function LeaseBanner({
@@ -45,7 +45,7 @@ export default function LeaseBanner({
           <span>Vacant — no active lease. Click to assign a tenant.</span>
           <Link
             href={assignHref}
-            className="min-h-[44px] rounded-full border border-[#8B6FE8]/50 bg-[#5B4FE8] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#4A3FD0]"
+            className="min-h-[44px] rounded-full border border-[#8D3B32]/50 bg-[#A4473D] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#8D3B32]"
           >
             Assign Tenant
           </Link>

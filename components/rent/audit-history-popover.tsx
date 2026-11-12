@@ -102,7 +102,7 @@ export default function AuditHistoryPopover({
         onClick={() => setOpen((o) => !o)}
         title="View change history"
         aria-label="View change history"
-        className="rounded-full border border-zinc-200 bg-white px-2.5 py-1 text-xs font-semibold text-zinc-700 shadow-xs transition hover:bg-zinc-100 hover:border-zinc-300 hover:text-zinc-900"
+        className="rounded-full border border-zinc-200 bg-card px-2.5 py-1 text-xs font-semibold text-zinc-700 shadow-xs transition hover:bg-zinc-100 hover:border-zinc-300 hover:text-zinc-900"
       >
         History
       </button>
@@ -113,7 +113,7 @@ export default function AuditHistoryPopover({
             onClick={() => setOpen(false)}
             aria-hidden
           />
-          <div className="absolute right-0 z-50 mt-1 max-h-80 w-80 overflow-y-auto rounded-2xl border border-zinc-200 bg-white p-3.5 text-left shadow-xl">
+          <div className="absolute right-0 z-50 mt-1 max-h-80 w-80 overflow-y-auto rounded-2xl border border-zinc-200 bg-card p-3.5 text-left shadow-xl">
             <p className="mb-2 text-xs font-bold uppercase tracking-wider text-zinc-700">
               Change history
             </p>

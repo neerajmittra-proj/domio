@@ -4,8 +4,8 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 const inputClass =
-  'rounded-lg border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-3 py-2 text-sm text-white outline-none transition placeholder:text-[#B0B0C8] focus:border-zinc-700 focus:ring-2 focus:ring-zinc-500/20';
-const labelClass = 'text-sm font-medium text-[#E8E8F2]';
+  'rounded-lg border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-3 py-2 text-sm text-[#223144] outline-none transition placeholder:text-[#7A929C] focus:border-zinc-700 focus:ring-2 focus:ring-zinc-500/20';
+const labelClass = 'text-sm font-medium text-[#223144]';
 
 export default function NewOwnerForm() {
   const router = useRouter();
@@ -72,14 +72,14 @@ export default function NewOwnerForm() {
           name="password"
           type="password"
           required
-          minLength={6}
+          minLength={8}
           autoComplete="new-password"
           className={inputClass}
         />
       </div>
 
       {error && (
-        <p role="alert" className="rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-400">
+        <p role="alert" className="rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-700">
           {error}
         </p>
       )}
@@ -87,7 +87,7 @@ export default function NewOwnerForm() {
       <button
         type="submit"
         disabled={pending}
-        className="mt-2 rounded-full bg-zinc-900 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90 disabled:opacity-60"
+        className="mt-2 rounded-full bg-brand-grad px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90 disabled:opacity-60"
       >
         {pending ? 'Creating…' : 'Create Owner'}
       </button>

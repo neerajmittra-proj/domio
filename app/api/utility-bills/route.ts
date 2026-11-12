@@ -27,6 +27,15 @@ export async function GET(request: Request) {
   if (!account) {
     return NextResponse.json({ error: 'Utility account not found.' }, { status: 404 });
   }
+  // Managers may only read bills of accounts on properties/units they can access.
+  if (ds.isManager) {
+    const inScope =
+      (account.propertyId && ds.scope.propertyIds.includes(account.propertyId)) ||
+      (account.subPropertyId && ds.scope.subPropertyIds.includes(account.subPropertyId));
+    if (!inScope) {
+      return NextResponse.json({ error: 'Utility account not found.' }, { status: 404 });
+    }
+  }
 
   const bills = await prisma.utilityBill.findMany({
     where: { utilityAccountId },

@@ -19,6 +19,7 @@ import { prisma } from '@/lib/prisma';
 // ── Constants ─────────────────────────────────────────────────────────────────
 
 const OTP_TTL_MS = 10 * 60 * 1000; // 10 minutes
+export const MAX_OTP_ATTEMPTS = 5;
 const JWT_TTL = '24h';
 const COOKIE_NAME = 'tenant-jwt';
 
@@ -64,7 +65,8 @@ export class OtpError extends Error {
       | 'NOT_FOUND'
       | 'EXPIRED'
       | 'ALREADY_USED'
-      | 'INVALID',
+      | 'INVALID'
+      | 'TOO_MANY_ATTEMPTS',
   ) {
     super(message);
     this.name = 'OtpError';
@@ -89,8 +91,24 @@ export async function verifyOtp(tenantId: string, rawOtp: string): Promise<void>
     throw new OtpError('This OTP has expired. Please request a new one.', 'EXPIRED');
   }
 
+  if (record.attempts >= MAX_OTP_ATTEMPTS) {
+    await prisma.tenantOtp.updateMany({ where: { id: record.id }, data: { used: true } });
+    throw new OtpError('Too many incorrect attempts. Please request a new code.', 'TOO_MANY_ATTEMPTS');
+  }
+
   const valid = await bcrypt.compare(rawOtp, record.otpHash);
   if (!valid) {
+    // Count the guess; burn the code once the limit is reached so a 6-digit
+    // OTP cannot be brute-forced within its 10 minute lifetime.
+    const bumped = await prisma.tenantOtp.update({
+      where: { id: record.id },
+      data: { attempts: { increment: 1 } },
+      select: { attempts: true },
+    });
+    if (bumped.attempts >= MAX_OTP_ATTEMPTS) {
+      await prisma.tenantOtp.updateMany({ where: { id: record.id }, data: { used: true } });
+      throw new OtpError('Too many incorrect attempts. Please request a new code.', 'TOO_MANY_ATTEMPTS');
+    }
     throw new OtpError('Incorrect OTP. Please try again.', 'INVALID');
   }
 

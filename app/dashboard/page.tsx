@@ -27,12 +27,13 @@ export default async function DashboardPage() {
     ds.isManager ? ds.scope : undefined,
   );
 
-  const activeUnitsCount = data.unitStatuses.filter((u) => u.status !== 'vacant').length;
-  const totalUnitsCount = data.unitStatuses.length;
-  const occupancyRate = totalUnitsCount > 0 ? Math.round((activeUnitsCount / totalUnitsCount) * 100) : 100;
+  // Occupancy counts flat units AND rentable-entity leaves; no units means 0%, not 100%.
+  const activeUnitsCount = data.occupancy.occupied;
+  const totalUnitsCount = data.occupancy.total;
+  const occupancyRate = totalUnitsCount > 0 ? Math.round((activeUnitsCount / totalUnitsCount) * 100) : 0;
 
   return (
-    <div className="flex flex-col min-h-full bg-[#fafaf9]">
+    <div className="flex flex-col min-h-full">
       {/* 1. Signature Dark Hero with Translucent Glass Action Cards */}
       <DomioHero />
 
@@ -53,7 +54,7 @@ export default async function DashboardPage() {
             <div className="flex items-center gap-2">
               <Link
                 href="/dashboard/rent"
-                className="rounded-full bg-black px-4 py-1.5 text-xs font-semibold text-white shadow-xs transition-colors hover:bg-zinc-800"
+                className="rounded-full bg-brand-grad px-4 py-1.5 text-xs font-semibold text-white shadow-xs transition-colors hover:bg-brand-grad-hover"
               >
                 Open Rent Ledger →
               </Link>
@@ -62,7 +63,7 @@ export default async function DashboardPage() {
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {/* Due this month */}
-            <div className="rounded-2xl border border-[#e1e2e3] bg-white p-5 shadow-xs">
+            <div className="rounded-2xl border border-[#DCE9EC] bg-card p-5 shadow-xs">
               <div className="flex items-center justify-between">
                 <p className="text-xs font-bold uppercase tracking-wider text-zinc-400">
                   Due This Month
@@ -80,7 +81,7 @@ export default async function DashboardPage() {
             </div>
 
             {/* Collected this month */}
-            <div className="rounded-2xl border border-[#e1e2e3] bg-white p-5 shadow-xs">
+            <div className="rounded-2xl border border-[#DCE9EC] bg-card p-5 shadow-xs">
               <div className="flex items-center justify-between">
                 <p className="text-xs font-bold uppercase tracking-wider text-zinc-400">
                   Collected
@@ -101,7 +102,7 @@ export default async function DashboardPage() {
             </div>
 
             {/* Total Overdue */}
-            <div className="rounded-2xl border border-[#e1e2e3] bg-white p-5 shadow-xs">
+            <div className="rounded-2xl border border-[#DCE9EC] bg-card p-5 shadow-xs">
               <div className="flex items-center justify-between">
                 <p className="text-xs font-bold uppercase tracking-wider text-zinc-400">
                   Total Arrears
@@ -121,7 +122,7 @@ export default async function DashboardPage() {
             </div>
 
             {/* Portfolio Occupancy */}
-            <div className="rounded-2xl border border-[#e1e2e3] bg-white p-5 shadow-xs">
+            <div className="rounded-2xl border border-[#DCE9EC] bg-card p-5 shadow-xs">
               <div className="flex items-center justify-between">
                 <p className="text-xs font-bold uppercase tracking-wider text-zinc-400">
                   Occupancy
@@ -131,7 +132,7 @@ export default async function DashboardPage() {
                 </span>
               </div>
               <p className="mt-2 font-mono text-2xl sm:text-3xl font-bold text-zinc-900">
-                {activeUnitsCount} <span className="text-base font-normal text-zinc-500">/ {totalUnitsCount || 1} Units</span>
+                {activeUnitsCount} <span className="text-base font-normal text-zinc-500">/ {totalUnitsCount} Units</span>
               </p>
               <p className="mt-1 text-xs text-zinc-500">
                 {data.alerts.vacant.length} vacant properties
@@ -155,12 +156,12 @@ export default async function DashboardPage() {
         </div>
 
         {/* All Modules Launcher Grid */}
-        <div className="rounded-2xl border border-[#e1e2e3] bg-white p-6 sm:p-8 shadow-xs">
+        <div className="rounded-2xl border border-[#DCE9EC] bg-card p-6 sm:p-8 shadow-xs">
           <AppHubGrid role={session.user.role} />
         </div>
 
         {/* Landlord Rent Savings Calculator Widget */}
-        <div className="overflow-hidden rounded-2xl border border-[#e1e2e3] bg-white shadow-xs">
+        <div className="overflow-hidden rounded-2xl border border-[#DCE9EC] bg-card shadow-xs">
           <DomioCalculator />
         </div>
 

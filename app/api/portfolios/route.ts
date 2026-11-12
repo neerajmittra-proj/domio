@@ -19,8 +19,16 @@ export async function GET() {
   }
 
   const ds = await resolveDataScope(session.user);
+  // Managers only see portfolios containing a property they were granted, and
+  // only count those properties.
+  const accessibleProps = ds.isManager
+    ? { id: { in: ds.scope.propertyIds } }
+    : undefined;
   const portfolios = await prisma.portfolio.findMany({
-    where: { ownerId: ds.ownerId },
+    where: {
+      ownerId: ds.ownerId,
+      ...(accessibleProps ? { properties: { some: accessibleProps } } : {}),
+    },
     orderBy: { createdAt: 'desc' },
     select: {
       id: true,
@@ -29,7 +37,11 @@ export async function GET() {
       type: true,
       description: true,
       createdAt: true,
-      _count: { select: { properties: true } },
+      _count: {
+        select: {
+          properties: accessibleProps ? { where: accessibleProps } : true,
+        },
+      },
     },
   });
 

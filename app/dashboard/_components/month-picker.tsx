@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 const arrow =
-  'flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-200 bg-white text-base font-bold leading-none text-zinc-600 transition-all hover:bg-zinc-50 hover:text-zinc-900 active:scale-95 shadow-sm';
+  'flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-200 bg-card text-base font-bold leading-none text-zinc-600 transition-all hover:bg-zinc-50 hover:text-zinc-900 active:scale-95 shadow-sm';
 
 // Month navigation for the dashboard. Pure links → keeps the page server-rendered
 // (URL params drive the data). `nextHref` is null when already at the current
@@ -20,7 +20,7 @@ export default function MonthPicker({
   showCurrent: boolean;
 }) {
   return (
-    <div className="flex items-center gap-1.5 rounded-xl border border-zinc-200 bg-white p-1 shadow-sm">
+    <div className="flex items-center gap-1.5 rounded-xl border border-zinc-200 bg-card p-1 shadow-sm">
       {showCurrent && (
         <Link
           href={currentHref}

@@ -15,7 +15,7 @@ import {
 import type { OverviewProperty, OverviewUnit } from '@/lib/portfolio-overview';
 
 const inputClass =
-  'w-full rounded-lg border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-3 py-2 text-sm text-white outline-none transition placeholder:text-[#B0B0C8] focus:border-zinc-700 focus:ring-2 focus:ring-zinc-500/20';
+  'w-full rounded-lg border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-3 py-2 text-sm text-[#223144] outline-none transition placeholder:text-[#7A929C] focus:border-zinc-700 focus:ring-2 focus:ring-zinc-500/20';
 
 function today() {
   return new Date().toISOString().slice(0, 10);
@@ -32,7 +32,7 @@ function unitStyle(u: OverviewUnit): {
       cls: 'border-[rgba(249,115,22,0.5)] bg-[rgba(249,115,22,0.08)]',
     };
   if (u.status === 'VACANT')
-    return { emoji: '⚪', cls: 'border-[#1A1A2A] bg-[rgba(255,255,255,0.02)]' };
+    return { emoji: '⚪', cls: 'border-[#DCE9EC] bg-[rgba(34,49,68,0.035)]' };
   if (u.overdueAmount > 0)
     return {
       emoji: '🔴',
@@ -101,7 +101,7 @@ export default function PropertySlidePanel({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             onClick={onClose}
-            className="fixed inset-0 z-50 bg-black/50"
+            className="fixed inset-0 z-50 bg-navy/50"
           />
           <motion.aside
             key="panel"
@@ -110,12 +110,12 @@ export default function PropertySlidePanel({
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'tween', duration: 0.3, ease: 'easeInOut' }}
-            className="fixed inset-y-0 right-0 z-50 flex w-full flex-col overflow-y-auto border-l border-[#312D58] bg-[#0E0C22] shadow-2xl sm:max-w-md"
+            className="fixed inset-y-0 right-0 z-50 flex w-full flex-col overflow-y-auto border-l border-[#C2D9E0] bg-[#FFFFFF] shadow-2xl sm:max-w-md"
           >
             {/* Header */}
-            <div className="border-b border-[#1A1A2A] p-5">
+            <div className="border-b border-[#DCE9EC] p-5">
               <div className="flex items-start justify-between gap-3">
-                <h2 className="text-xl font-semibold tracking-tight text-white">
+                <h2 className="text-xl font-semibold tracking-tight text-[#223144]">
                   {p.name}
                 </h2>
                 <Button
@@ -126,21 +126,21 @@ export default function PropertySlidePanel({
                   ✕ Close
                 </Button>
               </div>
-              <p className="mt-1 text-xs text-[#6A6A8A]">
+              <p className="mt-1 text-xs text-[#3E5560]">
                 {propertyTypeLabel(p.type)} · {propertyStatusLabel(p.status)}
               </p>
-              <p className="text-xs text-[#6A6A8A]">
+              <p className="text-xs text-[#3E5560]">
                 {p.address}, {p.city}
               </p>
 
               {/* Stats */}
               <div className="mt-4 space-y-3">
                 <div>
-                  <div className="mb-1 flex justify-between text-[10px] uppercase tracking-wide text-[#6A6A8A]">
+                  <div className="mb-1 flex justify-between text-[10px] uppercase tracking-wide text-[#3E5560]">
                     <span>Occupancy {p.occupiedCount}/{p.unitCount}</span>
                     <span>{occupancy}%</span>
                   </div>
-                  <div className="h-2 w-full overflow-hidden rounded-full bg-[#1A1A2A]">
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-[#EAF2F4]">
                     <motion.div
                       className="h-full rounded-full bg-zinc-900"
                       initial={{ width: 0 }}
@@ -149,13 +149,13 @@ export default function PropertySlidePanel({
                     />
                   </div>
                 </div>
-                <p className="text-sm text-[#E8E8F2]">
+                <p className="text-sm text-[#223144]">
                   Rent{' '}
                   <span className="font-semibold text-zinc-500">
                     {formatMoney(p.monthlyCollected)}
                   </span>{' '}
                   collected /{' '}
-                  <span className="font-semibold text-[#E8A020]">
+                  <span className="font-semibold text-[#B26A0B]">
                     {formatMoney(p.monthlyExpected)}
                   </span>{' '}
                   expected
@@ -178,14 +178,14 @@ export default function PropertySlidePanel({
               </div>
 
               {p.units.length === 0 ? (
-                <div className="mt-8 rounded-2xl border border-dashed border-[#312D58] bg-[#17152F] p-10 text-center">
+                <div className="mt-8 rounded-2xl border border-dashed border-[#C2D9E0] bg-[#FFFFFF] p-10 text-center">
                   <div className="text-4xl">🚪</div>
-                  <p className="mt-3 text-sm font-medium text-white">
+                  <p className="mt-3 text-sm font-medium text-[#223144]">
                     No units added yet
                   </p>
                   <Link
                     href={`${base}/units/new`}
-                    className="mt-4 inline-flex rounded-full border border-zinc-300 bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-800"
+                    className="mt-4 inline-flex rounded-full border border-zinc-300 bg-brand-grad px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-grad-hover"
                   >
                     + Add Unit
                   </Link>
@@ -203,7 +203,7 @@ export default function PropertySlidePanel({
                     ))}
                   </div>
 
-                  <div className="mt-5 text-[11px] leading-relaxed text-[#6A6A8A]">
+                  <div className="mt-5 text-[11px] leading-relaxed text-[#3E5560]">
                     <span className="mr-3">🟢 Healthy</span>
                     <span className="mr-3">🔴 Overdue</span>
                     <span className="mr-3">⚪ Vacant</span>
@@ -248,7 +248,7 @@ function UnitCard({
       }
     >
       <div className="flex items-center justify-between">
-        <span className="text-sm font-bold text-white">
+        <span className="text-sm font-bold text-[#223144]">
           Unit {unit.unitNumber}
         </span>
         <span aria-hidden className="text-xs">
@@ -256,23 +256,23 @@ function UnitCard({
         </span>
       </div>
       {unit.displayId && (
-        <p className="font-mono text-[10px] text-[#4A4A6A]">{unit.displayId}</p>
+        <p className="font-mono text-[10px] text-[#5B7280]">{unit.displayId}</p>
       )}
-      <p className="mt-1 truncate text-xs text-[#E8E8F2]">
+      <p className="mt-1 truncate text-xs text-[#223144]">
         {vacant
           ? 'Vacant'
           : unit.status === 'MAINTENANCE'
             ? 'Maintenance'
             : (unit.tenantName ?? 'Occupied')}
       </p>
-      <p className="text-xs text-[#6A6A8A]">{formatMoney(unit.rentAmount)}/mo</p>
+      <p className="text-xs text-[#3E5560]">{formatMoney(unit.rentAmount)}/mo</p>
       <p className="mt-0.5 text-[11px]">
         {overdue ? (
-          <span className="text-red-400">
+          <span className="text-red-700">
             {formatMoney(unit.overdueAmount)} · {unit.daysOverdue} days overdue
           </span>
         ) : unit.daysRemaining != null && !vacant ? (
-          <span className="text-[#6A6A8A]">
+          <span className="text-[#3E5560]">
             {unit.daysRemaining} days remaining
           </span>
         ) : (
@@ -359,22 +359,22 @@ function PayNowModal({
       role="dialog"
       aria-modal="true"
       onClick={() => !pending && onClose()}
-      className="fixed inset-0 z-[70] flex items-center justify-center bg-black/60 p-4"
+      className="fixed inset-0 z-[70] flex items-center justify-center bg-navy/60 p-4"
     >
       <form
         onClick={(e) => e.stopPropagation()}
         onSubmit={submit}
-        className="w-full max-w-sm rounded-2xl border border-[#312D58] bg-[#17152F] p-6 shadow-xl"
+        className="w-full max-w-sm rounded-2xl border border-[#C2D9E0] bg-[#FFFFFF] p-6 shadow-xl"
       >
-        <h2 className="text-lg font-semibold tracking-tight text-white">
+        <h2 className="text-lg font-semibold tracking-tight text-[#223144]">
           Record Payment
         </h2>
-        <p className="mt-1 mb-4 text-sm text-[#B0B0C8]">
+        <p className="mt-1 mb-4 text-sm text-[#3E5560]">
           Unit {unit.unitNumber} · {formatMoney(unit.overdueAmount)} overdue
         </p>
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="pn-amt" className="text-sm font-medium text-[#E8E8F2]">
+            <label htmlFor="pn-amt" className="text-sm font-medium text-[#223144]">
               Amount Paid
             </label>
             <input
@@ -389,7 +389,7 @@ function PayNowModal({
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="pn-date" className="text-sm font-medium text-[#E8E8F2]">
+            <label htmlFor="pn-date" className="text-sm font-medium text-[#223144]">
               Payment Received Date
             </label>
             <input
@@ -402,14 +402,14 @@ function PayNowModal({
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="pn-ref" className="text-sm font-medium text-[#E8E8F2]">
-              Reference <span className="text-[#B0B0C8]">(optional)</span>
+            <label htmlFor="pn-ref" className="text-sm font-medium text-[#223144]">
+              Reference <span className="text-[#3E5560]">(optional)</span>
             </label>
             <input id="pn-ref" name="reference" type="text" className={inputClass} />
           </div>
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="pn-notes" className="text-sm font-medium text-[#E8E8F2]">
-              Notes <span className="text-[#B0B0C8]">(optional)</span>
+            <label htmlFor="pn-notes" className="text-sm font-medium text-[#223144]">
+              Notes <span className="text-[#3E5560]">(optional)</span>
             </label>
             <textarea
               id="pn-notes"
@@ -422,7 +422,7 @@ function PayNowModal({
         {error && (
           <p
             role="alert"
-            className="mt-4 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-400"
+            className="mt-4 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-700"
           >
             {error}
           </p>
@@ -432,14 +432,14 @@ function PayNowModal({
             type="button"
             onClick={() => !pending && onClose()}
             disabled={pending}
-            className="rounded-full border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-4 py-2 text-sm font-medium text-[#E8E8F2] transition-colors hover:text-white disabled:opacity-60"
+            className="rounded-full border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-4 py-2 text-sm font-medium text-[#223144] transition-colors hover:text-[#223144] disabled:opacity-60"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={pending}
-            className="rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90 disabled:opacity-60"
+            className="rounded-full bg-brand-grad px-4 py-2 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90 disabled:opacity-60"
           >
             {pending ? 'Saving…' : 'Save Payment'}
           </button>

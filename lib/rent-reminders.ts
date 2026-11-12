@@ -6,10 +6,13 @@ export async function sendSingleRentReminder({
   tenantId,
   targetMonth,
   manual = false,
+  ownerId,
 }: {
   tenantId: string;
   targetMonth?: string;
   manual?: boolean;
+  // When given, the tenant must belong to this owner (every API caller passes it).
+  ownerId?: string;
 }): Promise<{ success: boolean; message: string; stopped?: boolean }> {
   const tenant = await prisma.tenant.findUnique({
     where: { id: tenantId },
@@ -25,7 +28,7 @@ export async function sendSingleRentReminder({
     },
   });
 
-  if (!tenant) {
+  if (!tenant || !tenant.ownerId || (ownerId && tenant.ownerId !== ownerId)) {
     return { success: false, message: 'Tenant not found.' };
   }
 
@@ -34,7 +37,7 @@ export async function sendSingleRentReminder({
     await prisma.rentReminder.create({
       data: {
         tenantId: tenant.id,
-        ownerId: tenant.ownerId || 'unknown',
+        ownerId: tenant.ownerId,
         targetMonth: targetMonth || new Date().toISOString().slice(0, 7),
         dueDate: new Date(),
         amount: 0,
@@ -63,16 +66,36 @@ export async function sendSingleRentReminder({
     activeTenancy.rentableEntity?.name ||
     'Unit';
 
-  const monthlyRent = activeTenancy.monthlyRent;
   const currentMonthStr = targetMonth || new Date().toISOString().slice(0, 7);
 
-  // Calculate upcoming due date (e.g. 1st or custom due day of the month)
-  const now = new Date();
-  const nextDueDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+  // Remind about the earliest rent record that is not fully paid, using ITS due
+  // date and its OUTSTANDING balance (not a guessed "1st of next month" and the
+  // full monthly rent, which nagged tenants who had already paid).
+  const nextUnpaid = await prisma.rentLedger.findFirst({
+    where: { tenancyId: activeTenancy.id, status: { not: 'PAID' } },
+    orderBy: { dueDate: 'asc' },
+    select: { dueDate: true, amountDue: true, amountPaid: true },
+  });
+  if (!nextUnpaid || nextUnpaid.amountDue - nextUnpaid.amountPaid <= 0) {
+    return { success: false, message: `${tenant.name} has no outstanding rent.` };
+  }
+  // Automated runs: don't send the same month's reminder twice.
+  if (!manual) {
+    const already = await prisma.rentReminder.findFirst({
+      where: { tenantId: tenant.id, targetMonth: currentMonthStr, status: 'SENT' },
+      select: { id: true },
+    });
+    if (already) {
+      return { success: false, message: `Reminder already sent to ${tenant.name} for ${currentMonthStr}.` };
+    }
+  }
+  const monthlyRent = Math.round((nextUnpaid.amountDue - nextUnpaid.amountPaid) * 100) / 100;
+  const nextDueDate = nextUnpaid.dueDate;
   const formattedDueDate = nextDueDate.toLocaleDateString('en-US', {
     month: 'long',
     day: 'numeric',
     year: 'numeric',
+    timeZone: 'UTC',
   });
 
   const portalLink = `${APP_URL}/tenant-portal`;
@@ -152,7 +175,7 @@ export async function sendSingleRentReminder({
     data: {
       tenantId: tenant.id,
       tenancyId: activeTenancy.id,
-      ownerId: tenant.ownerId || 'unknown',
+      ownerId: tenant.ownerId,
       targetMonth: currentMonthStr,
       dueDate: nextDueDate,
       amount: monthlyRent,
@@ -167,7 +190,11 @@ export async function sendSingleRentReminder({
   };
 }
 
-export async function sendAllOwnerRentReminders(ownerId: string): Promise<{
+export async function sendAllOwnerRentReminders(
+  ownerId: string,
+  // Manager scope: only remind tenants of units they can access.
+  onlyTenantIds?: string[],
+): Promise<{
   totalSent: number;
   totalSkipped: number;
   results: Array<{ tenantName: string; status: string }>;
@@ -175,6 +202,7 @@ export async function sendAllOwnerRentReminders(ownerId: string): Promise<{
   const tenants = await prisma.tenant.findMany({
     where: {
       ownerId,
+      ...(onlyTenantIds ? { id: { in: onlyTenantIds } } : {}),
       tenancies: { some: { status: 'ACTIVE' } },
     },
   });
@@ -190,7 +218,7 @@ export async function sendAllOwnerRentReminders(ownerId: string): Promise<{
       continue;
     }
 
-    const res = await sendSingleRentReminder({ tenantId: t.id });
+    const res = await sendSingleRentReminder({ tenantId: t.id, ownerId });
     if (res.success && !res.stopped) {
       totalSent++;
       results.push({ tenantName: t.name, status: 'SENT' });
@@ -206,16 +234,30 @@ export async function toggleTenantReminderSettings({
   tenantId,
   enabled,
   daysBefore,
+  ownerId,
 }: {
   tenantId: string;
   enabled: boolean;
   daysBefore?: number;
+  ownerId: string;
 }): Promise<{ success: boolean; tenant: any }> {
+  // Scope the write to the caller's own tenant — an id alone must never be
+  // enough to change another owner's tenant.
+  const existing = await prisma.tenant.findFirst({
+    where: { id: tenantId, ownerId },
+    select: { id: true },
+  });
+  if (!existing) return { success: false, tenant: null };
+
+  const days =
+    daysBefore !== undefined && Number.isInteger(daysBefore)
+      ? Math.min(Math.max(daysBefore, 0), 60)
+      : undefined;
   const updated = await prisma.tenant.update({
     where: { id: tenantId },
     data: {
       rentReminderEnabled: enabled,
-      ...(daysBefore !== undefined ? { rentReminderDaysBefore: Number(daysBefore) } : {}),
+      ...(days !== undefined ? { rentReminderDaysBefore: days } : {}),
     },
   });
 

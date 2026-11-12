@@ -74,7 +74,7 @@ export default function HorizontalTopNav({ role }: { role: Role }) {
   }, [pathname]);
 
   return (
-    <div className="mb-5 w-full rounded-xl border border-zinc-200 bg-white shadow-sm">
+    <div className="mb-5 w-full rounded-xl border border-zinc-200 bg-card shadow-sm">
       <div
         ref={scrollRef}
         className="flex items-center gap-0.5 overflow-x-auto no-scrollbar scroll-smooth px-2 py-1.5"
@@ -88,7 +88,7 @@ export default function HorizontalTopNav({ role }: { role: Role }) {
               data-active={active}
               className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all shrink-0 active:scale-95 ${
                 active
-                  ? 'bg-zinc-900 text-white'
+                  ? 'bg-brand-grad text-white'
                   : (item as any).isAi
                     ? 'text-zinc-700 hover:bg-zinc-50'
                     : 'text-zinc-500 hover:bg-zinc-100 hover:text-zinc-800'

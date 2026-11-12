@@ -38,17 +38,17 @@ export default async function ImportHistoryPage() {
     <div className="mx-auto max-w-5xl">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-white">
+          <h1 className="text-2xl font-semibold tracking-tight text-[#223144]">
             Import History
           </h1>
-          <p className="mt-1 text-sm text-[#B0B0C8]">
+          <p className="mt-1 text-sm text-[#3E5560]">
             Every data import you have run. Completed imports can be rolled back
             within 30 days.
           </p>
         </div>
         <Link
           href="/dashboard/import"
-          className="rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white shadow-sm hover:opacity-90"
+          className="rounded-full bg-brand-grad px-4 py-2 text-sm font-medium text-white shadow-sm hover:opacity-90"
         >
           New Import
         </Link>

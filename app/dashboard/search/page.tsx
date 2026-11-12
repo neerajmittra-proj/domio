@@ -132,10 +132,12 @@ export default function PropertySearchPage() {
   const [requestTarget, setRequestTarget] = useState<TargetEntity | null>(null);
   const [requestModalOpen, setRequestModalOpen] = useState(false);
 
-  async function fetchProperties() {
+  async function fetchProperties(isCurrent: () => boolean = () => true) {
     setLoading(true);
     try {
       const res = await fetch(`/api/public/search?q=${encodeURIComponent(locationQuery)}`);
+      // Ignore responses for an older query (typing fires many requests).
+      if (!isCurrent()) return;
       if (res.ok) {
         const data = await res.json();
         if (data.properties && data.properties.length > 0) {
@@ -147,14 +149,22 @@ export default function PropertySearchPage() {
         setProperties(BACKUP_PROPERTIES);
       }
     } catch {
-      setProperties(BACKUP_PROPERTIES);
+      if (isCurrent()) setProperties(BACKUP_PROPERTIES);
     } finally {
-      setLoading(false);
+      if (isCurrent()) setLoading(false);
     }
   }
 
   useEffect(() => {
-    fetchProperties();
+    // Debounce keystrokes and drop stale responses.
+    let current = true;
+    const timer = setTimeout(() => {
+      fetchProperties(() => current);
+    }, 300);
+    return () => {
+      current = false;
+      clearTimeout(timer);
+    };
   }, [locationQuery]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const filteredProperties = useMemo(() => {
@@ -170,8 +180,14 @@ export default function PropertySearchPage() {
   }, [properties, maxPrice, typeFilter]);
 
   function handleSendRequest(p: PropertyItem) {
+    // Sample listings (shown when the database has no results) have no real
+    // owner account to send a request to.
+    if (!p.ownerId) {
+      alert('This is a sample listing, so a request cannot be sent. Search for a real property.');
+      return;
+    }
     setRequestTarget({
-      receiverId: p.ownerId || p.id,
+      receiverId: p.ownerId,
       receiverName: p.ownerName || 'Property Owner',
       receiverRole: 'OWNER',
       location: `${p.city}, ${p.country}`,
@@ -184,9 +200,9 @@ export default function PropertySearchPage() {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-73px)] overflow-hidden bg-white">
+    <div className="flex flex-col h-[calc(100vh-73px)] overflow-hidden">
       {/* ── Top Filter Toolbar (PropertyLoop Exact Match) ────────────────── */}
-      <div className="border-b border-[#e1e2e3] bg-white px-4 py-3 sm:px-6">
+      <div className="border-b border-[#DCE9EC] bg-card px-4 py-3 sm:px-6">
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           {/* Location Search Input */}
           <div className="relative min-w-[200px] flex-1 sm:max-w-xs">
@@ -201,7 +217,7 @@ export default function PropertySearchPage() {
               value={locationQuery}
               onChange={(e) => setLocationQuery(e.target.value)}
               placeholder="Search location (e.g. London, New York)..."
-              className="w-full rounded-xl border border-zinc-200 bg-white py-2 pl-9 pr-3 text-xs sm:text-sm font-medium text-zinc-900 placeholder-zinc-400 focus:border-black focus:outline-none shadow-xs"
+              className="w-full rounded-xl border border-zinc-200 bg-card py-2 pl-9 pr-3 text-xs sm:text-sm font-medium text-zinc-900 placeholder-zinc-400 focus:border-ink focus:outline-none shadow-xs"
             />
           </div>
 
@@ -209,7 +225,7 @@ export default function PropertySearchPage() {
           <select
             value={rentType}
             onChange={(e) => setRentType(e.target.value)}
-            className="rounded-xl border border-zinc-200 bg-white px-3 py-2 text-xs font-semibold text-zinc-800 shadow-xs focus:border-black cursor-pointer"
+            className="rounded-xl border border-zinc-200 bg-card px-3 py-2 text-xs font-semibold text-zinc-800 shadow-xs focus:border-ink cursor-pointer"
           >
             <option value="To Rent">To Rent ▾</option>
             <option value="For Sale">For Sale ▾</option>
@@ -220,7 +236,7 @@ export default function PropertySearchPage() {
             onChange={(e) =>
               setMaxPrice(e.target.value === 'all' ? 'all' : Number(e.target.value))
             }
-            className="rounded-xl border border-zinc-200 bg-white px-3 py-2 text-xs font-semibold text-zinc-800 shadow-xs focus:border-black cursor-pointer"
+            className="rounded-xl border border-zinc-200 bg-card px-3 py-2 text-xs font-semibold text-zinc-800 shadow-xs focus:border-ink cursor-pointer"
           >
             <option value="all">Price: Any ▾</option>
             <option value="1000">Up to £1,000 /mo</option>
@@ -232,7 +248,7 @@ export default function PropertySearchPage() {
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
-            className="rounded-xl border border-zinc-200 bg-white px-3 py-2 text-xs font-semibold text-zinc-800 shadow-xs focus:border-black cursor-pointer"
+            className="rounded-xl border border-zinc-200 bg-card px-3 py-2 text-xs font-semibold text-zinc-800 shadow-xs focus:border-ink cursor-pointer"
           >
             <option value="all">Home type: All ▾</option>
             <option value="Flat">Flat / Apartment</option>
@@ -246,7 +262,7 @@ export default function PropertySearchPage() {
 
           <Link
             href="/dashboard/portfolios/new"
-            className="ml-auto rounded-xl bg-zinc-900 px-3.5 py-2 text-xs font-bold text-white shadow-xs hover:bg-zinc-800 transition-all whitespace-nowrap"
+            className="ml-auto rounded-xl bg-brand-grad px-3.5 py-2 text-xs font-bold text-white shadow-xs hover:bg-brand-grad-hover transition-all whitespace-nowrap"
           >
             + Upload Property (5 Photos)
           </Link>
@@ -285,7 +301,7 @@ export default function PropertySearchPage() {
         </div>
 
         {/* Right Column: Interactive Map View (PropertyLoop exact match) */}
-        <div className="hidden lg:flex flex-1 relative bg-[#e5e3df] overflow-hidden border-l border-[#e1e2e3]">
+        <div className="hidden lg:flex flex-1 relative bg-[#EAF2F4] overflow-hidden border-l border-[#DCE9EC]">
           {/* Map Base SVG */}
           <svg className="absolute inset-0 h-full w-full opacity-60" xmlns="http://www.w3.org/2000/svg">
             <defs>
@@ -303,10 +319,10 @@ export default function PropertySearchPage() {
               strokeWidth="24"
             />
             {/* Major Motorways */}
-            <path d="M 50,0 L 200,800" stroke="#f0d5a0" strokeWidth="4" />
-            <path d="M 0,450 L 1200,200" stroke="#f0d5a0" strokeWidth="3.5" />
-            <path d="M 400,0 L 500,800" stroke="#f0d5a0" strokeWidth="4" />
-            <path d="M 0,250 L 1200,500" stroke="#f0d5a0" strokeWidth="3" />
+            <path d="M 50,0 L 200,800" stroke="#F4E3C0" strokeWidth="4" />
+            <path d="M 0,450 L 1200,200" stroke="#F4E3C0" strokeWidth="3.5" />
+            <path d="M 400,0 L 500,800" stroke="#F4E3C0" strokeWidth="4" />
+            <path d="M 0,250 L 1200,500" stroke="#F4E3C0" strokeWidth="3" />
           </svg>
 
           {/* Area Labels */}
@@ -342,8 +358,8 @@ export default function PropertySearchPage() {
                   style={{ top: pos.top, left: pos.left }}
                   className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-full px-3 py-1 text-xs font-black shadow-md transition-all active:scale-95 ${
                     isSelected
-                      ? 'bg-black text-white scale-125 z-30 ring-4 ring-black/20'
-                      : 'bg-white text-zinc-900 hover:scale-110 hover:bg-black hover:text-white z-20 border border-zinc-300'
+                      ? 'bg-brand-grad text-white scale-125 z-30 ring-4 ring-black/20'
+                      : 'bg-card text-zinc-900 hover:scale-110 hover:bg-brand-grad-hover hover:text-white z-20 border border-zinc-300'
                   }`}
                 >
                   £{p.minRentAmount.toLocaleString()}
@@ -352,11 +368,11 @@ export default function PropertySearchPage() {
             })}
 
             {/* Extra surrounding market price markers */}
-            <div className="absolute top-[18%] left-[38%] rounded-full bg-white/90 border border-zinc-300 px-2.5 py-0.5 text-[10px] font-bold text-zinc-700">£1,050</div>
-            <div className="absolute top-[12%] left-[54%] rounded-full bg-white/90 border border-zinc-300 px-2.5 py-0.5 text-[10px] font-bold text-zinc-700">£2,200</div>
-            <div className="absolute top-[22%] left-[64%] rounded-full bg-white/90 border border-zinc-300 px-2.5 py-0.5 text-[10px] font-bold text-zinc-700">£1,950</div>
-            <div className="absolute top-[48%] left-[58%] rounded-full bg-white/90 border border-zinc-300 px-2.5 py-0.5 text-[10px] font-bold text-zinc-700">£1,400</div>
-            <div className="absolute top-[44%] left-[28%] rounded-full bg-white/90 border border-zinc-300 px-2.5 py-0.5 text-[10px] font-bold text-zinc-700">£1,350</div>
+            <div className="absolute top-[18%] left-[38%] rounded-full bg-card/90 border border-zinc-300 px-2.5 py-0.5 text-[10px] font-bold text-zinc-700">£1,050</div>
+            <div className="absolute top-[12%] left-[54%] rounded-full bg-card/90 border border-zinc-300 px-2.5 py-0.5 text-[10px] font-bold text-zinc-700">£2,200</div>
+            <div className="absolute top-[22%] left-[64%] rounded-full bg-card/90 border border-zinc-300 px-2.5 py-0.5 text-[10px] font-bold text-zinc-700">£1,950</div>
+            <div className="absolute top-[48%] left-[58%] rounded-full bg-card/90 border border-zinc-300 px-2.5 py-0.5 text-[10px] font-bold text-zinc-700">£1,400</div>
+            <div className="absolute top-[44%] left-[28%] rounded-full bg-card/90 border border-zinc-300 px-2.5 py-0.5 text-[10px] font-bold text-zinc-700">£1,350</div>
           </div>
         </div>
       </div>
@@ -399,9 +415,9 @@ function PropertyCard({
   return (
     <div
       onClick={onSelect}
-      className={`group flex flex-col overflow-hidden rounded-2xl border bg-white transition-all cursor-pointer ${
+      className={`group flex flex-col overflow-hidden rounded-2xl border bg-card transition-all cursor-pointer ${
         isSelected
-          ? 'border-black shadow-lg ring-2 ring-black/10'
+          ? 'border-ink shadow-lg ring-2 ring-black/10'
           : 'border-zinc-200 shadow-xs hover:shadow-md hover:border-zinc-300'
       }`}
     >
@@ -417,10 +433,10 @@ function PropertyCard({
         <span
           className={`absolute top-2.5 left-2.5 rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
             p.listingStatus === 'Available now'
-              ? 'bg-white text-emerald-700 shadow-sm'
+              ? 'bg-card text-emerald-700 shadow-sm'
               : p.listingStatus === 'Under Offer'
-                ? 'bg-zinc-900 text-white'
-                : 'bg-white text-zinc-900 shadow-sm'
+                ? 'bg-brand-grad text-white'
+                : 'bg-card text-zinc-900 shadow-sm'
           }`}
         >
           {p.listingStatus}
@@ -428,7 +444,7 @@ function PropertyCard({
 
         {/* Custom Property Type badge */}
         {p.customType && (
-          <span className="absolute top-2.5 right-2.5 rounded-md bg-black/60 backdrop-blur-xs px-2 py-0.5 text-[10px] font-bold text-white shadow-xs">
+          <span className="absolute top-2.5 right-2.5 rounded-md bg-card/85 backdrop-blur-xs px-2 py-0.5 text-[10px] font-bold text-[#223144] shadow-xs">
             🏷️ {p.customType}
           </span>
         )}
@@ -439,7 +455,7 @@ function PropertyCard({
             <button
               type="button"
               onClick={prevImage}
-              className="absolute left-2 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded-full bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/80"
+              className="absolute left-2 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded-full bg-card/75 text-[#223144] opacity-0 group-hover:opacity-100 transition-opacity hover:bg-card/95"
               aria-label="Previous Photo"
             >
               ‹
@@ -447,7 +463,7 @@ function PropertyCard({
             <button
               type="button"
               onClick={nextImage}
-              className="absolute right-2 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded-full bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/80"
+              className="absolute right-2 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded-full bg-card/75 text-[#223144] opacity-0 group-hover:opacity-100 transition-opacity hover:bg-card/95"
               aria-label="Next Photo"
             >
               ›
@@ -462,7 +478,7 @@ function PropertyCard({
               <span
                 key={i}
                 className={`h-1.5 rounded-full transition-all ${
-                  i === currentIdx ? 'w-4 bg-white shadow-sm' : 'w-1.5 bg-white/50'
+                  i === currentIdx ? 'w-4 bg-card shadow-sm' : 'w-1.5 bg-card/50'
                 }`}
               />
             ))}
@@ -499,7 +515,7 @@ function PropertyCard({
               e.stopPropagation();
               onRequest();
             }}
-            className="w-full rounded-xl bg-zinc-900 py-2 text-xs font-bold text-white shadow-xs hover:bg-zinc-800 transition-all"
+            className="w-full rounded-xl bg-brand-grad py-2 text-xs font-bold text-white shadow-xs hover:bg-brand-grad-hover transition-all"
           >
             🔒 Send Privacy Request / Inquire →
           </button>

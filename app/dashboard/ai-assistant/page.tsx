@@ -12,8 +12,8 @@ export default async function AiAssistantPage() {
       <header className="mb-4 flex items-center gap-3">
         <Domi mood="happy" size={56} className="shrink-0" />
         <div>
-          <h1 className="text-2xl font-bold text-white">Ask Domi</h1>
-          <p className="mt-1 text-sm text-[#6A6A8A]">
+          <h1 className="text-2xl font-bold text-[#223144]">Ask Domi</h1>
+          <p className="mt-1 text-sm text-[#3E5560]">
             Ask me anything about your portfolio
           </p>
         </div>

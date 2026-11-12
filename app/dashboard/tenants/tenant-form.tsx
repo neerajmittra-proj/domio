@@ -17,7 +17,7 @@ type Initial = {
 };
 
 const inputClass =
-  'rounded-xl border border-zinc-300 bg-white px-3.5 py-2 text-sm font-semibold text-zinc-900 shadow-2xs outline-none transition placeholder:text-zinc-400 focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10';
+  'rounded-xl border border-zinc-300 bg-card px-3.5 py-2 text-sm font-semibold text-zinc-900 shadow-2xs outline-none transition placeholder:text-zinc-400 focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10';
 const labelClass = 'text-xs font-bold uppercase tracking-wider text-zinc-700';
 const optional = <span className="text-zinc-400 text-xs font-normal lowercase">(optional)</span>;
 
@@ -250,7 +250,7 @@ export default function TenantForm({
             onClick={() => { setAddMode('username'); setError(null); }}
             className={`flex-1 rounded-lg py-2.5 text-xs font-bold transition-all ${
               addMode === 'username'
-                ? 'bg-white text-zinc-900 shadow-xs'
+                ? 'bg-card text-zinc-900 shadow-xs'
                 : 'text-zinc-600 hover:text-zinc-900'
             }`}
           >
@@ -261,7 +261,7 @@ export default function TenantForm({
             onClick={() => { setAddMode('manual'); setError(null); }}
             className={`flex-1 rounded-lg py-2.5 text-xs font-bold transition-all ${
               addMode === 'manual'
-                ? 'bg-white text-zinc-900 shadow-xs'
+                ? 'bg-card text-zinc-900 shadow-xs'
                 : 'text-zinc-600 hover:text-zinc-900'
             }`}
           >
@@ -292,7 +292,7 @@ export default function TenantForm({
               <button
                 type="submit"
                 disabled={lookingUp}
-                className="rounded-xl bg-zinc-900 px-5 py-2 text-xs font-bold text-white transition-all hover:bg-zinc-800 disabled:opacity-60 shadow-xs"
+                className="rounded-xl bg-brand-grad px-5 py-2 text-xs font-bold text-white transition-all hover:bg-brand-grad-hover disabled:opacity-60 shadow-xs"
               >
                 {lookingUp ? 'Searching…' : 'Find Tenant'}
               </button>
@@ -323,7 +323,7 @@ export default function TenantForm({
                 <button
                   type="submit"
                   disabled={pending}
-                  className="w-full rounded-xl bg-zinc-900 py-2.5 text-xs font-bold text-white shadow-sm transition-all hover:bg-zinc-800 disabled:opacity-60 active:scale-[0.99]"
+                  className="w-full rounded-xl bg-brand-grad py-2.5 text-xs font-bold text-white shadow-sm transition-all hover:bg-brand-grad-hover disabled:opacity-60 active:scale-[0.99]"
                 >
                   {pending ? 'Linking Tenant…' : `Link @${foundTenant.username} to My Portfolio →`}
                 </button>
@@ -477,7 +477,7 @@ export default function TenantForm({
           <button
             type="submit"
             disabled={pending}
-            className="mt-2 rounded-xl bg-zinc-900 px-6 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-zinc-800 active:scale-95 disabled:opacity-50"
+            className="mt-2 rounded-xl bg-brand-grad px-6 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-brand-grad-hover active:scale-95 disabled:opacity-50"
           >
             {pending ? 'Saving…' : mode === 'edit' ? 'Save Changes' : 'Create Tenant'}
           </button>

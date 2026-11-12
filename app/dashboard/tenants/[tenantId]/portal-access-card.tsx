@@ -128,7 +128,7 @@ export default function PortalAccessCard({
   }
 
   return (
-    <div className="rounded-2xl border border-zinc-200 bg-white p-6 text-sm shadow-sm">
+    <div className="rounded-2xl border border-zinc-200 bg-card p-6 text-sm shadow-sm">
       <div className="mb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="mb-1 flex items-center gap-2">
@@ -164,7 +164,7 @@ export default function PortalAccessCard({
           style={{ width: '52px', height: '28px' }}
         >
           <span
-            className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-md transition-transform duration-300 ${
+            className={`inline-block h-5 w-5 transform rounded-full bg-card shadow-md transition-transform duration-300 ${
               enabled ? 'translate-x-7' : 'translate-x-1'
             }`}
           />

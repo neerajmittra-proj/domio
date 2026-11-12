@@ -25,7 +25,7 @@ export default function NotesIcon({
         📝
       </span>
       <span className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 hidden -translate-x-1/2 group-hover/note:block">
-        <span className="block w-max max-w-[240px] whitespace-pre-wrap rounded-lg border border-[#1A1A2A] bg-[#0E0C22] px-3 py-2 text-left text-xs text-[#E8E8F2] shadow-xl">
+        <span className="block w-max max-w-[240px] whitespace-pre-wrap rounded-lg border border-[#DCE9EC] bg-[#FFFFFF] px-3 py-2 text-left text-xs text-[#223144] shadow-xl">
           {preview}
         </span>
       </span>

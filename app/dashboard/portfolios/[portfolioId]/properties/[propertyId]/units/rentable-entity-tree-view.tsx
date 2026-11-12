@@ -65,12 +65,16 @@ export type HierarchyRow = {
   } | null;
   hasChildren: boolean;
   isLeaf: boolean;
+  synthetic?: 'root' | 'floor' | 'unit';
   children: HierarchyRow[];
 };
 
 // Helper: lowest sub-unit has direct rent, upper units display rollup rent
 function getNodeDisplayedRent(node: HierarchyRow): number {
-  return node.hasChildren ? node.aggregatedRent : node.rentAmount;
+  // A leaf unit with an active lease shows what the tenant actually pays; the
+  // listed rent is only the asking price. This keeps rows consistent with the
+  // roll-up, which is built from lease rents.
+  return node.hasChildren ? node.aggregatedRent : (node.activeLease?.monthlyRent ?? node.rentAmount);
 }
 
 export default function RentableEntityTreeView({
@@ -114,9 +118,14 @@ export default function RentableEntityTreeView({
     setDeleting(true);
     setDeleteError(null);
     try {
-      const res = await fetch(`/api/rentable-entities/${deleteTarget.id}`, {
+      const res = await fetch(
+        deleteTarget.synthetic === 'unit'
+          ? `/api/sub-properties/${deleteTarget.id}`
+          : `/api/rentable-entities/${deleteTarget.id}`,
+        {
         method: 'DELETE',
-      });
+      },
+      );
       if (res.ok) {
         setDeleteTarget(null);
         router.refresh();
@@ -149,6 +158,7 @@ export default function RentableEntityTreeView({
 
   // Beds and Offices are terminal — cannot have sub-units
   function canAddSubUnit(row: HierarchyRow): boolean {
+    if (row.synthetic === 'floor' || row.synthetic === 'unit') return false;
     return canHaveChildren(row.type as RentableEntityNode['type']);
   }
 
@@ -180,6 +190,7 @@ export default function RentableEntityTreeView({
         activeLease: node.activeLease,
         hasChildren: kids.length > 0,
         isLeaf: kids.length === 0,
+        synthetic: node.synthetic,
         children: kids,
       };
     }
@@ -283,7 +294,7 @@ export default function RentableEntityTreeView({
 
   if (!entities || entities.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-zinc-200 bg-white p-8 text-center shadow-xs">
+      <div className="rounded-2xl border border-dashed border-zinc-200 bg-card p-8 text-center shadow-xs">
         <p className="text-sm font-semibold text-zinc-700">No hierarchical rental entities configured yet for this property.</p>
         <p className="mt-1 text-xs text-zinc-500">
           Use &quot;Add Entity / Unit&quot; to define floors, rooms, beds, or whole-building levels.
@@ -293,11 +304,11 @@ export default function RentableEntityTreeView({
   }
 
   const selectCls =
-    'w-full rounded-lg border border-zinc-200 bg-zinc-50/90 px-2 py-1 text-xs text-zinc-700 outline-none transition focus:border-zinc-900 focus:bg-white cursor-pointer';
+    'w-full rounded-lg border border-zinc-200 bg-zinc-50/90 px-2 py-1 text-xs text-zinc-700 outline-none transition focus:border-zinc-900 focus:bg-card cursor-pointer';
 
   return (
     <>
-    <div className="rounded-2xl border border-zinc-200/90 bg-white shadow-xs overflow-hidden">
+    <div className="rounded-2xl border border-zinc-200/90 bg-card shadow-xs overflow-hidden">
       {/* Subheader Title */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-5 py-3.5 border-b border-zinc-100 bg-zinc-50/70">
         <div>
@@ -335,7 +346,7 @@ export default function RentableEntityTreeView({
       >
         <table className="w-full min-w-[900px] text-left border-collapse text-sm">
           {/* ── Sticky thead: Row 1 = Headers, Row 2 = Column Filters ──────── */}
-          <thead className="sticky top-0 z-20 bg-white">
+          <thead className="sticky top-0 z-20 bg-card">
             {/* Row 1 — Column Labels */}
             <tr className="bg-zinc-50/95 text-xs font-bold uppercase tracking-wider text-zinc-600 border-b border-zinc-200 shadow-2xs">
               <th className="px-5 py-3 min-w-[260px]">Unit</th>
@@ -347,7 +358,7 @@ export default function RentableEntityTreeView({
             </tr>
 
             {/* Row 2 — Column Filters */}
-            <tr className="bg-white border-b border-zinc-200/90 text-xs">
+            <tr className="bg-card border-b border-zinc-200/90 text-xs">
               {/* 1. Unit search */}
               <th className="px-5 py-2 font-normal">
                 <div className="relative">
@@ -365,7 +376,7 @@ export default function RentableEntityTreeView({
                     value={unitSearch}
                     onChange={(e) => setUnitSearch(e.target.value)}
                     placeholder="Search unit or code…"
-                    className="w-full rounded-lg border border-zinc-200 bg-zinc-50/90 py-1 pl-7 pr-6 text-xs text-zinc-900 placeholder:text-zinc-400 outline-none transition focus:border-zinc-900 focus:bg-white"
+                    className="w-full rounded-lg border border-zinc-200 bg-zinc-50/90 py-1 pl-7 pr-6 text-xs text-zinc-900 placeholder:text-zinc-400 outline-none transition focus:border-zinc-900 focus:bg-card"
                   />
                   {unitSearch && (
                     <button
@@ -460,7 +471,7 @@ export default function RentableEntityTreeView({
           </thead>
 
           {/* ── Table Body ────────────────────────────────────────────────── */}
-          <tbody className="divide-y divide-zinc-100 bg-white">
+          <tbody className="divide-y divide-zinc-100 bg-card">
             {visibleRows.length === 0 ? (
               <tr>
                 <td colSpan={6} className="px-5 py-12 text-center">
@@ -533,7 +544,7 @@ export default function RentableEntityTreeView({
                           <button
                             type="button"
                             onClick={() => toggleCollapse(row.id)}
-                            className="mr-2 flex h-4 w-4 shrink-0 items-center justify-center rounded border border-zinc-300 bg-white text-[11px] font-bold text-zinc-600 shadow-2xs transition hover:border-zinc-400 hover:bg-zinc-50 cursor-pointer"
+                            className="mr-2 flex h-4 w-4 shrink-0 items-center justify-center rounded border border-zinc-300 bg-card text-[11px] font-bold text-zinc-600 shadow-2xs transition hover:border-zinc-400 hover:bg-zinc-50 cursor-pointer"
                             title={isCollapsedRow ? 'Expand' : 'Collapse'}
                           >
                             {isCollapsedRow ? '+' : '−'}
@@ -590,9 +601,9 @@ export default function RentableEntityTreeView({
                         ) : (
                           <span className="text-zinc-400 font-normal">—</span>
                         )
-                      ) : row.rentAmount > 0 ? (
+                      ) : getNodeDisplayedRent(row) > 0 ? (
                         <span className="font-bold text-zinc-900">
-                          {formatRent(row.rentAmount)}
+                          {formatRent(getNodeDisplayedRent(row))}
                         </span>
                       ) : (
                         <span className="text-zinc-400 font-normal">—</span>
@@ -633,26 +644,6 @@ export default function RentableEntityTreeView({
                             Vacant
                           </span>
                         )
-                      ) : row.status === 'MAINTENANCE' ? (
-                        /* Parent row in MAINTENANCE — show badge + child count */
-                        <div className="flex flex-col items-center gap-1">
-                          <span className="inline-flex items-center gap-1 rounded-xl border border-rose-200 bg-rose-50 px-2.5 py-0.5 text-[11px] font-semibold text-rose-700 whitespace-nowrap">
-                            🔧 Maintenance
-                          </span>
-                          <span className="text-[10px] text-zinc-400 font-medium">
-                            {row.children.length} unit{row.children.length !== 1 ? 's' : ''}
-                          </span>
-                        </div>
-                      ) : row.status === 'OCCUPIED' || !!row.activeLease ? (
-                        /* Parent row with active direct lease */
-                        <div className="flex flex-col items-center gap-1">
-                          <span className="inline-flex items-center gap-1 rounded-xl border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-800 whitespace-nowrap">
-                            👤 Occupied
-                          </span>
-                          <span className="text-[10px] text-zinc-400 font-medium">
-                            {row.children.length} unit{row.children.length !== 1 ? 's' : ''}
-                          </span>
-                        </div>
                       ) : (
                         <span className="inline-flex items-center rounded-full border border-zinc-200 bg-zinc-50 px-2.5 py-0.5 text-[11px] font-bold text-zinc-600 whitespace-nowrap">
                           {row.children.length} unit{row.children.length !== 1 ? 's' : ''}
@@ -673,7 +664,7 @@ export default function RentableEntityTreeView({
                         </Link>
                       ) : (
                         <span
-                          className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-zinc-100 bg-zinc-50 text-xs text-zinc-300 select-none cursor-not-allowed"
+                          className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-zinc-100 bg-zinc-50 text-xs text-[#3E5560] select-none cursor-not-allowed"
                           title={`${row.type} cannot have sub-units`}
                           aria-label="Cannot add sub-unit"
                         >
@@ -685,6 +676,7 @@ export default function RentableEntityTreeView({
                     {/* 7. Actions */}
                     <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-1.5">
+                        {(!row.synthetic || row.synthetic === 'unit') && (
                         <button
                           type="button"
                           onClick={() => {
@@ -699,7 +691,7 @@ export default function RentableEntityTreeView({
                               hasChildren: row.hasChildren,
                               hasActiveLease: !!row.activeLease,
                               activeTenantName: row.activeLease?.tenantName ?? null,
-                              isRentableEntity: true,
+                              isRentableEntity: row.synthetic !== 'unit',
                             });
                           }}
                           title={`Edit ${row.name} (status, price, details)`}
@@ -720,6 +712,8 @@ export default function RentableEntityTreeView({
                             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                           </svg>
                         </button>
+                        )}
+                        {(!row.synthetic || row.synthetic === 'unit') && (
                         <button
                           type="button"
                           onClick={() => {
@@ -728,7 +722,7 @@ export default function RentableEntityTreeView({
                           }}
                           title={`Delete ${row.name}${row.hasChildren ? ` and its ${countDescendants(row)} sub-unit${countDescendants(row) !== 1 ? 's' : ''}` : ''}`}
                           aria-label={`Delete ${row.name}`}
-                          className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-rose-200 bg-rose-50 text-rose-600 shadow-2xs transition-all duration-150 hover:bg-rose-600 hover:text-white hover:border-rose-600 hover:scale-110 active:scale-95 cursor-pointer"
+                          className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-rose-200 bg-rose-50 text-rose-600 shadow-2xs transition-all duration-150 hover:bg-rose-600 hover:text-[#223144] hover:border-rose-600 hover:scale-110 active:scale-95 cursor-pointer"
                         >
                           <svg
                             width="14"
@@ -743,6 +737,7 @@ export default function RentableEntityTreeView({
                             <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
                           </svg>
                         </button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -760,12 +755,12 @@ export default function RentableEntityTreeView({
         role="dialog"
         aria-modal="true"
         onClick={closeDeleteConfirm}
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4"
+        className="fixed inset-0 z-50 flex items-center justify-center bg-navy/40 backdrop-blur-xs p-4"
       >
         <div
           ref={trapRef}
           onClick={(e) => e.stopPropagation()}
-          className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-white p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-150"
+          className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-card p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-150"
         >
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-rose-50 text-rose-600 mb-3">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -800,7 +795,7 @@ export default function RentableEntityTreeView({
               type="button"
               onClick={closeDeleteConfirm}
               disabled={deleting}
-              className="rounded-full border border-zinc-200 bg-white px-4 py-2 text-xs font-semibold text-zinc-700 transition-colors hover:bg-zinc-100 hover:text-zinc-900 disabled:opacity-60"
+              className="rounded-full border border-zinc-200 bg-card px-4 py-2 text-xs font-semibold text-zinc-700 transition-colors hover:bg-zinc-100 hover:text-zinc-900 disabled:opacity-60"
             >
               Cancel
             </button>

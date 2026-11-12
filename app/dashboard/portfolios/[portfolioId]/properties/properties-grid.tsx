@@ -19,9 +19,9 @@ import { ButtonLink } from '@/components/ui/button';
 const STORAGE_KEY = 'domio-properties-view';
 
 const ghostBtn =
-  'inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-3 py-1 text-xs font-semibold text-zinc-700 shadow-xs transition-all hover:bg-zinc-50 hover:border-zinc-300 hover:text-zinc-900';
+  'inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-card px-3 py-1 text-xs font-semibold text-zinc-700 shadow-xs transition-all hover:bg-zinc-50 hover:border-zinc-300 hover:text-zinc-900';
 const primaryBtn =
-  'inline-flex items-center gap-1.5 rounded-full bg-zinc-900 px-3.5 py-1 text-xs font-semibold text-white shadow-xs transition-all hover:bg-zinc-800';
+  'inline-flex items-center gap-1.5 rounded-full bg-brand-grad px-3.5 py-1 text-xs font-semibold text-white shadow-xs transition-all hover:bg-brand-grad-hover';
 const dangerBtn =
   'inline-flex items-center gap-1.5 rounded-full border border-rose-200 bg-rose-50/60 px-3 py-1 text-xs font-semibold text-rose-600 shadow-xs transition-all hover:bg-rose-100 hover:border-rose-300';
 
@@ -170,7 +170,7 @@ export default function PropertiesGrid({
 
       {/* 2. Key Metrics */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
-        <div className="rounded-2xl border border-zinc-200/80 bg-white p-4 shadow-xs">
+        <div className="rounded-2xl border border-zinc-200/80 bg-card p-4 shadow-xs">
           <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
             Properties
           </p>
@@ -180,7 +180,7 @@ export default function PropertiesGrid({
           <p className="mt-0.5 text-xs text-zinc-500">Total buildings</p>
         </div>
 
-        <div className="rounded-2xl border border-zinc-200/80 bg-white p-4 shadow-xs">
+        <div className="rounded-2xl border border-zinc-200/80 bg-card p-4 shadow-xs">
           <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
             Units
           </p>
@@ -190,7 +190,7 @@ export default function PropertiesGrid({
           <p className="mt-0.5 text-xs text-zinc-500">Total rentable spaces</p>
         </div>
 
-        <div className="rounded-2xl border border-zinc-200/80 bg-white p-4 shadow-xs">
+        <div className="rounded-2xl border border-zinc-200/80 bg-card p-4 shadow-xs">
           <div className="flex items-center justify-between">
             <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
               Occupancy
@@ -210,7 +210,7 @@ export default function PropertiesGrid({
           </div>
         </div>
 
-        <div className="rounded-2xl border border-zinc-200/80 bg-white p-4 shadow-xs">
+        <div className="rounded-2xl border border-zinc-200/80 bg-card p-4 shadow-xs">
           <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
             Portfolio
           </p>
@@ -239,8 +239,8 @@ export default function PropertiesGrid({
                 className={
                   'inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all ' +
                   (isSelected
-                    ? 'bg-zinc-900 text-white shadow-xs'
-                    : 'border border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:text-zinc-900')
+                    ? 'bg-brand-grad text-white shadow-xs'
+                    : 'border border-zinc-200 bg-card text-zinc-600 hover:border-zinc-300 hover:text-zinc-900')
                 }
               >
                 <span>{f.label}</span>
@@ -248,7 +248,7 @@ export default function PropertiesGrid({
                   className={
                     'rounded-full px-1.5 py-0.2 text-[10px] font-bold ' +
                     (isSelected
-                      ? 'bg-white/20 text-white'
+                      ? 'bg-[#223144]/8 text-[#223144]'
                       : 'bg-zinc-100 text-zinc-500')
                   }
                 >
@@ -280,7 +280,7 @@ export default function PropertiesGrid({
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search properties..."
-              className="w-full rounded-full border border-zinc-200 bg-white py-1.5 pl-9 pr-3 text-xs text-zinc-900 shadow-xs outline-none transition placeholder:text-zinc-400 focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
+              className="w-full rounded-full border border-zinc-200 bg-card py-1.5 pl-9 pr-3 text-xs text-zinc-900 shadow-xs outline-none transition placeholder:text-zinc-400 focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
             />
           </div>
         </div>
@@ -288,7 +288,7 @@ export default function PropertiesGrid({
 
       {/* 4. Properties Grid / Table */}
       {items.length === 0 ? (
-        <div className="rounded-3xl border border-dashed border-zinc-300 bg-white p-12 text-center shadow-xs">
+        <div className="rounded-3xl border border-dashed border-zinc-300 bg-card p-12 text-center shadow-xs">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-zinc-100 text-3xl">
             🏢
           </div>
@@ -308,7 +308,7 @@ export default function PropertiesGrid({
           </ButtonLink>
         </div>
       ) : filtered.length === 0 ? (
-        <div className="rounded-2xl border border-zinc-200 bg-white p-8 text-center shadow-xs">
+        <div className="rounded-2xl border border-zinc-200 bg-card p-8 text-center shadow-xs">
           <p className="text-sm font-medium text-zinc-500">
             No properties match your filter.
           </p>
@@ -331,7 +331,7 @@ export default function PropertiesGrid({
             return (
               <div
                 key={p.id}
-                className="flex flex-col rounded-2xl border border-zinc-200/90 bg-white p-5 shadow-xs transition-all hover:border-zinc-300 hover:shadow-md"
+                className="flex flex-col rounded-2xl border border-zinc-200/90 bg-card p-5 shadow-xs transition-all hover:border-zinc-300 hover:shadow-md"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
@@ -416,7 +416,7 @@ export default function PropertiesGrid({
           })}
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-2xl border border-zinc-200 bg-white shadow-xs">
+        <div className="overflow-x-auto rounded-2xl border border-zinc-200 bg-card shadow-xs">
           <table className="w-full min-w-[640px] text-left text-sm">
             <thead className="border-b border-zinc-200 bg-zinc-50 text-[11px] font-bold uppercase tracking-wider text-zinc-600">
               <tr>
@@ -519,12 +519,12 @@ export default function PropertiesGrid({
           role="dialog"
           aria-modal="true"
           onClick={closeConfirm}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-navy/40 backdrop-blur-xs p-4"
         >
           <div
             ref={trapRef}
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-white p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-150"
+            className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-card p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-150"
           >
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-rose-50 text-rose-600 mb-3">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -552,7 +552,7 @@ export default function PropertiesGrid({
                 type="button"
                 onClick={closeConfirm}
                 disabled={deleting}
-                className="rounded-full border border-zinc-200 bg-white px-4 py-2 text-xs font-semibold text-zinc-700 transition-colors hover:bg-zinc-100 hover:text-zinc-900 disabled:opacity-60"
+                className="rounded-full border border-zinc-200 bg-card px-4 py-2 text-xs font-semibold text-zinc-700 transition-colors hover:bg-zinc-100 hover:text-zinc-900 disabled:opacity-60"
               >
                 Cancel
               </button>

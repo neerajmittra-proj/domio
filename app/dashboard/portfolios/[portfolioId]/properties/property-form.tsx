@@ -20,7 +20,7 @@ type Initial = {
 };
 
 const inputClass =
-  'w-full rounded-xl border border-zinc-300 bg-white px-3.5 py-2.5 text-sm text-zinc-900 shadow-xs outline-none transition placeholder:text-zinc-400 focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10';
+  'w-full rounded-xl border border-zinc-300 bg-card px-3.5 py-2.5 text-sm text-zinc-900 shadow-xs outline-none transition placeholder:text-zinc-400 focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10';
 const labelClass = 'text-xs font-bold uppercase tracking-wider text-zinc-700';
 
 export default function PropertyForm({
@@ -215,7 +215,7 @@ export default function PropertyForm({
 
         {/* Upload Zone & File Input */}
         {images.length < 5 && (
-          <div className="relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-zinc-300 bg-white p-5 text-center transition-colors hover:border-zinc-500">
+          <div className="relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-zinc-300 bg-card p-5 text-center transition-colors hover:border-zinc-500">
             <input
               type="file"
               multiple
@@ -246,7 +246,7 @@ export default function PropertyForm({
                   alt={`Photo ${idx + 1}`}
                   className="h-full w-full object-cover"
                 />
-                <span className="absolute bottom-1 left-1 rounded bg-black/60 px-1.5 py-0.5 text-[9px] font-bold text-white">
+                <span className="absolute bottom-1 left-1 rounded bg-card/85 px-1.5 py-0.5 text-[9px] font-bold text-[#223144]">
                   #{idx + 1}
                 </span>
                 <button
@@ -275,7 +275,7 @@ export default function PropertyForm({
             <button
               type="button"
               onClick={handleAddImageUrl}
-              className="rounded-xl border border-zinc-300 bg-white px-3 py-1.5 text-xs font-bold text-zinc-700 hover:bg-zinc-100 shrink-0"
+              className="rounded-xl border border-zinc-300 bg-card px-3 py-1.5 text-xs font-bold text-zinc-700 hover:bg-zinc-100 shrink-0"
             >
               + Add URL
             </button>
@@ -360,7 +360,7 @@ export default function PropertyForm({
       <button
         type="submit"
         disabled={pending}
-        className="mt-2 rounded-full bg-zinc-900 px-6 py-3 text-sm font-semibold text-white shadow-xs transition-all hover:bg-zinc-800 disabled:opacity-60"
+        className="mt-2 rounded-full bg-brand-grad px-6 py-3 text-sm font-semibold text-white shadow-xs transition-all hover:bg-brand-grad-hover disabled:opacity-60"
       >
         {pending ? 'Saving…' : mode === 'edit' ? 'Save Changes' : 'Create Property'}
       </button>

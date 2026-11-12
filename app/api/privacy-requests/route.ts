@@ -15,7 +15,6 @@ export async function POST(req: Request) {
     const {
       receiverId,
       receiverRole = 'OWNER',
-      receiverName,
       requestType = 'RENT_REQUEST',
       propertyId,
       propertyName,
@@ -51,6 +50,57 @@ export async function POST(req: Request) {
       ? (requestType as PrivacyRequestType)
       : 'RENT_REQUEST';
 
+    // The recipient must be a real, active account. Their name and role come
+    // from the database, never from the request body.
+    const receiver = await prisma.user.findUnique({
+      where: { id: String(receiverId) },
+      select: { id: true, name: true, role: true, active: true },
+    });
+    if (!receiver || !receiver.active) {
+      return NextResponse.json({ error: 'Recipient not found.' }, { status: 404 });
+    }
+
+    // A referenced property must belong to the recipient (owners) — otherwise
+    // the request could attach another owner's listing.
+    let linkedPropertyId: string | null = null;
+    let linkedPropertyName: string | null = null;
+    if (propertyId) {
+      const prop = await prisma.property.findFirst({
+        where: { id: String(propertyId), ownerId: receiver.id },
+        select: { id: true, name: true },
+      });
+      if (prop) {
+        linkedPropertyId = prop.id;
+        linkedPropertyName = prop.name;
+      }
+    }
+
+    const fee =
+      proposedRentOrFee !== undefined && proposedRentOrFee !== null && proposedRentOrFee !== ''
+        ? Number(proposedRentOrFee)
+        : null;
+    if (fee !== null && (!Number.isFinite(fee) || fee < 0)) {
+      return NextResponse.json({ error: 'Proposed amount must be a positive number.' }, { status: 400 });
+    }
+
+    // Don't let one user spam the same recipient with identical open requests.
+    const duplicate = await prisma.privacyRequest.findFirst({
+      where: {
+        senderId,
+        receiverId: receiver.id,
+        requestType: chosenType,
+        propertyId: linkedPropertyId,
+        status: 'PENDING',
+      },
+      select: { id: true },
+    });
+    if (duplicate) {
+      return NextResponse.json(
+        { error: 'You already have a pending request to this recipient.' },
+        { status: 409 },
+      );
+    }
+
     const newRequest = await prisma.privacyRequest.create({
       data: {
         requestType: chosenType,
@@ -59,15 +109,15 @@ export async function POST(req: Request) {
         senderName: sender.name,
         senderPhone: sender.phone || 'Not provided',
         senderEmail: sender.email,
-        receiverId,
-        receiverRole: String(receiverRole).toUpperCase(),
-        receiverName: receiverName || 'Recipient',
-        propertyId: propertyId || null,
-        propertyName: propertyName || null,
-        location: location || sender.location || 'Not specified',
-        propertyType: propertyType || null,
-        proposedRentOrFee: proposedRentOrFee ? Number(proposedRentOrFee) : null,
-        message: message ? String(message).trim() : null,
+        receiverId: receiver.id,
+        receiverRole: receiver.role === 'AGENT' ? 'AGENT' : String(receiverRole).toUpperCase() === 'TENANT' ? 'TENANT' : 'OWNER',
+        receiverName: receiver.name,
+        propertyId: linkedPropertyId,
+        propertyName: linkedPropertyName ?? (propertyName ? String(propertyName).slice(0, 200) : null),
+        location: String(location || sender.location || 'Not specified').slice(0, 200),
+        propertyType: propertyType ? String(propertyType).slice(0, 100) : null,
+        proposedRentOrFee: fee,
+        message: message ? String(message).trim().slice(0, 1000) : null,
         status: 'PENDING',
       },
     });

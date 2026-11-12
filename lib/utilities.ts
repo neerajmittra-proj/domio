@@ -313,7 +313,7 @@ export function parseBillInput(
     data: {
       billDate: bill,
       dueDate: due,
-      amount: amt,
+      amount: Math.round((amt + Number.EPSILON) * 100) / 100,
       notes: typeof notes === 'string' && notes.trim() ? notes.trim() : null,
     },
   };
@@ -333,14 +333,14 @@ export function parseBillPaymentInput(
     unknown
   >;
   const amt = typeof amountPaid === 'number' ? amountPaid : Number(amountPaid);
-  if (!Number.isFinite(amt) || amt < 0) {
-    return { error: 'A valid amount paid is required.' };
+  if (!Number.isFinite(amt) || amt <= 0) {
+    return { error: 'Payment amount must be greater than zero.' };
   }
   const paid = toDate(paymentDate);
   if (!paid) return { error: 'A valid payment date is required.' };
   return {
     data: {
-      amountPaid: amt,
+      amountPaid: Math.round((amt + Number.EPSILON) * 100) / 100,
       paidDate: paid,
       paymentMethod: isPaymentMethod(paymentMethod) ? paymentMethod : null,
     },

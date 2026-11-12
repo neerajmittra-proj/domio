@@ -1,22 +1,15 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
-import { auth } from '@/auth';
+import { requireOwner } from '@/lib/api-auth';
 import { prisma } from '@/lib/prisma';
 import { generateManagerDisplayId } from '@/lib/display-ids';
 
 export async function POST(request: Request) {
-  const session = await auth();
-  if (!session?.user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
   // Only Owners create managers for themselves — a manager cannot create
   // sub-managers, and Super Admins manage owners, not their managers.
-  if (session.user.role !== 'OWNER') {
-    return NextResponse.json(
-      { error: 'Only property owners can add managers.' },
-      { status: 403 },
-    );
-  }
+  const guard = await requireOwner();
+  if ('response' in guard) return guard.response;
+  const session = guard.session;
 
   const body = await request.json().catch(() => null);
   if (!body) {

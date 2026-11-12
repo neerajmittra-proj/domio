@@ -14,6 +14,12 @@ export async function PATCH(
   }
   const { id } = await params;
   const ds = await resolveDataScope(session.user);
+  if (ds.isManager) {
+    return NextResponse.json(
+      { error: 'Managers cannot change tenant portal access.' },
+      { status: 403 },
+    );
+  }
 
   const tenant = await prisma.tenant.findUnique({
     where: { id },

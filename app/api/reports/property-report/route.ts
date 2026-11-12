@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { resolveDataScope } from '@/lib/manager-access';
+import { expenseScopeWhere } from '@/lib/expenses';
 import { getPortfolioOverview, type OverviewEntityNode } from '@/lib/portfolio-overview';
 import { renderReportPdf } from '@/lib/reports/render';
 import { PropertyReportPDF, type PropertyReportData } from '@/lib/reports/property-report';
@@ -79,7 +80,12 @@ export async function POST(request: Request) {
   const monthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
   const monthEnd = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1));
   const expenseAgg = await prisma.expense.aggregate({
-    where: { ownerId: ds.ownerId, propertyId: property.id, date: { gte: monthStart, lt: monthEnd } },
+    where: {
+      ownerId: ds.ownerId,
+      propertyId: property.id,
+      date: { gte: monthStart, lt: monthEnd },
+      ...expenseScopeWhere(scope),
+    },
     _sum: { amount: true },
   });
   const expenses = expenseAgg._sum.amount ?? 0;

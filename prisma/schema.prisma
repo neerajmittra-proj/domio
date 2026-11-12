@@ -289,6 +289,7 @@ model TenantOtp {
   otpHash   String   // bcrypt hash of the 6-digit code
   expiresAt DateTime // 10 minutes from creation
   used      Boolean  @default(false)
+  attempts  Int      @default(0) // wrong-code guesses; OTP is burned after MAX_OTP_ATTEMPTS
   createdAt DateTime @default(now())
 
   @@index([tenantId])
@@ -851,6 +852,7 @@ model UserOtp {
   otpHash   String   // bcrypt hash of 6-digit OTP
   expiresAt DateTime // 10 minutes from creation
   used      Boolean  @default(false)
+  attempts  Int      @default(0) // wrong guesses; code is burned after 5
   createdAt DateTime @default(now())
 
   @@index([userId, target])

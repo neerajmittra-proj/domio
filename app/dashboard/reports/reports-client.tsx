@@ -8,10 +8,10 @@ type TenancyOpt = { id: string; label: string };
 type CatOpt = { value: string; label: string };
 
 const glassCard =
-  'rounded-2xl border border-zinc-200 bg-[rgba(14,12,34,0.6)] p-5 backdrop-blur-md shadow-[0_4px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.05)] transition-all duration-200 hover:shadow-md';
+  'rounded-2xl border border-zinc-200 bg-[rgba(255,255,255,0.88)] p-5 backdrop-blur-md shadow-[0_4px_20px_rgba(34,49,68,0.10)] transition-all duration-200 hover:shadow-md';
 const inputClass =
-  'w-full rounded-lg border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-3 py-2 text-sm text-white outline-none transition focus:border-zinc-700 focus:ring-2 focus:ring-zinc-500/20';
-const labelClass = 'text-sm font-medium text-[#E8E8F2]';
+  'w-full rounded-lg border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-3 py-2 text-sm text-[#223144] outline-none transition focus:border-zinc-700 focus:ring-2 focus:ring-zinc-500/20';
+const labelClass = 'text-sm font-medium text-[#223144]';
 
 type ReportKey =
   | 'rent'
@@ -153,8 +153,8 @@ export default function ReportsClient({
   const radioBtn = (active: boolean) =>
     'rounded-full px-3 py-1.5 text-xs font-medium transition-colors ' +
     (active
-      ? 'border border-zinc-300 bg-zinc-900 text-white'
-      : 'border border-[#312D58] bg-[rgba(255,255,255,0.04)] text-[#B0B0C8] hover:text-white');
+      ? 'border border-zinc-300 bg-brand-grad text-white'
+      : 'border border-[#C2D9E0] bg-[rgba(255,255,255,0.5)] text-[#3E5560] hover:text-[#223144]');
 
   const card = CARDS.find((c) => c.key === open);
 
@@ -162,10 +162,10 @@ export default function ReportsClient({
     <div className="mx-auto max-w-5xl">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-white">
+          <h1 className="text-2xl font-semibold tracking-tight text-[#223144]">
             Reports
           </h1>
-          <p className="mt-1 text-sm text-[#6A6A8A]">
+          <p className="mt-1 text-sm text-[#3E5560]">
             Generate and download PDF reports for your properties.
           </p>
         </div>
@@ -181,12 +181,12 @@ export default function ReportsClient({
         {CARDS.map((c) => (
           <div key={c.key} className={glassCard + ' flex flex-col'}>
             <div className="text-3xl">{c.icon}</div>
-            <h3 className="mt-3 text-base font-semibold text-white">{c.title}</h3>
-            <p className="mt-1 flex-1 text-sm text-[#6A6A8A]">{c.desc}</p>
+            <h3 className="mt-3 text-base font-semibold text-[#223144]">{c.title}</h3>
+            <p className="mt-1 flex-1 text-sm text-[#3E5560]">{c.desc}</p>
             <button
               type="button"
               onClick={() => openModal(c.key)}
-              className="mt-4 inline-flex w-max rounded-full border border-zinc-300 bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-800"
+              className="mt-4 inline-flex w-max rounded-full border border-zinc-300 bg-brand-grad px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-grad-hover"
             >
               Generate →
             </button>
@@ -199,13 +199,13 @@ export default function ReportsClient({
           role="dialog"
           aria-modal="true"
           onClick={() => !loading && setOpen(null)}
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4"
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-navy/60 p-4"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md rounded-2xl border border-zinc-200 bg-[rgba(14,12,34,0.95)] p-6 shadow-2xl backdrop-blur-xl"
+            className="w-full max-w-md rounded-2xl border border-zinc-200 bg-[rgba(255,255,255,0.97)] p-6 shadow-2xl backdrop-blur-xl"
           >
-            <h2 className="text-lg font-semibold tracking-tight text-white">
+            <h2 className="text-lg font-semibold tracking-tight text-[#223144]">
               {card.icon} {card.title}
             </h2>
 
@@ -302,7 +302,7 @@ export default function ReportsClient({
             </div>
 
             {error && (
-              <p role="alert" className="mt-4 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-400">
+              <p role="alert" className="mt-4 rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-700">
                 {error}
               </p>
             )}
@@ -312,7 +312,7 @@ export default function ReportsClient({
                 type="button"
                 onClick={() => !loading && setOpen(null)}
                 disabled={loading}
-                className="rounded-full border border-[#312D58] bg-[rgba(255,255,255,0.06)] px-4 py-2 text-sm font-medium text-[#E8E8F2] transition-colors hover:text-white disabled:opacity-60"
+                className="rounded-full border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-4 py-2 text-sm font-medium text-[#223144] transition-colors hover:text-[#223144] disabled:opacity-60"
               >
                 Cancel
               </button>
@@ -320,7 +320,7 @@ export default function ReportsClient({
                 type="button"
                 onClick={submit}
                 disabled={loading}
-                className="inline-flex items-center gap-2 rounded-full bg-zinc-900 px-5 py-2 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90 disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-full bg-brand-grad px-5 py-2 text-sm font-medium text-white shadow-sm transition-opacity hover:opacity-90 disabled:opacity-60"
               >
                 {loading && (
                   <span className="h-3 w-3 animate-spin rounded-full border-2 border-white/40 border-t-white" />

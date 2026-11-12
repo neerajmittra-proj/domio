@@ -26,7 +26,7 @@ const ENTITY_LABEL: Record<AuditEntity, string> = {
 const ACTION_STYLE: Record<AuditAction, { label: string; cls: string }> = {
   CREATE: {
     label: 'Created',
-    cls: 'border-green-500/30 bg-green-500/10 text-green-400',
+    cls: 'border-green-500/30 bg-green-500/10 text-green-700',
   },
   UPDATE: {
     label: 'Edited',
@@ -34,7 +34,7 @@ const ACTION_STYLE: Record<AuditAction, { label: string; cls: string }> = {
   },
   DELETE: {
     label: 'Deleted',
-    cls: 'border-red-500/30 bg-red-500/10 text-red-400',
+    cls: 'border-red-500/30 bg-red-500/10 text-red-700',
   },
 };
 
@@ -106,10 +106,10 @@ export default async function AuditLogPage({
 
   return (
     <div className="mx-auto max-w-6xl">
-      <h1 className="text-2xl font-semibold tracking-tight text-white">
+      <h1 className="text-2xl font-semibold tracking-tight text-[#223144]">
         Rent Ledger Audit Log
       </h1>
-      <p className="mt-1 text-sm text-[#6A6A8A]">
+      <p className="mt-1 text-sm text-[#3E5560]">
         Every change to rent charges, payments and monthly rent records.
         {ds.isManager && ' Showing entries for units you can access.'}
       </p>
@@ -121,9 +121,9 @@ export default async function AuditLogPage({
       </div>
 
       {entries.length === 0 ? (
-        <div className="mt-6 rounded-2xl border border-dashed border-[#312D58] bg-[#17152F] p-12 text-center">
+        <div className="mt-6 rounded-2xl border border-dashed border-[#C2D9E0] bg-[#FFFFFF] p-12 text-center">
           <div className="text-4xl">🗒️</div>
-          <p className="mt-3 text-sm text-[#E8E8F2]">
+          <p className="mt-3 text-sm text-[#223144]">
             No changes recorded yet
           </p>
         </div>
@@ -149,12 +149,12 @@ export default async function AuditLogPage({
                     key={it.id}
                     className="align-top transition-colors hover:bg-zinc-50"
                   >
-                    <td className="whitespace-nowrap px-4 py-3 text-[#6A6A8A]">
+                    <td className="whitespace-nowrap px-4 py-3 text-[#3E5560]">
                       {dtFmt.format(new Date(it.createdAt))}
                     </td>
                     <td className="px-4 py-3">
-                      <span className="text-[#E8E8F2]">{it.actorName}</span>
-                      <span className="ml-1 text-xs text-[#4A4A6A]">
+                      <span className="text-[#223144]">{it.actorName}</span>
+                      <span className="ml-1 text-xs text-[#5B7280]">
                         {it.actorRole.toLowerCase()}
                       </span>
                     </td>
@@ -168,13 +168,13 @@ export default async function AuditLogPage({
                         {style.label}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-[#6A6A8A]">
+                    <td className="px-4 py-3 text-[#3E5560]">
                       {ENTITY_LABEL[it.entity]}
                     </td>
-                    <td className="px-4 py-3 text-[#B0B0C8]">
+                    <td className="px-4 py-3 text-[#3E5560]">
                       {it.tenant?.name ?? '—'}
                       {it.unit && (
-                        <span className="block text-xs text-[#4A4A6A]">
+                        <span className="block text-xs text-[#5B7280]">
                           Unit {it.unit.unitNumber}
                         </span>
                       )}
@@ -182,7 +182,7 @@ export default async function AuditLogPage({
                     <td className="max-w-sm px-4 py-3 text-xs text-zinc-500">
                       {changeSummary(it)}
                     </td>
-                    <td className="px-4 py-3 text-xs italic text-[#6A6A8A]">
+                    <td className="px-4 py-3 text-xs italic text-[#3E5560]">
                       {it.reason ?? '—'}
                     </td>
                   </tr>

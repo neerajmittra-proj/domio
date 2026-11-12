@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { resolveDataScope } from '@/lib/manager-access';
+import { expenseScopeWhere } from '@/lib/expenses';
 import { renderReportPdf } from '@/lib/reports/render';
 import { PortfolioSummaryPDF, type PortfolioSummaryData } from '@/lib/reports/portfolio-summary';
 
@@ -41,7 +42,14 @@ export async function POST(request: Request) {
   const scope = ds.isManager ? ds.scope : undefined;
   const dateFrom = body.dateFrom ? new Date(body.dateFrom) : new Date(0);
   const dateToRaw = body.dateTo ? new Date(body.dateTo) : new Date();
-  const dateTo = new Date(dateToRaw.getTime() + 24 * 60 * 60 * 1000);
+  if (Number.isNaN(dateFrom.getTime()) || Number.isNaN(dateToRaw.getTime())) {
+    return NextResponse.json({ error: 'Valid report dates are required.' }, { status: 400 });
+  }
+  // `dateTo` is inclusive of its whole (UTC) day.
+  const dateTo = new Date(
+    Date.UTC(dateToRaw.getUTCFullYear(), dateToRaw.getUTCMonth(), dateToRaw.getUTCDate()) +
+      24 * 60 * 60 * 1000,
+  );
 
   const properties = await prisma.property.findMany({
     where: {
@@ -79,15 +87,20 @@ export async function POST(request: Request) {
     });
   }
 
+  // Managers only see tenancies on units they were granted (a unit-only grant
+  // exposes its parent property id, but not the sibling units' tenancies).
   const tenancyScopeWhere = {
     ownerId: ds.ownerId,
     OR: [
-      { subProperty: { propertyId: { in: propertyIds } } },
+      {
+        subProperty: { propertyId: { in: propertyIds } },
+        ...(scope ? { subPropertyId: { in: scope.subPropertyIds } } : {}),
+      },
       { rentableEntity: { propertyId: { in: propertyIds } } },
     ],
   };
 
-  const [payments, charges, propExpenses, portfolioExpenses] = await Promise.all([
+  const [payments, charges, scheduled, propExpenses, portfolioExpenses] = await Promise.all([
     prisma.ledgerEntry.findMany({
       where: { type: 'PAYMENT', date: { gte: dateFrom, lt: dateTo }, tenancy: tenancyScopeWhere },
       select: {
@@ -114,19 +127,40 @@ export async function POST(request: Request) {
         },
       },
     }),
-    prisma.expense.findMany({
-      where: { ownerId: ds.ownerId, propertyId: { in: propertyIds }, date: { gte: dateFrom, lt: dateTo } },
-      select: { propertyId: true, amount: true, date: true },
+    // Expected rent = the rent schedule (RentLedger rows falling due in range).
+    prisma.rentLedger.findMany({
+      where: { dueDate: { gte: dateFrom, lt: dateTo }, tenancy: tenancyScopeWhere },
+      select: {
+        amountDue: true,
+        tenancy: {
+          select: {
+            subProperty: { select: { propertyId: true } },
+            rentableEntity: { select: { propertyId: true } },
+          },
+        },
+      },
     }),
     prisma.expense.findMany({
       where: {
         ownerId: ds.ownerId,
-        portfolioId: portfolio.id,
-        propertyId: null,
+        propertyId: { in: propertyIds },
         date: { gte: dateFrom, lt: dateTo },
+        ...expenseScopeWhere(scope),
       },
-      select: { amount: true, date: true },
+      select: { propertyId: true, amount: true, date: true },
     }),
+    // Portfolio-level (no property) expenses are the owner's own; managers don't see them.
+    scope
+      ? Promise.resolve([] as { amount: number; date: Date }[])
+      : prisma.expense.findMany({
+          where: {
+            ownerId: ds.ownerId,
+            portfolioId: portfolio.id,
+            propertyId: null,
+            date: { gte: dateFrom, lt: dateTo },
+          },
+          select: { amount: true, date: true },
+        }),
   ]);
 
   const collectedByProp = new Map<string, number>();
@@ -139,9 +173,18 @@ export async function POST(request: Request) {
     if (pid) collectedByProp.set(pid, (collectedByProp.get(pid) ?? 0) + e.amount);
     bump(trendMap, monthKey(e.date), 'income', e.amount);
   }
+  const chargesByProp = new Map<string, number>();
   for (const e of charges) {
     const pid = e.tenancy.subProperty?.propertyId ?? e.tenancy.rentableEntity?.propertyId;
-    if (pid) expectedByProp.set(pid, (expectedByProp.get(pid) ?? 0) + Math.abs(e.amount));
+    if (pid) chargesByProp.set(pid, (chargesByProp.get(pid) ?? 0) + Math.abs(e.amount));
+  }
+  for (const e of scheduled) {
+    const pid = e.tenancy.subProperty?.propertyId ?? e.tenancy.rentableEntity?.propertyId;
+    if (pid) expectedByProp.set(pid, (expectedByProp.get(pid) ?? 0) + e.amountDue);
+  }
+  // Properties with no schedule rows in range fall back to manual journal charges.
+  for (const [pid, v] of chargesByProp) {
+    if (!(expectedByProp.get(pid) ?? 0)) expectedByProp.set(pid, v);
   }
   for (const e of propExpenses) {
     if (e.propertyId) expensesByProp.set(e.propertyId, (expensesByProp.get(e.propertyId) ?? 0) + e.amount);
