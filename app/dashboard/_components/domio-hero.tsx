@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { PART2_ENABLED } from '@/lib/features';
 
 const svgProps = {
   width: 24,
@@ -175,7 +176,7 @@ export default function DomioHero() {
               </Link>
             ))}
 
-            {/* Box 8: Join as a tenant (at the end, reveals modal on click) */}
+            {PART2_ENABLED && (<>{/* Box 8: Join as a tenant (at the end, reveals modal on click) */}
             <button
               type="button"
               onClick={() => setTenantModalOpen(true)}
@@ -201,7 +202,7 @@ export default function DomioHero() {
               <span className="mt-3 text-center text-xs font-semibold leading-snug text-[#223144]">
                 Join as an agent
               </span>
-            </button>
+            </button></>)}
           </div>
         </div>
       </section>
@@ -401,12 +402,12 @@ export default function DomioHero() {
             </div>
 
             <div className="mt-8 pt-6 border-t border-zinc-100 flex flex-wrap items-center justify-center gap-3">
-              <Link
+              {PART2_ENABLED && (<Link
                 href="/tenant-portal"
                 className="rounded-full bg-blue-600 px-8 py-3 text-xs sm:text-sm font-bold text-white shadow-md hover:bg-blue-700 transition-all"
               >
                 Open Tenant Portal →
-              </Link>
+              </Link>)}
               <Link
                 href="/dashboard/search"
                 className="rounded-full border border-zinc-300 bg-card px-6 py-3 text-xs sm:text-sm font-bold text-zinc-800 hover:bg-zinc-100 transition-colors"

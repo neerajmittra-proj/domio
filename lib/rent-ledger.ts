@@ -315,10 +315,11 @@ export async function getRentSummary(
     : {};
 
   const [due, collected, overdue] = await Promise.all([
-    // Due this month: current month AND already due (dueDate <= now).
+    // Due this month: everything scheduled for the current calendar month
+    // (same figure the dashboard shows).
     prisma.rentLedger.aggregate({
       _sum: { amountDue: true },
-      where: { ownerId, dueDate: { gte: start, lte: now, lt: end }, ...s },
+      where: { ownerId, dueDate: { gte: start, lt: end }, ...s },
     }),
     prisma.rentLedger.aggregate({
       _sum: { amountPaid: true },

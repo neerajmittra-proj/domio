@@ -1,6 +1,20 @@
 import { prisma } from '@/lib/prisma';
 import { sendEmail, APP_URL } from '@/lib/email';
 import { sendOtpSms } from '@/lib/twilio';
+import { PART2_ENABLED } from '@/lib/features';
+
+// Imported tenants were given placeholder contacts (e.g. name@placeholder.com,
+// 9999999999). Never send reminders to those.
+const PLACEHOLDER_EMAIL = /@(placeholder|example)\.(com|org|net|in)$/i;
+export function isRealEmail(email: string): boolean {
+  return /.+@.+\..+/.test(email) && !PLACEHOLDER_EMAIL.test(email.trim());
+}
+export function isRealPhone(phone: string): boolean {
+  const digits = phone.replace(/\D/g, '');
+  if (digits.length < 10) return false;
+  return !/^(\d)\1+$/.test(digits.slice(-10)) && digits.slice(-10) !== '1234567890';
+}
+
 
 export async function sendSingleRentReminder({
   tenantId,
@@ -98,12 +112,14 @@ export async function sendSingleRentReminder({
     timeZone: 'UTC',
   });
 
-  const portalLink = `${APP_URL}/tenant-portal`;
+  // The tenant portal is Part 2; until it is on, link to nothing tenant-facing.
+  const portalLink = PART2_ENABLED ? `${APP_URL}/tenant-portal` : '';
   let emailSent = false;
   let smsSent = false;
 
   // 1. Send Email Reminder if tenant has email
-  if (tenant.email) {
+  // Skip addresses/numbers created as placeholders during data import.
+  if (tenant.email && isRealEmail(tenant.email)) {
     const emailResult = await sendEmail({
       to: tenant.email,
       subject: `Upcoming Rent Reminder: ${propertyName} (${unitName})`,
@@ -130,7 +146,7 @@ export async function sendSingleRentReminder({
               </tr>
               <tr>
                 <td style="color: #71717a; padding: 4px 0;">Monthly Rent Due:</td>
-                <td style="font-weight: bold; color: #059669; font-size: 16px; text-align: right;">$${monthlyRent.toLocaleString()}</td>
+                <td style="font-weight: bold; color: #059669; font-size: 16px; text-align: right;">₹${monthlyRent.toLocaleString('en-IN')}</td>
               </tr>
               <tr>
                 <td style="color: #71717a; padding: 4px 0;">Due Date:</td>
@@ -147,25 +163,27 @@ export async function sendSingleRentReminder({
           </div>
           ` : ''}
 
+          ${portalLink ? `
           <div style="text-align: center; margin: 24px 0;">
             <a href="${portalLink}" style="display: inline-block; background: #09090b; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 10px; font-weight: bold; font-size: 14px;">
               Open Tenant Portal &amp; View Ledger →
             </a>
           </div>
+          ` : ''}
 
           <p style="font-size: 11px; color: #a1a1aa; text-align: center; margin-bottom: 0;">
             This is an automated reminder. Landlords can adjust or pause reminder preferences in their dashboard for free at any time.
           </p>
         </div>
       `,
-      text: `Hello ${tenant.name}, friendly reminder that rent of $${monthlyRent} for ${propertyName} (${unitName}) is due on ${formattedDueDate}. You can review your ledger at ${portalLink}`,
+      text: `Hello ${tenant.name}, friendly reminder that rent of ₹${monthlyRent.toLocaleString('en-IN')} for ${propertyName} (${unitName}) is due on ${formattedDueDate}. ${portalLink ? `You can review your ledger at ${portalLink}` : ''}`,
     });
     emailSent = emailResult.success;
   }
 
   // 2. Send SMS Reminder if tenant has phone
-  if (tenant.phone) {
-    const smsMessage = `Domio Rent Reminder: Hello ${tenant.name}, rent of $${monthlyRent.toLocaleString()} for ${propertyName} (${unitName}) is due on ${formattedDueDate}. View details: ${portalLink}`;
+  if (tenant.phone && isRealPhone(tenant.phone)) {
+    const smsMessage = `Domio Rent Reminder: Hello ${tenant.name}, rent of ₹${monthlyRent.toLocaleString('en-IN')} for ${propertyName} (${unitName}) is due on ${formattedDueDate}.${portalLink ? ` View details: ${portalLink}` : ''}`;
     const smsResult = await sendOtpSms(tenant.phone, smsMessage);
     smsSent = smsResult.sent;
   }

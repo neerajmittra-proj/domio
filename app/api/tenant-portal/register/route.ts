@@ -5,10 +5,13 @@ import { prisma } from '@/lib/prisma';
 import { generateTenantId } from '@/lib/display-ids';
 import { issueTenantJwt, TENANT_JWT_COOKIE } from '@/lib/tenant-otp';
 import { rateLimit, clientIp } from '@/lib/rate-limit';
+import { part2Guard } from '@/lib/features';
 
 const USERNAME_RE = /^[a-z0-9_.]{3,30}$/;
 
 export async function POST(req: Request) {
+  const disabled = part2Guard();
+  if (disabled) return disabled;
   try {
     const { username, name, phone, email, password } = await req.json().catch(() => ({}));
 

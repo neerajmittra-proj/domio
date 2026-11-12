@@ -4,6 +4,7 @@ import { markOverdueBills } from '@/lib/utilities';
 import { expenseScopeWhere } from '@/lib/expenses';
 import { markOverdueRent, round2 } from '@/lib/rent-ledger';
 import { getPortfolioOverview } from '@/lib/portfolio-overview';
+import { getArrearsByTenancy } from '@/lib/arrears';
 import { getEntityTypeLabel } from '@/lib/document-types';
 
 const DAY_MS = 1000 * 60 * 60 * 24;
@@ -211,6 +212,8 @@ export async function getDashboardData(
     fyEntries,
     arrearsAgg,
     fyLedgerRows,
+    monthDueAgg,
+    arrearsByTenancy,
   ] = await Promise.all([
     getPortfolioOverview(ownerId, scope),
     // Active tenancies → monthly expected + per-tenant collection rows.
@@ -330,10 +333,23 @@ export async function getDashboardData(
       where: { ...ledgerEntryWhere, ownerId, dueDate: { gte: fyStart, lt: fyEnd } },
       select: { dueDate: true, amountDue: true },
     }),
+    // Rent scheduled for the viewed month — same figure as the Rent page.
+    prisma.rentLedger.aggregate({
+      _sum: { amountDue: true },
+      where: { ...ledgerEntryWhere, ownerId, dueDate: { gte: monthStart, lt: monthEnd } },
+    }),
+    // Arrears per tenancy (shared with the Rent page and tenant list).
+    getArrearsByTenancy(ownerId, scope ? { subPropertyIds: scope.subPropertyIds } : {}),
   ]);
 
   // ── Month + FY stat cards ──────────────────────────────────────────────────
-  const monthlyExpected = activeTenancies.reduce((s, t) => s + t.monthlyRent, 0);
+  // "Due this month" = the rent schedule for the month (same as the Rent page);
+  // falls back to active lease rents when no schedule rows exist yet.
+  const scheduledThisMonth = round2(monthDueAgg._sum.amountDue ?? 0);
+  const monthlyExpected =
+    scheduledThisMonth > 0
+      ? scheduledThisMonth
+      : activeTenancies.reduce((s, t) => s + t.monthlyRent, 0);
   const collectedByTenancy = new Map<string, number>();
   for (const p of monthPayments) {
     collectedByTenancy.set(p.tenancyId, (collectedByTenancy.get(p.tenancyId) ?? 0) + p.amount);
@@ -451,17 +467,45 @@ export async function getDashboardData(
   const recentActivity = acts.map((a) => a.item);
 
   // ── Alerts (Needs Attention) ────────────────────────────────────────────────
-  const overdue: OverdueAlert[] = allUnits
-    .filter((x) => x.unit.overdueAmount > 0)
-    .sort((a, b) => (b.unit.daysOverdue ?? 0) - (a.unit.daysOverdue ?? 0))
-    .map((x) => ({
-      entryId: x.unit.overdueEntryId,
-      tenantName: x.unit.tenantName ?? 'Tenant',
-      unitLabel: `Unit ${x.unit.unitNumber}`,
-      amount: x.unit.overdueAmount,
-      daysOverdue: x.unit.daysOverdue ?? 0,
-      href: `/dashboard/portfolios/${x.portfolio.id}/properties/${x.property.id}/units/${x.unit.id}`,
-    }));
+  // Every tenancy with past-due rent on the schedule — flat units AND units in
+  // the hierarchy tree — so the count matches the Rent page's arrears.
+  const overdueTenancyIds = [...arrearsByTenancy.values()]
+    .filter((a) => a.overdue > 0)
+    .map((a) => a.tenancyId);
+  const overdueTenancies = overdueTenancyIds.length
+    ? await prisma.tenancy.findMany({
+        where: { id: { in: overdueTenancyIds } },
+        select: {
+          id: true,
+          tenant: { select: { name: true } },
+          subProperty: {
+            select: { name: true, propertyId: true, property: { select: { portfolioId: true } } },
+          },
+          rentableEntity: {
+            select: { name: true, propertyId: true, property: { select: { portfolioId: true } } },
+          },
+        },
+      })
+    : [];
+  const overdue: OverdueAlert[] = overdueTenancies
+    .map((t) => {
+      const a = arrearsByTenancy.get(t.id)!;
+      const place = t.subProperty ?? t.rentableEntity;
+      const href = place
+        ? `/dashboard/portfolios/${place.property.portfolioId}/properties/${place.propertyId}/units`
+        : '/dashboard/rent';
+      return {
+        entryId: a.oldestOverdueEntryId,
+        tenantName: t.tenant.name,
+        unitLabel: place?.name ?? 'Unit',
+        amount: a.overdue,
+        daysOverdue: a.oldestOverdueDate
+          ? Math.max(0, Math.floor((now.getTime() - a.oldestOverdueDate.getTime()) / DAY_MS))
+          : 0,
+        href,
+      };
+    })
+    .sort((a, b) => b.amount - a.amount);
 
   const expiring: ExpiringAlert[] = allUnits
     .filter((x) => x.unit.expiringSoon && x.unit.tenancyId)

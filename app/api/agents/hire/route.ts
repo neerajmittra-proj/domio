@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import { part2Guard } from '@/lib/features';
 
 export async function POST(req: Request) {
+  const disabled = part2Guard();
+  if (disabled) return disabled;
   try {
     const session = await auth();
     const body = await req.json().catch(() => ({}));

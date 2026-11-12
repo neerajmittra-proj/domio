@@ -3,8 +3,11 @@ import { cookies } from 'next/headers';
 import { verifyOtp, issueTenantJwt, TENANT_JWT_COOKIE, OtpError } from '@/lib/tenant-otp';
 import { prisma } from '@/lib/prisma';
 import { rateLimit, clientIp } from '@/lib/rate-limit';
+import { part2Guard } from '@/lib/features';
 
 export async function POST(req: Request) {
+  const disabled = part2Guard();
+  if (disabled) return disabled;
   try {
     const { tenantId, otp } = await req.json().catch(() => ({}));
 

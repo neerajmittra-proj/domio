@@ -1,3 +1,5 @@
+import { notFound } from 'next/navigation';
+import { PART2_ENABLED } from '@/lib/features';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import '../globals.css';
@@ -9,6 +11,7 @@ export const metadata: Metadata = {
 };
 
 export default function TenantPortalLayout({ children }: { children: React.ReactNode }) {
+  if (!PART2_ENABLED) notFound();
   return (
     <div className="min-h-screen bg-transparent text-[#223144] selection:bg-card selection:text-ink flex flex-col justify-between relative overflow-hidden">
 

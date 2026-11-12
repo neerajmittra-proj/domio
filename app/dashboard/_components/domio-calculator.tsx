@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 
 export default function DomioCalculator() {
-  const [monthlyRent, setMonthlyRent] = useState(1700);
+  const [monthlyRent, setMonthlyRent] = useState(25000);
 
   const annualCollected = monthlyRent * 12;
   const automatedSavings = Math.round(annualCollected * 0.08); // 8% avg agent fee saved
@@ -37,28 +37,28 @@ export default function DomioCalculator() {
               Estimated Annual Rent Collection
             </p>
             <p className="mt-2 text-4xl sm:text-6xl font-black text-ink tracking-tight font-mono">
-              ${annualCollected.toLocaleString()}
+              ₹{annualCollected.toLocaleString('en-IN')}
             </p>
             <p className="mt-1 text-sm font-medium text-zinc-600">
-              Monthly rental <strong className="text-ink font-bold">${monthlyRent.toLocaleString()}</strong> · ${automatedSavings.toLocaleString()} avg savings/yr
+              Monthly rent <strong className="text-ink font-bold">₹{monthlyRent.toLocaleString('en-IN')}</strong> · ₹{automatedSavings.toLocaleString('en-IN')} avg savings/yr
             </p>
 
             {/* Slider Control */}
             <div className="mt-8 px-2">
               <input
                 type="range"
-                min="500"
-                max="10000"
-                step="100"
+                min="5000"
+                max="200000"
+                step="1000"
                 value={monthlyRent}
                 onChange={(e) => setMonthlyRent(Number(e.target.value))}
                 className="h-2.5 w-full cursor-pointer appearance-none rounded-lg bg-zinc-300 accent-black transition-all"
                 aria-label="Monthly rental slider"
               />
               <div className="mt-2 flex justify-between text-xs font-semibold text-zinc-500">
-                <span>$500 PCM</span>
-                <span>$5,000 PCM</span>
-                <span>$10,000+ PCM</span>
+                <span>₹5,000/mo</span>
+                <span>₹1,00,000/mo</span>
+                <span>₹2,00,000+/mo</span>
               </div>
             </div>
 

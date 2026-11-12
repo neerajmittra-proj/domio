@@ -1,6 +1,7 @@
 import type { TenancyStatus } from '@prisma/client';
 import type { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
+import { getArrearsByTenancy } from '@/lib/arrears';
 import type { ManagerScope } from '@/lib/manager-access';
 
 // Tenants a manager may see: those with a tenancy in a unit / property they
@@ -98,7 +99,7 @@ export async function listTenantsForOwner(
             : {}),
         };
 
-  const [rows, docCountRows, balanceRows, rentLedgerPaidRows, rentLedgerDueRows] = await Promise.all([
+  const [rows, docCountRows, balanceRows, rentLedgerPaidRows, rentLedgerDueRows, arrearsByTenancy] = await Promise.all([
     prisma.tenant.findMany({
       where: whereClause,
       orderBy: { createdAt: 'desc' },
@@ -152,6 +153,7 @@ export async function listTenantsForOwner(
       where: { ownerId },
       _sum: { amountDue: true },
     }),
+    getArrearsByTenancy(ownerId),
   ]);
 
   const docCounts = new Map<string, number>(
@@ -178,29 +180,33 @@ export async function listTenantsForOwner(
       tenantTotalDue += dueByTenancy.get(tenancy.id) ?? 0;
     }
 
-    const currentBalance = current ? (balanceByTenancy.get(current.id) ?? 0) : 0;
-    const overdueAmount = Math.max(0, -currentBalance);
-
-    // Calculate remaining rent and status
+    // Arrears come from the rent schedule (same source as the Rent page and
+    // dashboard), summed over all of this tenant's leases.
+    let overdueAmount = 0;
     let remainingRent = 0;
-    let paidStatus: TenantPaymentStatus = 'NO_LEASE';
+    for (const tenancy of t.tenancies) {
+      const a = arrearsByTenancy.get(tenancy.id);
+      if (a) {
+        overdueAmount += a.overdue;
+        remainingRent += a.dueToDate;
+      }
+    }
+    overdueAmount = Math.round(overdueAmount * 100) / 100;
+    remainingRent = Math.round(remainingRent * 100) / 100;
+    const currentArrears = current ? arrearsByTenancy.get(current.id) : undefined;
+    // Negative = owed (kept for components that read the running balance).
+    const currentBalance = currentArrears ? -currentArrears.dueToDate : 0;
+    void balanceByTenancy;
+    void tenantTotalDue;
 
+    let paidStatus: TenantPaymentStatus = 'NO_LEASE';
     if (current) {
-      if (currentBalance < 0) {
-        remainingRent = Math.abs(currentBalance);
+      if (overdueAmount > 0) {
         paidStatus = tenantTotalPaid > 0 ? 'PARTIAL' : 'OVERDUE';
-      } else if (currentBalance > 0) {
-        remainingRent = 0;
-        paidStatus = 'PAID';
+      } else if (remainingRent > 0) {
+        paidStatus = 'UNPAID';
       } else {
-        // Balance is 0
-        if (tenantTotalPaid > 0 || (tenantTotalDue > 0 && tenantTotalPaid >= tenantTotalDue)) {
-          remainingRent = 0;
-          paidStatus = 'PAID';
-        } else {
-          remainingRent = current.monthlyRent;
-          paidStatus = 'UNPAID';
-        }
+        paidStatus = 'PAID';
       }
     }
 

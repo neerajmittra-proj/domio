@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { PART2_ENABLED } from '@/lib/features';
 
 const svgProps = {
   width: 24,
@@ -220,7 +221,7 @@ export default function HomePage() {
               </Link>
             ))}
 
-            {/* Box 8: Join as a tenant (at the end, reveals modal on click) */}
+            {PART2_ENABLED && (<>{/* Box 8: Join as a tenant (at the end, reveals modal on click) */}
             <button
               type="button"
               onClick={() => setTenantModalOpen(true)}
@@ -246,7 +247,7 @@ export default function HomePage() {
               <span className="mt-3 text-center text-xs font-semibold leading-snug text-white">
                 Join as an agent
               </span>
-            </button>
+            </button></>)}
           </div>
         </div>
       </main>

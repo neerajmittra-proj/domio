@@ -7,6 +7,7 @@ import type { Role } from '@prisma/client';
 import GlobalSearchBar from '@/components/search/global-search-bar';
 import VerifyAccountModal from '@/components/auth/verify-account-modal';
 import Logo from '@/components/brand/logo';
+import { PART2_ENABLED } from '@/lib/features';
 
 function getInitials(name: string, email: string): string {
   if (name?.trim()) {
@@ -84,7 +85,7 @@ export default function DomioHeader({
 
         {/* Right: Requests Bell + User Menu Pill */}
         <div className="flex items-center gap-2">
-          {/* Requests Inbox Bell */}
+          {PART2_ENABLED && (<>{/* Requests Inbox Bell */}
           <Link
             href="/dashboard/requests"
             className="relative flex h-9 w-9 items-center justify-center rounded-full border border-zinc-200 bg-zinc-50 text-zinc-500 transition-all hover:border-zinc-300 hover:bg-card hover:text-zinc-900"
@@ -100,7 +101,7 @@ export default function DomioHeader({
                 {pendingCount > 9 ? '9+' : pendingCount}
               </span>
             )}
-          </Link>
+          </Link></>)}
 
           {/* User Menu Pill Dropdown */}
           <div ref={dropdownRef} className="relative">
@@ -216,7 +217,7 @@ export default function DomioHeader({
                   >
                     <span>🤖</span> Ask Domi AI
                   </Link>
-                  <Link
+                  {PART2_ENABLED && (<><Link
                     href="/dashboard/agents"
                     className="flex items-center gap-2.5 rounded-xl px-3.5 py-2 text-sm text-zinc-700 hover:bg-zinc-100 transition-colors"
                   >
@@ -227,7 +228,7 @@ export default function DomioHeader({
                     className="flex items-center gap-2.5 rounded-xl px-3.5 py-2 text-sm text-zinc-700 hover:bg-zinc-100 transition-colors"
                   >
                     <span>🧑‍💼</span> Work as Agent
-                  </Link>
+                  </Link></>)}
                   {role === 'OWNER' && (
                     <Link
                       href="/dashboard/managers"

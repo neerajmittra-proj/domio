@@ -2,11 +2,14 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import type { AgentHiringStatus } from '@prisma/client';
+import { part2Guard } from '@/lib/features';
 
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const disabled = part2Guard();
+  if (disabled) return disabled;
   try {
     const session = await auth();
     if (!session?.user?.id) {

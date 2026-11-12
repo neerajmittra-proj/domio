@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { PART2_ENABLED } from '@/lib/features';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import type { Role } from '@prisma/client';
@@ -154,7 +155,7 @@ export default function DashboardSidebar({
     return href === '/dashboard' ? pathname === '/dashboard' : pathname.startsWith(href);
   }
 
-  const sections: NavSection[] = [
+  const allSections: NavSection[] = [
     {
       title: 'MAIN',
       items: [
@@ -202,6 +203,10 @@ export default function DashboardSidebar({
       ],
     },
   ];
+  // Agents & marketplace are Part 2 (see lib/features.ts).
+  const sections = PART2_ENABLED
+    ? allSections
+    : allSections.filter((s) => s.title !== 'AGENTS & MARKETPLACE');
 
   const mobileDockItems = [
     { href: '/dashboard', label: 'Home', icon: <HouseIcon /> },

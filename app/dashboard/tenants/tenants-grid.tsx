@@ -8,6 +8,7 @@ import {
   tenancyStatusLabel,
 } from '@/lib/tenancy-types';
 import ViewToggle, { type View } from '@/components/ui/view-toggle';
+import { formatMoney } from '@/lib/tenancy-types';
 import ExportButton from '@/components/ui/export-button';
 import { useScrollLock } from '@/hooks/use-scroll-lock';
 import { useFocusTrap } from '@/hooks/use-focus-trap';
@@ -341,7 +342,7 @@ export default function TenantsGrid({
             Collected
           </p>
           <p className="mt-0.5 font-mono text-xl sm:text-2xl font-bold text-emerald-600">
-            ${totalPaidSum.toLocaleString()}
+            {formatMoney(totalPaidSum)}
           </p>
           <p className="text-[11px] text-emerald-600/80 font-medium">
             Lifetime receipts
@@ -354,7 +355,7 @@ export default function TenantsGrid({
             Overdue
           </p>
           <p className={`mt-0.5 font-mono text-xl sm:text-2xl font-bold ${totalOverdueSum > 0 ? 'text-red-600' : 'text-emerald-600'}`}>
-            ${totalOverdueSum.toLocaleString()}
+            {formatMoney(totalOverdueSum)}
           </p>
           <p className="text-[11px] text-zinc-500 truncate">
             {overdueCount} behind
@@ -609,20 +610,20 @@ export default function TenantsGrid({
                     <div className="flex justify-between gap-2">
                       <dt className="text-zinc-500">Monthly Rent</dt>
                       <dd className="font-mono font-bold text-zinc-800">
-                        ${t.currentTenancy.monthlyRent.toLocaleString()}/mo
+                        {formatMoney(t.currentTenancy.monthlyRent)}/mo
                       </dd>
                     </div>
                   )}
                   <div className="flex justify-between gap-2">
                     <dt className="text-zinc-500">Remaining Rent</dt>
                     <dd className={`font-mono font-bold ${t.remainingRent > 0 ? 'text-amber-600' : 'text-emerald-600'}`}>
-                      {t.remainingRent > 0 ? `$${t.remainingRent.toLocaleString()} due` : '$0.00 (All Paid)'}
+                      {t.remainingRent > 0 ? `${formatMoney(t.remainingRent)} due` : `${formatMoney(0)} (All paid)`}
                     </dd>
                   </div>
                   <div className="flex justify-between gap-2">
                     <dt className="text-zinc-500">Total Paid</dt>
                     <dd className="font-mono font-bold text-zinc-900">
-                      ${t.totalPaid.toLocaleString()}
+                      {formatMoney(t.totalPaid)}
                     </dd>
                   </div>
                 </dl>
@@ -745,7 +746,7 @@ export default function TenantsGrid({
                   </td>
                   <td className="px-5 py-3 font-mono font-bold">
                     <span className={t.remainingRent > 0 ? 'text-amber-600' : 'text-emerald-600'}>
-                      {t.remainingRent > 0 ? `$${t.remainingRent.toLocaleString()}` : '$0 (Paid)'}
+                      {t.remainingRent > 0 ? formatMoney(t.remainingRent) : `${formatMoney(0)} (Paid)`}
                     </span>
                   </td>
                   <td className="px-5 py-3 text-xs">

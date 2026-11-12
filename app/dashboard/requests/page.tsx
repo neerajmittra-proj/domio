@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { formatMoney } from '@/lib/tenancy-types';
 import SendPrivacyRequestModal, { type TargetEntity } from '@/components/privacy-requests/send-request-modal';
 
 type Request = {
@@ -317,7 +318,7 @@ function ReceivedCard({
           {r.propertyName && <p><span className="font-bold">Property:</span> 🏠 {r.propertyName}</p>}
           {r.propertyType && <p><span className="font-bold">Type:</span> 🏷️ {r.propertyType}</p>}
           {r.proposedRentOrFee && (
-            <p><span className="font-bold">Proposed Rent/Fee:</span> <span className="font-mono font-bold">${r.proposedRentOrFee.toLocaleString()}</span></p>
+            <p><span className="font-bold">Proposed Rent/Fee:</span> <span className="font-mono font-bold">{formatMoney(r.proposedRentOrFee)}</span></p>
           )}
           {r.message && <p className="italic text-zinc-500 border-t border-zinc-200 pt-1 mt-1">&ldquo;{r.message}&rdquo;</p>}
         </div>
@@ -412,7 +413,7 @@ function SentCard({
           {r.propertyName && <p><span className="font-bold">Property:</span> 🏠 {r.propertyName}</p>}
           {r.propertyType && <p><span className="font-bold">Type:</span> 🏷️ {r.propertyType}</p>}
           {r.proposedRentOrFee && (
-            <p><span className="font-bold">Proposed:</span> <span className="font-mono font-bold">${r.proposedRentOrFee.toLocaleString()}</span></p>
+            <p><span className="font-bold">Proposed:</span> <span className="font-mono font-bold">{formatMoney(r.proposedRentOrFee)}</span></p>
           )}
           {r.message && <p className="italic text-zinc-500 border-t border-zinc-200 pt-1 mt-1">&ldquo;{r.message}&rdquo;</p>}
         </div>

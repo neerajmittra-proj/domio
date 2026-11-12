@@ -4,10 +4,13 @@ import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
 import { issueTenantJwt, TENANT_JWT_COOKIE } from '@/lib/tenant-otp';
 import { rateLimit, clientIp } from '@/lib/rate-limit';
+import { part2Guard } from '@/lib/features';
 
 const INVALID = 'Invalid username/email/phone or password.';
 
 export async function POST(req: Request) {
+  const disabled = part2Guard();
+  if (disabled) return disabled;
   try {
     const { username, password } = await req.json().catch(() => ({}));
 

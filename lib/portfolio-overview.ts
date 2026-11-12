@@ -7,6 +7,7 @@ import type {
 } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { markOverdueRent, round2 } from '@/lib/rent-ledger';
+import { getArrearsByTenancy } from '@/lib/arrears';
 
 // Rich, owner-scoped portfolio → property → unit overview powering the
 // portfolios accordion page and the property slide-in panel. A single nested
@@ -318,6 +319,8 @@ export async function getPortfolioOverview(
   // Manager scope: restrict to accessible property/unit ids.
   scope?: { propertyIds: string[]; subPropertyIds: string[] },
 ): Promise<OverviewPortfolio[]> {
+  // Arrears per tenancy from the rent schedule (started early, awaited below).
+  const arrearsPromise = getArrearsByTenancy(ownerId);
   const now = new Date();
   const monthStart = new Date(
     Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1),
@@ -498,6 +501,8 @@ export async function getPortfolioOverview(
     entityRowsByProperty.get(row.propertyId)!.push(row);
   }
 
+  const arrearsByTenancy = await arrearsPromise;
+
   const mapped = portfolios.map((p) => {
     const properties: OverviewProperty[] = p.properties.map((pr) => {
       // ── SubProperty (flat) units ──────────────────────────────────────────
@@ -566,11 +571,33 @@ export async function getPortfolioOverview(
       // ── Monthly expected rent calculation ─────────────────────────────────
       // Priority: if RentableEntity hierarchy exists → use its leaf-sum rollup.
       // Otherwise fall back to SubProperty unit sum.
-      const entityExpected = rentableEntities.length > 0
-        ? sumEntityRoots(rentableEntities)
-        : 0;
-      const subPropExpected = units.reduce((s, u) => s + u.monthlyExpected, 0);
-      const monthlyExpected = entityExpected + subPropExpected;
+      // Created and imported units are mirrored (a SubProperty row AND a
+      // RentableEntity node can carry the same lease), so expected / collected
+      // rent and overdue counts are totalled once per LEASE (tenancy id), never
+      // once per unit row — adding both trees double-counted every lease.
+      const leaseRent = new Map<string, number>();
+      const leaseCollected = new Map<string, number>();
+      for (const u of units) {
+        if (!u.tenancyId) continue;
+        leaseRent.set(u.tenancyId, u.monthlyExpected);
+        leaseCollected.set(u.tenancyId, Math.max(leaseCollected.get(u.tenancyId) ?? 0, u.monthlyCollected));
+      }
+      const walkLeases = (nodes: OverviewEntityNode[]) => {
+        for (const n of nodes) {
+          if (n.activeLease) {
+            const id = n.activeLease.tenancyId;
+            leaseRent.set(id, n.activeLease.monthlyRent);
+            const own = (n as OverviewEntityNode & { directCollection?: number }).directCollection ?? 0;
+            leaseCollected.set(id, Math.max(leaseCollected.get(id) ?? 0, own));
+          }
+          walkLeases(n.children);
+        }
+      };
+      walkLeases(rentableEntities);
+      const monthlyExpected = round2([...leaseRent.values()].reduce((s, v) => s + v, 0));
+      const leaseIds = [...leaseRent.keys()];
+      const overdueLeaseCount = leaseIds.filter((id) => (arrearsByTenancy.get(id)?.overdue ?? 0) > 0).length;
+      void sumEntityRoots;
 
       const hasHierarchy = rentableEntities.length > 0;
       const entityCount = hasHierarchy ? countAllEntities(rentableEntities) : 0;
@@ -593,10 +620,8 @@ export async function getPortfolioOverview(
           ? entityOccupied
           : units.filter((u) => u.status === 'OCCUPIED').length,
         monthlyExpected,
-        monthlyCollected:
-          units.reduce((s, u) => s + u.monthlyCollected, 0) +
-          rentableEntities.reduce((s, n) => s + n.aggregatedCollection, 0),
-        overdueCount: units.filter((u) => u.overdueAmount > 0).length,
+        monthlyCollected: round2([...leaseCollected.values()].reduce((s, v) => s + v, 0)),
+        overdueCount: overdueLeaseCount,
         expiringCount: units.filter((u) => u.expiringSoon).length,
         documentCount: docCounts.get(pr.id) ?? 0,
         managerName: managerByProperty.get(pr.id) ?? null,

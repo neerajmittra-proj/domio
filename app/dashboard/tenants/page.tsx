@@ -4,6 +4,7 @@ import { listTenantsForOwner } from '@/lib/tenants';
 import { resolveDataScope } from '@/lib/manager-access';
 import TenantsGrid from './tenants-grid';
 import Link from 'next/link';
+import { PART2_ENABLED } from '@/lib/features';
 
 export default async function TenantsPage() {
   const session = await auth();
@@ -53,14 +54,14 @@ export default async function TenantsPage() {
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
-              <Link
+              {PART2_ENABLED && (<Link
                 href="/tenant-portal/login"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 rounded-xl border border-[#223144]/18 bg-[#223144]/8 px-5 py-3 text-sm font-bold text-[#223144] backdrop-blur-md transition-all hover:bg-[#223144]/8 hover:scale-105 active:scale-95"
               >
                 🔑 Open Tenant Portal
-              </Link>
+              </Link>)}
               <Link
                 href="/dashboard/tenants/new"
                 className="inline-flex items-center gap-2 rounded-xl bg-brand-grad px-5 py-3 text-sm font-bold text-white transition-all hover:bg-brand-grad-hover hover:scale-105 active:scale-95 shadow-lg"

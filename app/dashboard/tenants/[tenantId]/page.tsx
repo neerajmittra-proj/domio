@@ -7,6 +7,7 @@ import { prisma } from '@/lib/prisma';
 import TenancyHistory, { type HistoryRow } from './tenancy-history';
 
 import PortalAccessCard from './portal-access-card';
+import { PART2_ENABLED } from '@/lib/features';
 
 function InfoRow({ label, value }: { label: string; value: string | null }) {
   return (
@@ -147,7 +148,7 @@ export default async function TenantDetailPage({
               activeTenancy?.rentableEntity?.name ??
               'Unit';
             // Portal access changes are owner-only (the API rejects managers).
-            if (ds.isManager) return null;
+            if (ds.isManager || !PART2_ENABLED) return null;
             return (
               <PortalAccessCard
                 tenantId={tenant.id}

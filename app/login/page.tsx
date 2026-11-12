@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import LoginForm from './login-form';
 import Logo from '@/components/brand/logo';
+import { PART2_ENABLED } from '@/lib/features';
 
 export default function LoginPage() {
   return (
@@ -36,7 +37,7 @@ export default function LoginPage() {
           </Suspense>
         </div>
 
-        {/* Tenant Portal Registration & Login Options */}
+        {PART2_ENABLED && (<>{/* Tenant Portal Registration & Login Options */}
         <div className="mt-4 rounded-2xl border border-[#C2D9E0] bg-[#FFFFFF]/70 p-4 text-center shadow-lg backdrop-blur-sm">
           <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
             Tenant Account Access
@@ -65,7 +66,7 @@ export default function LoginPage() {
           >
             <span>🔍 Looking to rent? Search Nearest Empty Properties</span>
           </a>
-        </div>
+        </div></>)}
       </div>
     </div>
   );

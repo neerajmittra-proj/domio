@@ -2,8 +2,11 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { verifyTenantJwt, TENANT_JWT_COOKIE } from '@/lib/tenant-otp';
 import { prisma } from '@/lib/prisma';
+import { part2Guard } from '@/lib/features';
 
 export async function GET() {
+  const disabled = part2Guard();
+  if (disabled) return disabled;
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get(TENANT_JWT_COOKIE)?.value;

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { formatMoney } from '@/lib/tenancy-types';
 import { useRouter } from 'next/navigation';
 
 type InvitedUser = {
@@ -212,7 +213,7 @@ export default function AgentDashboardPage() {
                 Commission Earned
               </p>
               <p className="mt-1 font-mono text-2xl font-bold text-amber-800">
-                ${data.totalCommissionEarned.toLocaleString()}
+                {formatMoney(data.totalCommissionEarned)}
               </p>
             </div>
             <div className="rounded-xl border border-[#223144]/18 bg-card/65 p-4 backdrop-blur-md">
@@ -455,7 +456,7 @@ export default function AgentDashboardPage() {
                         )}
                         {hr.budgetOrRent && (
                           <p>
-                            <span className="font-bold">Budget / Rent:</span> ${hr.budgetOrRent.toLocaleString()}
+                            <span className="font-bold">Budget / Rent:</span> {formatMoney(hr.budgetOrRent)}
                           </p>
                         )}
                         {hr.notes && (
@@ -538,9 +539,9 @@ export default function AgentDashboardPage() {
                         <td className="px-4 py-3 font-bold text-zinc-900">{d.title}</td>
                         <td className="px-4 py-3 text-xs">{d.propertyType}</td>
                         <td className="px-4 py-3 text-xs font-medium">{d.clientName}</td>
-                        <td className="px-4 py-3 font-mono font-semibold">${d.dealAmount.toLocaleString()}</td>
+                        <td className="px-4 py-3 font-mono font-semibold">{formatMoney(d.dealAmount)}</td>
                         <td className="px-4 py-3 font-mono font-bold text-emerald-600">
-                          +${d.commissionAmount.toLocaleString()}
+                          +{formatMoney(d.commissionAmount)}
                         </td>
                         <td className="px-4 py-3 text-xs text-zinc-500 font-mono">
                           {new Date(d.dealDate).toLocaleDateString()}

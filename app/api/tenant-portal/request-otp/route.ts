@@ -6,10 +6,13 @@ import { sendOtpToPhone } from '@/lib/phone-messaging';
 import { generateTenantId } from '@/lib/display-ids';
 import { resolveDataScope } from '@/lib/manager-access';
 import { rateLimit, clientIp } from '@/lib/rate-limit';
+import { part2Guard } from '@/lib/features';
 
 const OTP_COOLDOWN_MS = 30 * 1000;
 
 export async function POST(req: Request) {
+  const disabled = part2Guard();
+  if (disabled) return disabled;
   try {
     const { phone } = await req.json().catch(() => ({}));
 

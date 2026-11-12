@@ -135,7 +135,7 @@ export default async function DashboardPage() {
                 {activeUnitsCount} <span className="text-base font-normal text-zinc-500">/ {totalUnitsCount} Units</span>
               </p>
               <p className="mt-1 text-xs text-zinc-500">
-                {data.alerts.vacant.length} vacant properties
+                {Math.max(0, totalUnitsCount - activeUnitsCount)} units not occupied
               </p>
             </div>
           </div>

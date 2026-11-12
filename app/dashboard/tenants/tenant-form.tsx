@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
+import { PART2_ENABLED } from '@/lib/features';
 
 type Initial = {
   id: string;
@@ -362,7 +363,7 @@ export default function TenantForm({
           </div>
 
           {/* Portal password — only shown when creating a new tenant */}
-          {mode === 'create' && (
+          {mode === 'create' && PART2_ENABLED && (
             <div className="mt-2 border-t border-zinc-200 pt-4">
               <div className="mb-3 flex items-center gap-2">
                 <h2 className="text-sm font-bold uppercase tracking-wider text-zinc-800">
