@@ -2,6 +2,7 @@ import type Anthropic from '@anthropic-ai/sdk';
 import { prisma } from '@/lib/prisma';
 import { recordAudit, type AuditActor } from '@/lib/audit';
 import { normalizeLedgerAmount } from '@/lib/ledger';
+import { notifyInBackground, notifyJournalPayment } from '@/lib/tenant-notifications';
 import { getManagerScope, resolveRentLedgerAccess } from '@/lib/manager-access';
 
 // ── Tool definitions (sent to Claude) ───────────────────────────────────────
@@ -388,6 +389,11 @@ export async function runTool(
           });
         }
       });
+      if (isPayment) {
+        notifyInBackground('ask-domi-payment', () =>
+          notifyJournalPayment({ tenancyId: t.id, amount: magnitude, date: when }),
+        );
+      }
       const newBalance = balanceOf(t.ledgerEntries) + signedAmount;
       return {
         success: true,

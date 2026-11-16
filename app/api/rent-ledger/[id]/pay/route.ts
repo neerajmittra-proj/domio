@@ -10,6 +10,7 @@ import {
   round2,
 } from '@/lib/rent-ledger';
 import { loadActor, recordAudit } from '@/lib/audit';
+import { notifyInBackground, notifyRentPaymentChange } from '@/lib/tenant-notifications';
 
 class PaymentError extends Error {
   constructor(
@@ -57,6 +58,7 @@ export async function PATCH(
 
   try {
     const actor = await loadActor(session.user.id);
+    let previousPaid = 0;
     const updated = await prisma.$transaction(async (tx) => {
       // Re-read inside the transaction so two concurrent payments can't both
       // be added to the same stale total (and the cap check sees the truth).
@@ -80,6 +82,7 @@ export async function PATCH(
           400,
         );
       }
+      previousPaid = fresh.amountPaid;
       const newAmountPaid = round2(fresh.amountPaid + parsed.data.amountPaid);
       const status = computeRentStatus({
         amountDue: fresh.amountDue,
@@ -135,6 +138,10 @@ export async function PATCH(
       });
       return row;
     });
+    // Tell the tenant (email + SMS): fully paid, or part paid with balance left.
+    notifyInBackground('rent-payment', () =>
+      notifyRentPaymentChange({ rentLedgerId: id, previousPaid, newPaid: updated.amountPaid }),
+    );
     return NextResponse.json({ entry: updated });
   } catch (err) {
     if (err instanceof PaymentError) {

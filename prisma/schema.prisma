@@ -879,9 +879,17 @@ model RentReminder {
   status       String    @default("SENT")  // "SENT" | "FAILED" | "STOPPED_BY_OWNER"
   sentAt       DateTime? @default(now())
   errorMessage String?
+  // What triggered the message: MANUAL (owner clicked send), PRE_DUE (25th of
+  // the month before), DUE_DAY, OVERDUE (every 5 days, max 3), PAYMENT,
+  // REVERSAL, WELCOME. With rentLedgerId it stops the daily job from sending
+  // the same reminder twice.
+  kind         String    @default("MANUAL")
+  rentLedgerId String?
   createdAt    DateTime  @default(now())
 
   @@index([tenantId])
   @@index([ownerId])
   @@index([targetMonth])
+  @@index([tenancyId, kind])
+  @@index([rentLedgerId, kind])
 }

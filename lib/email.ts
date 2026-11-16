@@ -1,4 +1,5 @@
 import { Resend } from 'resend';
+import { brevoConfigured, brevoSendEmail } from '@/lib/brevo';
 
 const resend = new Resend(process.env.RESEND_API_KEY || 're_123456789');
 
@@ -19,6 +20,10 @@ export async function sendEmail({
   html: string;
   text: string;
 }): Promise<{ success: boolean; id?: string; error?: string }> {
+  // Brevo is the primary provider when its key is set; Resend is the fallback.
+  if (brevoConfigured()) {
+    return brevoSendEmail({ to, subject, html, text });
+  }
   try {
     const { data, error } = await resend.emails.send({
       from: EMAIL_FROM,

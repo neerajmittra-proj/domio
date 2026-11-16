@@ -8,6 +8,7 @@ import {
   checkDescendantLeaseConflict,
 } from '@/lib/rentable-entities';
 import { buildLedgerSchedule, computeRentStatus } from '@/lib/rent-ledger';
+import { notifyInBackground, notifyTenantAssigned } from '@/lib/tenant-notifications';
 
 export async function POST(req: Request) {
   try {
@@ -357,6 +358,9 @@ export async function POST(req: Request) {
 
       return created;
     });
+
+    // Welcome email + SMS to the tenant with rent, due day and unit.
+    notifyInBackground('welcome', () => notifyTenantAssigned(tenancy.id));
 
     return NextResponse.json({ success: true, tenancyId: tenancy.id }, { status: 201 });
   } catch (error: any) {

@@ -9,6 +9,7 @@ import {
   parseRentLedgerPatch,
 } from '@/lib/rent-ledger';
 import { loadActor, recordAudit } from '@/lib/audit';
+import { notifyInBackground, notifyRentPaymentChange } from '@/lib/tenant-notifications';
 
 export async function PATCH(
   request: Request,
@@ -110,6 +111,12 @@ export async function PATCH(
       });
       return row;
     });
+    // Paid total edited: payment added → receipt; reduced → correction notice.
+    if (updated.amountPaid !== entry.amountPaid) {
+      notifyInBackground('rent-edit', () =>
+        notifyRentPaymentChange({ rentLedgerId: id, previousPaid: entry.amountPaid, newPaid: updated.amountPaid }),
+      );
+    }
     return NextResponse.json({ entry: updated });
   } catch (err) {
     console.error('Failed to update rent ledger entry:', err);

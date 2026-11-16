@@ -370,15 +370,20 @@ export function parseTenantInput(
   if (typeof name !== 'string' || !name.trim()) {
     return { error: 'Name is required.' };
   }
-  // Phone is mandatory (portal login credential and reminder dispatch target)
-  if (typeof phone !== 'string' || !phone.trim() || phone.trim().replace(/\D/g, '').length < 8) {
-    return { error: 'A valid phone number (minimum 8 digits) is mandatory for every tenant.' };
+  // Phone is mandatory: rent reminders and payment updates go to it by SMS.
+  // Accept a 10-digit Indian mobile (optionally with 0 / 91 / +91), or a full
+  // international number written with a leading "+".
+  if (typeof phone !== 'string' || !isValidTenantPhone(phone)) {
+    return {
+      error: 'Enter a valid 10-digit mobile number (or an international number starting with +). Rent reminders are sent to it by SMS.',
+    };
   }
-  // Email is optional
-  const resolvedEmail =
-    typeof email === 'string' && email.trim().includes('@')
-      ? email.trim().toLowerCase()
-      : null;
+  // Email is optional, but if given it must be a real address (reminders go to it).
+  const emailText = typeof email === 'string' ? email.trim() : '';
+  if (emailText && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailText)) {
+    return { error: 'Enter a valid email address, or leave it blank.' };
+  }
+  const resolvedEmail = emailText ? emailText.toLowerCase() : null;
 
   return {
     data: {
@@ -393,4 +398,14 @@ export function parseTenantInput(
       bankName: optString(bankName),
     },
   };
+}
+
+/** 10-digit Indian mobile (with optional 0 / 91 / +91 prefix) or +international. */
+export function isValidTenantPhone(raw: string): boolean {
+  const s = raw.trim();
+  const digits = s.replace(/\D/g, '');
+  if (digits.length === 10) return /^[6-9]/.test(digits);
+  if (digits.length === 11 && digits.startsWith('0')) return /^[6-9]/.test(digits.slice(1));
+  if (digits.length === 12 && digits.startsWith('91')) return /^[6-9]/.test(digits.slice(2));
+  return s.startsWith('+') && digits.length >= 11 && digits.length <= 15;
 }

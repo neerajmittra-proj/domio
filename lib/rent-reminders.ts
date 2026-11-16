@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { sendEmail, APP_URL } from '@/lib/email';
-import { sendOtpSms } from '@/lib/twilio';
+import { sendSms } from '@/lib/sms';
 import { PART2_ENABLED } from '@/lib/features';
 
 // Imported tenants were given placeholder contacts (e.g. name@placeholder.com,
@@ -184,8 +184,8 @@ export async function sendSingleRentReminder({
   // 2. Send SMS Reminder if tenant has phone
   if (tenant.phone && isRealPhone(tenant.phone)) {
     const smsMessage = `Domio Rent Reminder: Hello ${tenant.name}, rent of ₹${monthlyRent.toLocaleString('en-IN')} for ${propertyName} (${unitName}) is due on ${formattedDueDate}.${portalLink ? ` View details: ${portalLink}` : ''}`;
-    const smsResult = await sendOtpSms(tenant.phone, smsMessage);
-    smsSent = smsResult.sent;
+    const smsResult = await sendSms(tenant.phone, smsMessage, 'rent-reminder');
+    smsSent = smsResult.success;
   }
 
   // Log reminder

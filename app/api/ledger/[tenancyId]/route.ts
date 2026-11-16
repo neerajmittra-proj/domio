@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { parseLedgerEntryInput, type ParsedLedgerEntry } from '@/lib/ledger';
 import { resolveTenancyLedgerAccess } from '@/lib/ledger-access';
 import { loadActor, recordAudit } from '@/lib/audit';
+import { notifyInBackground, notifyJournalPayment } from '@/lib/tenant-notifications';
 
 const ENTRY_SELECT = {
   id: true,
@@ -92,6 +93,11 @@ export async function POST(
       });
       return created;
     });
+    if (d.type === 'PAYMENT') {
+      notifyInBackground('journal-payment', () =>
+        notifyJournalPayment({ tenancyId, amount: Math.abs(d.amount), date: d.date }),
+      );
+    }
     return NextResponse.json({ entry }, { status: 201 });
   } catch (err) {
     console.error('Failed to create ledger entry:', err);
