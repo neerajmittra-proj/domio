@@ -1,5 +1,6 @@
 import { Resend } from 'resend';
-import { brevoConfigured, brevoSendEmail } from '@/lib/brevo';
+import { brevoEmailConfigured, brevoSendEmail } from '@/lib/brevo';
+import { gmailConfigured, gmailSendEmail } from '@/lib/gmail';
 
 const resend = new Resend(process.env.RESEND_API_KEY || 're_123456789');
 
@@ -21,7 +22,12 @@ export async function sendEmail({
   text: string;
 }): Promise<{ success: boolean; id?: string; error?: string }> {
   // Brevo is the primary provider when its key is set; Resend is the fallback.
-  if (brevoConfigured()) {
+  // Provider order: Gmail (no domain needed) → Brevo (needs a verified sender)
+  // → Resend. SMS goes through Brevo separately (lib/sms.ts).
+  if (gmailConfigured()) {
+    return gmailSendEmail({ to, subject, html, text });
+  }
+  if (brevoEmailConfigured()) {
     return brevoSendEmail({ to, subject, html, text });
   }
   try {

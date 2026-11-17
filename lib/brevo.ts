@@ -18,6 +18,11 @@ export function brevoConfigured(): boolean {
   return Boolean(process.env.BREVO_API_KEY);
 }
 
+/** Brevo is used for email only when a verified sender address is also set. */
+export function brevoEmailConfigured(): boolean {
+  return brevoConfigured() && Boolean(process.env.BREVO_SENDER_EMAIL);
+}
+
 export function brevoSmsEnabled(): boolean {
   return brevoConfigured() && process.env.BREVO_SMS_ENABLED !== 'false';
 }
