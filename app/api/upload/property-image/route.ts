@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
 import { randomBytes } from 'crypto';
+import { uploadToR2 } from '@/lib/r2';
+import { PROPERTY_IMAGE_PREFIX } from '@/lib/property-images';
 
 // Extension is derived from the verified MIME type, never from the filename the
 // client sent (a ".html" name with an image MIME type would otherwise be served
@@ -78,17 +78,13 @@ export async function POST(req: Request) {
       );
     }
 
-    // Save to public/uploads/properties directory
-    const uploadDir = join(process.cwd(), 'public', 'uploads', 'properties');
-    await mkdir(uploadDir, { recursive: true });
-
+    // Store in R2 (works on Cloudflare and Vercel; neither has a lasting disk).
+    // Served back through /api/property-image/<fileName>.
     const cleanExt = EXT_BY_MIME[file.type];
     const fileName = `prop_${Date.now()}_${randomBytes(4).toString('hex')}.${cleanExt}`;
-    const filePath = join(uploadDir, fileName);
+    await uploadToR2(`${PROPERTY_IMAGE_PREFIX}${fileName}`, buffer, file.type);
 
-    await writeFile(filePath, buffer);
-
-    const publicUrl = `/uploads/properties/${fileName}`;
+    const publicUrl = `/api/property-image/${fileName}`;
 
     return NextResponse.json({
       success: true,

@@ -1,0 +1,26 @@
+{
+  // Cloudflare Workers config for Domio (built with @opennextjs/cloudflare).
+  // Docs: https://opennext.js.org/cloudflare
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "domio",
+  // Custom entry: OpenNext's fetch handler + the daily reminder cron (see worker.ts).
+  "main": "worker.ts",
+  "compatibility_date": "2026-11-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "services": [
+    { "binding": "WORKER_SELF_REFERENCE", "service": "domio" }
+  ],
+  // 03:30 UTC = 09:00 IST, daily rent reminders (same as vercel.json).
+  "triggers": {
+    "crons": ["30 3 * * *"]
+  },
+  // Paid plan: allow longer CPU for PDF reports and the reminder sweep.
+  "limits": { "cpu_ms": 60000 },
+  "observability": { "enabled": true },
+  "workers_dev": true,
+  "preview_urls": true
+}

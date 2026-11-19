@@ -60,3 +60,9 @@ tests/e2e/.rent-fixtures.json
 .vercel
 .env*
 Claude outputs/
+
+# cloudflare (opennext / wrangler)
+.open-next
+.wrangler
+.dev.vars*
+cloudflare-env.d.ts
