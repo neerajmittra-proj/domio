@@ -69,3 +69,4 @@ cloudflare-env.d.ts
 .open-next.tgz
 .cf-secrets.json
 cf-*-log.txt
+_cloudflare-deploy/
