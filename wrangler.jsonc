@@ -21,6 +21,8 @@
   // Paid plan: allow longer CPU for PDF reports and the reminder sweep.
   "limits": { "cpu_ms": 60000 },
   "observability": { "enabled": true },
+  // Keep variables set in the Cloudflare dashboard when deploying from git.
+  "keep_vars": true,
   "workers_dev": true,
   "preview_urls": true
 }
