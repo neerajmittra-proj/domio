@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { authenticateWithGoogle } from '@/app/login/actions';
+import { PART2_ENABLED } from '@/lib/features';
 
 const inputClass =
   'w-full rounded-xl border border-[#C2D9E0] bg-[rgba(255,255,255,0.7)] px-3.5 py-2.5 text-sm text-[#223144] outline-none transition placeholder:text-[#7A929C] focus:border-[#A4473D] focus:ring-2 focus:ring-[#A4473D]/20';
@@ -144,7 +145,8 @@ export default function RegisterForm() {
         </p>
       </div>
 
-      {/* Role Selection */}
+      {/* Role Selection — Renter / Both are Part 2; owners only for now */}
+      {PART2_ENABLED && (
       <div className="flex flex-col gap-2">
         <label className={labelClass}>I am registering as</label>
         <div className="grid grid-cols-3 gap-2">
@@ -194,6 +196,7 @@ export default function RegisterForm() {
           </button>
         </div>
       </div>
+      )}
 
       {/* Name */}
       <div className="flex flex-col gap-1.5">

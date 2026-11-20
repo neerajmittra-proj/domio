@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
 import type { Role } from '@prisma/client';
+import { PART2_ENABLED } from '@/lib/features';
 
 export async function POST(req: Request) {
   try {
@@ -48,7 +49,8 @@ export async function POST(req: Request) {
       );
     }
 
-    const validRoles: Role[] = ['OWNER', 'RENTER', 'BOTH'];
+    // Renter / Both are Part 2 — owners only until it is switched on.
+    const validRoles: Role[] = PART2_ENABLED ? ['OWNER', 'RENTER', 'BOTH'] : ['OWNER'];
     const chosenRole: Role = validRoles.includes(role as Role)
       ? (role as Role)
       : 'OWNER';

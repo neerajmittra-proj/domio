@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { part2Guard } from '@/lib/features';
 
 export async function GET(request: Request) {
+  const disabled = part2Guard();
+  if (disabled) return disabled;
   try {
     const { searchParams } = new URL(request.url);
     const location = (searchParams.get('location') ?? searchParams.get('q') ?? '').trim().toLowerCase();

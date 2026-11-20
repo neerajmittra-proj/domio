@@ -79,9 +79,13 @@ export default function DomioHeader({
         </Link>
 
         {/* Center: Global Owner & Agent Search Bar */}
-        <div className="hidden sm:flex flex-1 max-w-lg">
-          <GlobalSearchBar />
-        </div>
+        {PART2_ENABLED ? (
+          <div className="hidden sm:flex flex-1 max-w-lg">
+            <GlobalSearchBar />
+          </div>
+        ) : (
+          <div className="flex-1" />
+        )}
 
         {/* Right: Requests Bell + User Menu Pill */}
         <div className="flex items-center gap-2">
@@ -156,6 +160,7 @@ export default function DomioHeader({
                   >
                     <span>👥</span> Tenants
                   </Link>
+                  {PART2_ENABLED && (<>
                   <Link
                     href="/dashboard/requests"
                     className="flex items-center justify-between gap-2.5 rounded-xl px-3.5 py-2 text-sm text-zinc-700 hover:bg-zinc-100 transition-colors"
@@ -173,6 +178,7 @@ export default function DomioHeader({
                   >
                     <span>🔍</span> Property Search & Map
                   </Link>
+                  </>)}
                   <Link
                     href="/dashboard/portfolios"
                     className="flex items-center gap-2.5 rounded-xl px-3.5 py-2 text-sm text-zinc-700 hover:bg-zinc-100 transition-colors"
