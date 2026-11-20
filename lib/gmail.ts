@@ -5,8 +5,8 @@ import type { SendResult } from '@/lib/brevo';
 // Limit: roughly 500 recipients/day on a normal Gmail account.
 //
 // Runtimes:
-// - Cloudflare Workers: `worker-mailer` (SMTP over Cloudflare TCP sockets).
-//   nodemailer does not run on Workers.
+// - Cloudflare Workers: `worker-mailer` (SMTP over Cloudflare TCP sockets), via
+//   the bridge in worker.ts. nodemailer does not run on Workers.
 // - Node (Vercel / next dev): nodemailer.
 // Both are loaded lazily so each runtime only touches the library it can run.
 //
@@ -35,27 +35,37 @@ function creds() {
 
 type Msg = { to: string; subject: string; html: string; text?: string };
 
+type SmtpBridge = (m: {
+  host: string;
+  port: number;
+  username: string;
+  password: string;
+  fromName: string;
+  fromEmail: string;
+  to: string;
+  subject: string;
+  html: string;
+  text: string;
+}) => Promise<void>;
+
+// On Cloudflare the SMTP client lives in worker.ts (see there for why) and is
+// exposed as globalThis.__domioSmtpSend.
 async function sendOnWorkers(msg: Msg): Promise<string | undefined> {
   const { user, pass, name } = creds();
-  const { WorkerMailer } = await import('worker-mailer');
-  const mailer = await WorkerMailer.connect({
+  const send = (globalThis as unknown as { __domioSmtpSend?: SmtpBridge }).__domioSmtpSend;
+  if (!send) throw new Error('SMTP bridge not available (worker.ts not loaded)');
+  await send({
     host: 'smtp.gmail.com',
     port: 465,
-    secure: true,
-    authType: 'plain',
-    credentials: { username: user, password: pass },
+    username: user,
+    password: pass,
+    fromName: name,
+    fromEmail: user,
+    to: msg.to,
+    subject: msg.subject,
+    html: msg.html,
+    text: msg.text ?? msg.html.replace(/<[^>]+>/g, ' '),
   });
-  try {
-    await mailer.send({
-      from: { name, email: user },
-      to: { email: msg.to },
-      subject: msg.subject,
-      html: msg.html,
-      text: msg.text ?? msg.html.replace(/<[^>]+>/g, ' '),
-    });
-  } finally {
-    await mailer.close().catch(() => {});
-  }
   return undefined;
 }
 

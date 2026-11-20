@@ -6,6 +6,43 @@
 
 // @ts-ignore `.open-next/worker.js` is generated at build time
 import { default as handler } from './.open-next/worker.js';
+import { WorkerMailer } from 'worker-mailer';
+
+// SMTP bridge for lib/gmail.ts. worker-mailer needs `cloudflare:sockets`, which
+// the Next.js bundle can't load ("Dynamic require ... not supported"), but this
+// entry file is bundled by wrangler, which can. The app calls it through a global.
+type SmtpMessage = {
+  host: string;
+  port: number;
+  username: string;
+  password: string;
+  fromName: string;
+  fromEmail: string;
+  to: string;
+  subject: string;
+  html: string;
+  text: string;
+};
+(globalThis as unknown as { __domioSmtpSend?: (m: SmtpMessage) => Promise<void> }).__domioSmtpSend = async (m) => {
+  const mailer = await WorkerMailer.connect({
+    host: m.host,
+    port: m.port,
+    secure: true,
+    authType: 'plain',
+    credentials: { username: m.username, password: m.password },
+  });
+  try {
+    await mailer.send({
+      from: { name: m.fromName, email: m.fromEmail },
+      to: { email: m.to },
+      subject: m.subject,
+      html: m.html,
+      text: m.text,
+    });
+  } finally {
+    await mailer.close().catch(() => {});
+  }
+};
 
 type Env = { CRON_SECRET?: string; [key: string]: unknown };
 type Ctx = { waitUntil(p: Promise<unknown>): void; passThroughOnException(): void };

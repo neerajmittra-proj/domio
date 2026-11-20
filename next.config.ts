@@ -4,9 +4,8 @@ const nextConfig: NextConfig = {
   // Load @react-pdf/renderer as a real Node module in server routes rather than
   // bundling it (bundling breaks its internals → "reading 'S'" at renderToBuffer).
   // @prisma/client + .prisma/client: required by OpenNext on Cloudflare so it can
-  // patch the generated client. worker-mailer: Cloudflare-only (cloudflare:sockets),
-  // never bundled for Node.
-  serverExternalPackages: ['@react-pdf/renderer', '@prisma/client', '.prisma/client', 'worker-mailer'],
+  // patch the generated client. (worker-mailer is used only from worker.ts.)
+  serverExternalPackages: ['@react-pdf/renderer', '@prisma/client', '.prisma/client'],
 
   // Cloudflare has no built-in Next image optimizer without an Images binding;
   // Domio has a single next/image use, so serve images as-is everywhere.
