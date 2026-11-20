@@ -26,7 +26,7 @@ export async function POST(req: Request) {
       done.push(sql.split('"')[1] + ' ' + (sql.match(/"(\w+_idx|kind|rentLedgerId)"/)?.[1] ?? ''));
     }
     const cols = await prisma.$queryRawUnsafe<{ column_name: string }[]>(
-      `SELECT column_name FROM information_schema.columns WHERE table_name = 'RentReminder' AND column_name IN ('kind','rentLedgerId')`,
+      `SELECT column_name::text AS column_name FROM information_schema.columns WHERE table_name = 'RentReminder' AND column_name IN ('kind','rentLedgerId')`,
     );
     return NextResponse.json({ ok: true, applied: done.length, columns: cols.map((c) => c.column_name) });
   } catch (err) {
