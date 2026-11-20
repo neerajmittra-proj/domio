@@ -110,12 +110,13 @@ export default function HomePage() {
 
   const mainCards = [
     {
-      href: '/search',
+      // Public property search is Part 2; owners see their own properties after signing in.
+      href: PART2_ENABLED ? '/search' : '/login',
       title: 'View all properties',
       icon: <PropertyIcon />,
     },
     {
-      href: '/search',
+      href: PART2_ENABLED ? '/search' : '/login',
       title: 'Looking for a tenant',
       icon: <TenantIcon />,
     },
@@ -163,12 +164,14 @@ export default function HomePage() {
 
           {/* Quick links & buttons */}
           <div className="flex items-center gap-3">
+            {PART2_ENABLED && (
             <Link
               href="/search"
               className="hidden sm:inline-block text-xs font-semibold text-zinc-300 hover:text-white transition-colors"
             >
               🔍 Property Search
             </Link>
+            )}
             <Link
               href="/login"
               className="rounded-full px-4 py-1.5 text-xs font-bold text-zinc-300 hover:text-white transition-colors"

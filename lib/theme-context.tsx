@@ -21,6 +21,12 @@ const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 const STORAGE_KEY = 'domio-theme';
 
+// Domio ships one light brand theme for now. The dark styles are unfinished
+// (navy text on black), and the DB default for themePreference is 'dark', so a
+// saved preference would flip owners into an unreadable screen. Until dark mode
+// is designed, always render light. Set to true to bring the toggle back.
+const DARK_MODE_ENABLED = false;
+
 export function ThemeProvider({
   initialTheme = 'dark',
   children,
@@ -28,7 +34,7 @@ export function ThemeProvider({
   initialTheme?: Theme;
   children: ReactNode;
 }) {
-  const [theme, setThemeState] = useState<Theme>(initialTheme);
+  const [theme, setThemeState] = useState<Theme>(DARK_MODE_ENABLED ? initialTheme : 'light');
   // Once the user explicitly toggles, an in-flight mount fetch must not clobber
   // their choice (avoids a late GET reverting the theme).
   const userChanged = useRef(false);
@@ -42,6 +48,7 @@ export function ThemeProvider({
   // instant read, then the DB which is authoritative across devices). Skips if
   // the user has already toggled this session.
   useEffect(() => {
+    if (!DARK_MODE_ENABLED) return;
     let cancelled = false;
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
@@ -69,6 +76,7 @@ export function ThemeProvider({
   }, []);
 
   const setTheme = (t: Theme) => {
+    if (!DARK_MODE_ENABLED) t = 'light';
     userChanged.current = true;
     setThemeState(t);
     try {

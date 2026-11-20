@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { auth } from '@/auth';
 
 const TABS = [
-  { href: '/dashboard/settings/appearance', label: 'Appearance' },
+  // Appearance (dark mode) hidden until dark mode is designed — see lib/theme-context.tsx
   { href: '/dashboard/settings/security', label: 'Security' },
   { href: '/dashboard/settings/notifications', label: 'Notifications' },
   { href: '/dashboard/settings/email-history', label: 'Email History' },
