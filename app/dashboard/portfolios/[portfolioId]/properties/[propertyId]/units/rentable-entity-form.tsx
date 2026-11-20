@@ -21,6 +21,11 @@ const ENTITY_TYPES: { value: RentableEntityType; label: string; description: str
   { value: 'ROOM', label: 'Room', description: 'A room (under floor or property)', icon: '🚪' },
   { value: 'OFFICE', label: 'Office', description: 'Office space (under floor or property)', icon: '💼' },
   { value: 'BED', label: 'Bed', description: 'A bed (under room or floor)', icon: '🛏️' },
+  { value: 'FLAT', label: 'Flat / Apartment', description: 'A flat (under floor or property); can hold rooms', icon: '🏠' },
+  { value: 'PORTION', label: 'Portion', description: 'Part of a bungalow / house; can hold rooms', icon: '🏡' },
+  { value: 'SHOP', label: 'Shop', description: 'A shop / showroom (under floor or property)', icon: '🏪' },
+  { value: 'PARKING', label: 'Parking', description: 'A parking slot or garage', icon: '🅿️' },
+  { value: 'STORAGE', label: 'Storage / Godown', description: 'Storage or godown space', icon: '📦' },
 ];
 
 /** Flatten a RentableEntityNode tree into a list for the parent picker. */
@@ -138,6 +143,8 @@ export default function AddRentableEntityForm({
           setEntityType('ROOM');
         } else if (parentNode.type === 'ROOM') {
           setEntityType('BED');
+        } else if (parentNode.type === 'FLAT' || parentNode.type === 'PORTION') {
+          setEntityType('ROOM');
         }
         // Note: OFFICE is intentionally excluded — an Office is always
         // terminal and can never receive a Bed (or anything else) as a
@@ -385,7 +392,7 @@ export default function AddRentableEntityForm({
               type="text"
               required
               autoComplete="off"
-              placeholder={`e.g. "${entityType === 'FLOOR' ? 'Ground Floor' : entityType === 'ROOM' ? 'Room 3A' : entityType === 'OFFICE' ? 'Suite 201' : entityType === 'BED' ? 'Bed B' : 'Main Building'}"`}
+              placeholder={`e.g. "${entityType === 'FLOOR' ? 'Ground Floor' : entityType === 'ROOM' ? 'Room 3A' : entityType === 'OFFICE' ? 'Suite 201' : entityType === 'BED' ? 'Bed B' : entityType === 'FLAT' ? 'Flat 302' : entityType === 'PORTION' ? 'Ground Floor Portion' : entityType === 'SHOP' ? 'Shop 4' : entityType === 'PARKING' ? 'Parking P-12' : entityType === 'STORAGE' ? 'Godown 1' : 'Main Building'}"`}
               className={inputClass}
             />
           </div>
@@ -398,7 +405,7 @@ export default function AddRentableEntityForm({
               name="code"
               type="text"
               autoComplete="off"
-              placeholder={`e.g. "${entityType === 'FLOOR' ? 'GF' : entityType === 'ROOM' ? '101' : entityType === 'OFFICE' ? '201' : entityType === 'BED' ? 'B1' : 'MAIN'}"`}
+              placeholder={`e.g. "${entityType === 'FLOOR' ? 'GF' : entityType === 'ROOM' ? '101' : entityType === 'OFFICE' ? '201' : entityType === 'BED' ? 'B1' : entityType === 'FLAT' ? '302' : entityType === 'PORTION' ? 'GFP' : entityType === 'SHOP' ? 'S4' : entityType === 'PARKING' ? 'P12' : entityType === 'STORAGE' ? 'G1' : 'MAIN'}"`}
               className={inputClass}
             />
           </div>
@@ -494,6 +501,11 @@ export default function AddRentableEntityForm({
             {entityType === 'ROOM' && 'Property → [Floor or direct Property] → Room → Direct lease on the room.'}
             {entityType === 'OFFICE' && 'Property → [Floor or direct Property] → Office → Direct lease on the office suite.'}
             {entityType === 'BED' && 'Property → [Floor or Room] → Bed → Individual bed lease (dorm/hostel style supported).'}
+            {entityType === 'FLAT' && 'Property → [Floor or direct Property] → Flat → Lease the whole flat, or add Rooms inside it.'}
+            {entityType === 'PORTION' && 'Property → [Floor or direct Property] → Portion → Lease the portion, or add Rooms inside it.'}
+            {entityType === 'SHOP' && 'Property → [Floor or direct Property] → Shop → Direct lease on the shop.'}
+            {entityType === 'PARKING' && 'Property → [Floor or direct Property] → Parking → Direct lease on the slot.'}
+            {entityType === 'STORAGE' && 'Property → [Floor or direct Property] → Storage → Direct lease on the space.'}
           </p>
         </div>
 

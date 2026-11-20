@@ -16,22 +16,32 @@ const input = 'w-full rounded-xl border border-zinc-200 bg-zinc-50 px-3.5 py-2.5
 const lbl = 'block text-xs font-semibold text-zinc-700 mb-1';
 
 const VALID_CHILD_TYPES: Record<string, string[]> = {
-  PROPERTY: ['FLOOR', 'ROOM', 'OFFICE', 'BED'],
-  FLOOR:    ['ROOM', 'OFFICE', 'BED'],
+  PROPERTY: ['FLOOR', 'FLAT', 'PORTION', 'ROOM', 'OFFICE', 'SHOP', 'BED', 'PARKING', 'STORAGE'],
+  FLOOR:    ['FLAT', 'PORTION', 'ROOM', 'OFFICE', 'SHOP', 'BED', 'PARKING', 'STORAGE'],
+  FLAT:     ['ROOM'],
+  PORTION:  ['ROOM'],
   ROOM:     ['BED'],
   OFFICE:   [],
   BED:      [],
+  SHOP:     [],
+  PARKING:  [],
+  STORAGE:  [],
 };
 
 const TYPE_LABELS: Record<string, string> = {
-  PROPERTY: '?? Whole Property',
-  FLOOR:    '??? Floor',
-  ROOM:     '?? Room',
-  OFFICE:   '?? Office',
-  BED:      '??? Bed',
+  PROPERTY: '🏢 Whole Property',
+  FLOOR:    '🏗️ Floor',
+  FLAT:     '🏠 Flat / Apartment',
+  PORTION:  '🏡 Portion',
+  ROOM:     '🚪 Room',
+  OFFICE:   '💼 Office',
+  SHOP:     '🏪 Shop',
+  BED:      '🛏️ Bed',
+  PARKING:  '🅿️ Parking',
+  STORAGE:  '📦 Storage / Godown',
 };
 
-const FLAT_UNIT_LABEL = '?? Flat Unit (Standard)';
+const FLAT_UNIT_LABEL = '🏠 Flat Unit (Standard)';
 
 export default function AddUnitModal({
   isOpen,

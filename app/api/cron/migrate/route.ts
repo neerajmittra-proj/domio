@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-// One-time, idempotent schema update for the rent-reminder log, run from the
+// One-time, idempotent schema updates (rent-reminder log columns + new
+// property / sub-unit enum values), run from the
 // server (Cloudflare/Vercel can reach Neon even when a local network can't).
 // Same result as `prisma db push` for these two columns + indexes; safe to run
 // again (IF NOT EXISTS). Protected by CRON_SECRET. Remove once applied.
@@ -12,6 +13,13 @@ const STATEMENTS = [
   `ALTER TABLE "RentReminder" ADD COLUMN IF NOT EXISTS "rentLedgerId" TEXT`,
   `CREATE INDEX IF NOT EXISTS "RentReminder_tenancyId_kind_idx" ON "RentReminder"("tenancyId", "kind")`,
   `CREATE INDEX IF NOT EXISTS "RentReminder_rentLedgerId_kind_idx" ON "RentReminder"("rentLedgerId", "kind")`,
+  // New property types (Apartment, Bungalow, ...) and sub-unit types (Flat, Portion, ...)
+  ...['APARTMENT', 'BUNGALOW', 'INDEPENDENT_HOUSE', 'PG_HOSTEL', 'SHOP_SHOWROOM', 'OFFICE_BUILDING', 'WAREHOUSE', 'LAND'].map(
+    (v) => `ALTER TYPE "PropertyType" ADD VALUE IF NOT EXISTS '${v}'`,
+  ),
+  ...['FLAT', 'PORTION', 'SHOP', 'PARKING', 'STORAGE'].map(
+    (v) => `ALTER TYPE "RentableEntityType" ADD VALUE IF NOT EXISTS '${v}'`,
+  ),
 ];
 
 export async function POST(req: Request) {
@@ -23,7 +31,7 @@ export async function POST(req: Request) {
   try {
     for (const sql of STATEMENTS) {
       await prisma.$executeRawUnsafe(sql);
-      done.push(sql.split('"')[1] + ' ' + (sql.match(/"(\w+_idx|kind|rentLedgerId)"/)?.[1] ?? ''));
+      done.push(sql);
     }
     const cols = await prisma.$queryRawUnsafe<{ column_name: string }[]>(
       `SELECT column_name::text AS column_name FROM information_schema.columns WHERE table_name = 'RentReminder' AND column_name IN ('kind','rentLedgerId')`,

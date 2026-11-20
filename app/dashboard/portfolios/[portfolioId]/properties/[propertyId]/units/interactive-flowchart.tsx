@@ -20,6 +20,11 @@ const TYPE_ICONS: Record<string, string> = {
   ROOM: '🚪',
   OFFICE: '💼',
   BED: '🛏️',
+  FLAT: '🏠',
+  PORTION: '🏡',
+  SHOP: '🏪',
+  PARKING: '🅿️',
+  STORAGE: '📦',
 };
 
 const TYPE_COLORS: Record<string, { border: string; bg: string; text: string; headerBg: string }> = {
@@ -52,6 +57,36 @@ const TYPE_COLORS: Record<string, { border: string; bg: string; text: string; he
     bg: 'bg-amber-50/50',
     text: 'text-amber-800',
     headerBg: 'bg-gradient-to-r from-amber-500 to-orange-500 text-white',
+  },
+  FLAT: {
+    border: 'border-sky-300 hover:border-sky-500',
+    bg: 'bg-sky-50/50',
+    text: 'text-sky-800',
+    headerBg: 'bg-gradient-to-r from-sky-600 to-blue-600 text-white',
+  },
+  PORTION: {
+    border: 'border-rose-300 hover:border-rose-500',
+    bg: 'bg-rose-50/50',
+    text: 'text-rose-800',
+    headerBg: 'bg-gradient-to-r from-rose-600 to-pink-600 text-white',
+  },
+  SHOP: {
+    border: 'border-fuchsia-300 hover:border-fuchsia-500',
+    bg: 'bg-fuchsia-50/50',
+    text: 'text-fuchsia-800',
+    headerBg: 'bg-gradient-to-r from-fuchsia-600 to-purple-600 text-white',
+  },
+  PARKING: {
+    border: 'border-slate-300 hover:border-slate-500',
+    bg: 'bg-slate-50/50',
+    text: 'text-slate-800',
+    headerBg: 'bg-gradient-to-r from-slate-600 to-zinc-600 text-white',
+  },
+  STORAGE: {
+    border: 'border-stone-300 hover:border-stone-500',
+    bg: 'bg-stone-50/50',
+    text: 'text-stone-800',
+    headerBg: 'bg-gradient-to-r from-stone-600 to-amber-700 text-white',
   },
 };
 

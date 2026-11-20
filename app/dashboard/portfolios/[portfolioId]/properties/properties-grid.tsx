@@ -15,6 +15,7 @@ import NotesIcon from '@/components/ui/notes-icon';
 import { useScrollLock } from '@/hooks/use-scroll-lock';
 import { useFocusTrap } from '@/hooks/use-focus-trap';
 import { ButtonLink } from '@/components/ui/button';
+import { PROPERTY_TYPES } from '@/lib/property-types';
 
 const STORAGE_KEY = 'domio-properties-view';
 
@@ -29,10 +30,7 @@ type TypeFilter = 'ALL' | PropertyType;
 
 const FILTERS: { value: TypeFilter; label: string }[] = [
   { value: 'ALL', label: 'All' },
-  { value: 'RESIDENTIAL', label: 'Residential' },
-  { value: 'COMMERCIAL', label: 'Commercial' },
-  { value: 'MIXED', label: 'Mixed' },
-  { value: 'INDUSTRIAL', label: 'Industrial' },
+  ...PROPERTY_TYPES,
 ];
 
 export default function PropertiesGrid({

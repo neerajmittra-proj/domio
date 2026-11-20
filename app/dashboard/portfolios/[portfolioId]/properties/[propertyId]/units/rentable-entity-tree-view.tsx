@@ -23,6 +23,11 @@ const TYPE_ICONS: Record<string, string> = {
   ROOM: '🚪',
   OFFICE: '💼',
   BED: '🛏️',
+  FLAT: '🏠',
+  PORTION: '🏡',
+  SHOP: '🏪',
+  PARKING: '🅿️',
+  STORAGE: '📦',
 };
 
 // Icon shown in the "Units" column to indicate what child type can be added
@@ -32,6 +37,11 @@ const CHILD_TYPE_ICONS: Record<string, string> = {
   ROOM: '🛏️',    // ROOM → can add BED
   OFFICE: '—',
   BED: '—',
+  FLAT: '🚪',     // FLAT → can add ROOM
+  PORTION: '🚪',  // PORTION → can add ROOM
+  SHOP: '—',
+  PARKING: '—',
+  STORAGE: '—',
 };
 
 const TYPE_BADGES: Record<string, string> = {
@@ -40,6 +50,11 @@ const TYPE_BADGES: Record<string, string> = {
   ROOM: 'border-emerald-200 bg-emerald-50 text-emerald-700 font-semibold',
   OFFICE: 'border-indigo-200 bg-indigo-50 text-indigo-700 font-semibold',
   BED: 'border-amber-200 bg-amber-50 text-amber-800 font-semibold',
+  FLAT: 'border-sky-200 bg-sky-50 text-sky-700 font-semibold',
+  PORTION: 'border-rose-200 bg-rose-50 text-rose-700 font-semibold',
+  SHOP: 'border-fuchsia-200 bg-fuchsia-50 text-fuchsia-700 font-semibold',
+  PARKING: 'border-slate-200 bg-slate-50 text-slate-700 font-semibold',
+  STORAGE: 'border-stone-300 bg-stone-50 text-stone-700 font-semibold',
 };
 
 type RentFilter = 'ALL' | 'HAS_RENT' | 'ZERO_RENT' | 'HIGH' | 'LOW' | 'SORT_HIGH' | 'SORT_LOW';

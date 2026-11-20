@@ -28,6 +28,11 @@ const TYPE_ICONS: Record<string, string> = {
   ROOM: '🚪',
   OFFICE: '💼',
   BED: '🛏️',
+  FLAT: '🏠',
+  PORTION: '🏡',
+  SHOP: '🏪',
+  PARKING: '🅿️',
+  STORAGE: '📦',
   UNIT: '🚪',
 };
 

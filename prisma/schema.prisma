@@ -152,6 +152,14 @@ enum PropertyType {
   COMMERCIAL
   MIXED
   INDUSTRIAL
+  APARTMENT        // apartment building / society with flats
+  BUNGALOW         // bungalow / villa (often let in portions)
+  INDEPENDENT_HOUSE
+  PG_HOSTEL        // paying guest / hostel (rooms and beds)
+  SHOP_SHOWROOM
+  OFFICE_BUILDING
+  WAREHOUSE        // warehouse / godown
+  LAND             // land / plot
 }
 
 enum PropertyStatus {
@@ -206,6 +214,11 @@ enum RentableEntityType {
   ROOM     // a room within a floor or directly under the property
   OFFICE   // an office space within a floor or directly under the property
   BED      // an individual bed within a shared room or directly under a floor
+  FLAT     // a flat / apartment unit (under property or floor); can hold rooms
+  PORTION  // a portion of a bungalow / house, e.g. "Ground floor portion"; can hold rooms
+  SHOP     // a shop / showroom unit
+  PARKING  // a parking slot / garage
+  STORAGE  // storage / godown space
 }
 
 model RentableEntity {

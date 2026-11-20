@@ -6,6 +6,14 @@ export const PROPERTY_TYPES: { value: PropertyType; label: string }[] = [
   { value: 'COMMERCIAL', label: 'Commercial' },
   { value: 'MIXED', label: 'Mixed' },
   { value: 'INDUSTRIAL', label: 'Industrial' },
+  { value: 'APARTMENT', label: 'Apartment / Flats' },
+  { value: 'BUNGALOW', label: 'Bungalow / Villa' },
+  { value: 'INDEPENDENT_HOUSE', label: 'Independent House' },
+  { value: 'PG_HOSTEL', label: 'PG / Hostel' },
+  { value: 'SHOP_SHOWROOM', label: 'Shop / Showroom' },
+  { value: 'OFFICE_BUILDING', label: 'Office Building' },
+  { value: 'WAREHOUSE', label: 'Warehouse / Godown' },
+  { value: 'LAND', label: 'Land / Plot' },
 ];
 
 export const PROPERTY_STATUSES: { value: PropertyStatus; label: string }[] = [
@@ -19,6 +27,14 @@ const TYPE_LABELS: Record<PropertyType, string> = {
   COMMERCIAL: 'Commercial',
   MIXED: 'Mixed',
   INDUSTRIAL: 'Industrial',
+  APARTMENT: 'Apartment / Flats',
+  BUNGALOW: 'Bungalow / Villa',
+  INDEPENDENT_HOUSE: 'Independent House',
+  PG_HOSTEL: 'PG / Hostel',
+  SHOP_SHOWROOM: 'Shop / Showroom',
+  OFFICE_BUILDING: 'Office Building',
+  WAREHOUSE: 'Warehouse / Godown',
+  LAND: 'Land / Plot',
 };
 
 const STATUS_LABELS: Record<PropertyStatus, string> = {
@@ -33,6 +49,14 @@ const TYPE_BADGE: Record<PropertyType, string> = {
   COMMERCIAL: 'border border-indigo-200 bg-indigo-50 text-indigo-700',
   MIXED: 'border border-purple-200 bg-purple-50 text-purple-700',
   INDUSTRIAL: 'border border-amber-200 bg-amber-50 text-amber-800',
+  APARTMENT: 'border border-sky-200 bg-sky-50 text-sky-700',
+  BUNGALOW: 'border border-rose-200 bg-rose-50 text-rose-700',
+  INDEPENDENT_HOUSE: 'border border-teal-200 bg-teal-50 text-teal-700',
+  PG_HOSTEL: 'border border-orange-200 bg-orange-50 text-orange-700',
+  SHOP_SHOWROOM: 'border border-fuchsia-200 bg-fuchsia-50 text-fuchsia-700',
+  OFFICE_BUILDING: 'border border-violet-200 bg-violet-50 text-violet-700',
+  WAREHOUSE: 'border border-stone-300 bg-stone-50 text-stone-700',
+  LAND: 'border border-lime-200 bg-lime-50 text-lime-800',
 };
 
 // Status badges — ACTIVE emerald, VACANT amber, MAINTENANCE rose.

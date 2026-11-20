@@ -98,6 +98,11 @@ const ENTITY_ICONS: Record<string, string> = {
   ROOM: '🚪',
   OFFICE: '💼',
   BED: '🛏️',
+  FLAT: '🏠',
+  PORTION: '🏡',
+  SHOP: '🏪',
+  PARKING: '🅿️',
+  STORAGE: '📦',
 };
 
 const ENTITY_INDENT_PX = 20; // px per depth level

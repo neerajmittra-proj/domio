@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { resolveDataScope } from '@/lib/manager-access';
 import { generatePropertyId } from '@/lib/display-ids';
 import type { PropertyType, PropertyStatus } from '@prisma/client';
+import { PROPERTY_TYPES } from '@/lib/property-types';
 
 export async function POST(request: Request) {
   const session = await auth();
@@ -93,12 +94,7 @@ export async function POST(request: Request) {
 
   const displayId = await generatePropertyId().catch(() => null);
 
-  const validTypes: PropertyType[] = [
-    'RESIDENTIAL',
-    'COMMERCIAL',
-    'MIXED',
-    'INDUSTRIAL',
-  ];
+  const validTypes: PropertyType[] = PROPERTY_TYPES.map((t) => t.value);
   const chosenType: PropertyType = validTypes.includes(type as PropertyType)
     ? (type as PropertyType)
     : 'RESIDENTIAL';

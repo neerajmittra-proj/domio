@@ -20,13 +20,14 @@ import {
   generateTenancyId,
 } from '@/lib/display-ids';
 import type { TemplateData } from './template-schema';
+import { PROPERTY_TYPES as ALL_PROPERTY_TYPES } from '@/lib/property-types';
 
 // Raised for problems in the user's data (unknown references, bad values). The
 // surrounding transaction is rolled back and the message is shown to the user.
 export class ImportDataError extends Error {}
 
 const PORTFOLIO_TYPES: PortfolioType[] = ['RESIDENTIAL', 'COMMERCIAL', 'MIXED', 'INDUSTRIAL'];
-const PROPERTY_TYPES: PropertyType[] = ['RESIDENTIAL', 'COMMERCIAL', 'MIXED', 'INDUSTRIAL'];
+const PROPERTY_TYPES: PropertyType[] = ALL_PROPERTY_TYPES.map((t) => t.value);
 const PROPERTY_STATUSES: PropertyStatus[] = ['ACTIVE', 'VACANT', 'MAINTENANCE'];
 const UNIT_STATUSES: SubPropertyStatus[] = ['OCCUPIED', 'VACANT', 'MAINTENANCE'];
 const TENANCY_STATUSES: TenancyStatus[] = ['ACTIVE', 'EXPIRED', 'TERMINATED'];

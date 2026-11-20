@@ -5,8 +5,9 @@ import { resolveDataScope } from '@/lib/manager-access';
 import { Prisma } from '@prisma/client';
 import { deletePropertiesCascade } from '@/lib/cascade-delete';
 import type { PropertyType, PropertyStatus } from '@prisma/client';
+import { PROPERTY_TYPES } from '@/lib/property-types';
 
-const VALID_TYPES: PropertyType[] = ['RESIDENTIAL', 'COMMERCIAL', 'MIXED', 'INDUSTRIAL'];
+const VALID_TYPES: PropertyType[] = PROPERTY_TYPES.map((t) => t.value);
 const VALID_STATUSES: PropertyStatus[] = ['ACTIVE', 'VACANT', 'MAINTENANCE'];
 const VALID_GROUP_BY = ['custom', 'floor', 'status', 'rent'];
 // Display-only layout preferences; any manager who can see the property may

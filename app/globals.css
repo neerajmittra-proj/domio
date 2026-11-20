@@ -88,6 +88,26 @@ body {
   background-image: linear-gradient(135deg, #7A3029 0%, #A14A40 100%);
 }
 
+/* ── Mandatory fields: red star after the label of every required input ───
+   Covers label + input as siblings, or the input wrapped one level deeper.
+   Labels that already show a hand-written red * keep just that one. */
+label:has(+ input:required)::after,
+label:has(+ select:required)::after,
+label:has(+ textarea:required)::after,
+div:has(> input:required) > label::after,
+div:has(> select:required) > label::after,
+div:has(> textarea:required) > label::after,
+div:has(> label + div > input:required) > label::after,
+div:has(> label + div > select:required) > label::after {
+  content: " *";
+  color: #dc2626;
+  font-weight: 700;
+}
+label:has(.text-red-500)::after,
+label:has(.text-rose-500)::after {
+  content: none;
+}
+
 /* ── Scrollbar hide utility ─────────────────────────────────────────────── */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
