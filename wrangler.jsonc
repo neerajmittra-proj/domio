@@ -3,6 +3,8 @@
   // Docs: https://opennext.js.org/cloudflare
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "domio",
+  // Mayank.kashyap@invotechservices.com's Cloudflare account
+  "account_id": "0b1706b94be271ff1b5f561468b5f812",
   // Custom entry: OpenNext's fetch handler + the daily reminder cron (see worker.ts).
   "main": "worker.ts",
   "compatibility_date": "2026-11-01",
