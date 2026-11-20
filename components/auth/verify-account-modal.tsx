@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from 'react';
 
+// Phone (SMS) verification stays hidden until SMS is switched on (see lib/sms.ts).
+const PHONE_OTP_ENABLED = process.env.NEXT_PUBLIC_SMS_ENABLED === 'true';
+
 export default function VerifyAccountModal({
   isOpen,
   onClose,
@@ -34,7 +37,7 @@ export default function VerifyAccountModal({
       if (res.ok) {
         const data = await res.json();
         setStatus(data);
-        if (data.emailVerified && !data.phoneVerified) {
+        if (PHONE_OTP_ENABLED && data.emailVerified && !data.phoneVerified) {
           setActiveTab('phone');
         }
       }
@@ -151,7 +154,7 @@ export default function VerifyAccountModal({
               Account Verification (OTP)
             </h3>
             <p className="text-xs text-zinc-500">
-              Verify your Gmail address and phone number
+              {PHONE_OTP_ENABLED ? 'Verify your Gmail address and phone number' : 'Verify your email address'}
             </p>
           </div>
         </div>
@@ -173,6 +176,7 @@ export default function VerifyAccountModal({
           >
             ✉️ Gmail / Email {status?.emailVerified ? '✓' : ''}
           </button>
+          {PHONE_OTP_ENABLED && (
           <button
             type="button"
             onClick={() => {
@@ -188,6 +192,7 @@ export default function VerifyAccountModal({
           >
             📱 Phone Number {status?.phoneVerified ? '✓' : ''}
           </button>
+          )}
         </div>
 
         {/* Content */}

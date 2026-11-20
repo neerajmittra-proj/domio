@@ -3,8 +3,19 @@ import { sendOtpSms as twilioSendOtp, sendPlainSms, type TwilioSendResult } from
 
 // One place for outgoing SMS: Brevo when BREVO_API_KEY is set (fetch-based, works
 // on Cloudflare and Vercel), otherwise Twilio.
+//
+// SMS is OFF unless SMS_ENABLED=true. For now Domio is email-only: reminders,
+// payment updates and verification codes all go by email. To turn SMS on later
+// (after Brevo phone verification, SMS credits and India DLT registration), set
+// SMS_ENABLED=true and NEXT_PUBLIC_SMS_ENABLED=true (the latter shows the phone
+// verification tab and must be set before the build).
+
+export function smsEnabled(): boolean {
+  return process.env.SMS_ENABLED === 'true';
+}
 
 export async function sendSms(to: string, text: string, tag?: string): Promise<SendResult> {
+  if (!smsEnabled()) return { success: false, error: 'SMS is turned off (email only)' };
   if (brevoSmsEnabled()) return brevoSendSms({ to, text, tag });
   try {
     const r = await sendPlainSms(to, text);
@@ -24,6 +35,7 @@ export async function sendOtpSms(
   otp: string,
   appName = 'Domio',
 ): Promise<TwilioSendResult> {
+  if (!smsEnabled()) return { sent: false, reason: 'SMS is turned off (email only)' };
   if (brevoSmsEnabled()) {
     const r = await brevoSendSms({
       to: toPhone,

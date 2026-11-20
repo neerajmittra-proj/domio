@@ -1,7 +1,7 @@
 import { after } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { sendEmail } from '@/lib/email';
-import { sendSms } from '@/lib/sms';
+import { sendSms, smsEnabled } from '@/lib/sms';
 import { isRealEmail, isRealPhone } from '@/lib/rent-reminders';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -191,7 +191,7 @@ async function deliver(
     emailOk = r.success;
     if (!r.success && r.error) errors.push(`email: ${r.error}`);
   }
-  if (c.phone) {
+  if (c.phone && smsEnabled()) {
     const r = await sendSms(c.phone, msg.sms, kind.toLowerCase());
     smsOk = r.success;
     if (!r.success && r.error) errors.push(`sms: ${r.error}`);

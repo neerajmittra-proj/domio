@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { smsEnabled } from '@/lib/sms';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { requestUserVerificationOtp } from '@/lib/user-verification';
@@ -18,6 +19,12 @@ export async function POST(req: Request) {
     const type = body?.type;
     if (type !== 'EMAIL_VERIFICATION' && type !== 'PHONE_VERIFICATION') {
       return NextResponse.json({ error: 'Invalid verification type.' }, { status: 400 });
+    }
+    if (type === 'PHONE_VERIFICATION' && !smsEnabled()) {
+      return NextResponse.json(
+        { error: 'Phone verification by SMS is not available yet. Please verify your email instead.' },
+        { status: 400 },
+      );
     }
 
     const limit = rateLimit(`verify-send:${session.user.id}:${type}`, 5, 60 * 60 * 1000);

@@ -348,8 +348,8 @@ export default function TenantForm({
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
           <Field id="name" label="Full Name" required defaultValue={tenant?.name} />
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <Field id="phone" label="Mobile number (rent SMS)" type="tel" required defaultValue={tenant?.phone} />
-            <Field id="email" label="Email (rent emails)" type="email" opt defaultValue={tenant?.email ?? ''} />
+            <Field id="phone" label="Mobile number" type="tel" required defaultValue={tenant?.phone} />
+            <Field id="email" label="Email (needed for rent reminders)" type="email" opt defaultValue={tenant?.email ?? ''} />
           </div>
           <Field id="location" label="Location / Address" opt defaultValue={tenant?.location ?? ''} />
           <Field id="nationalId" label="National ID" opt defaultValue={tenant?.nationalId ?? ''} />
