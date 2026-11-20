@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { sendEmail, APP_URL } from '@/lib/email';
-import { sendSms } from '@/lib/sms';
+import { sendSms, smsEnabled } from '@/lib/sms';
 import { PART2_ENABLED } from '@/lib/features';
 
 // Imported tenants were given placeholder contacts (e.g. name@placeholder.com,
@@ -116,6 +116,7 @@ export async function sendSingleRentReminder({
   const portalLink = PART2_ENABLED ? `${APP_URL}/tenant-portal` : '';
   let emailSent = false;
   let smsSent = false;
+  const sendErrors: string[] = [];
 
   // 1. Send Email Reminder if tenant has email
   // Skip addresses/numbers created as placeholders during data import.
@@ -179,6 +180,10 @@ export async function sendSingleRentReminder({
       text: `Hello ${tenant.name}, friendly reminder that rent of ₹${monthlyRent.toLocaleString('en-IN')} for ${propertyName} (${unitName}) is due on ${formattedDueDate}. ${portalLink ? `You can review your ledger at ${portalLink}` : ''}`,
     });
     emailSent = emailResult.success;
+    if (!emailResult.success) {
+      sendErrors.push(`email: ${emailResult.error ?? 'unknown error'}`);
+      console.error('[rent-reminder] email failed:', emailResult.error);
+    }
   }
 
   // 2. Send SMS Reminder if tenant has phone
@@ -186,6 +191,7 @@ export async function sendSingleRentReminder({
     const smsMessage = `Domio Rent Reminder: Hello ${tenant.name}, rent of ₹${monthlyRent.toLocaleString('en-IN')} for ${propertyName} (${unitName}) is due on ${formattedDueDate}.${portalLink ? ` View details: ${portalLink}` : ''}`;
     const smsResult = await sendSms(tenant.phone, smsMessage, 'rent-reminder');
     smsSent = smsResult.success;
+    if (!smsResult.success && smsEnabled()) sendErrors.push(`sms: ${smsResult.error ?? 'unknown error'}`);
   }
 
   // Log reminder
@@ -199,12 +205,16 @@ export async function sendSingleRentReminder({
       amount: monthlyRent,
       channel: emailSent && smsSent ? 'BOTH' : emailSent ? 'EMAIL' : smsSent ? 'SMS' : 'FAILED',
       status: emailSent || smsSent ? 'SENT' : 'FAILED',
+      errorMessage: sendErrors.length ? sendErrors.join(' | ').slice(0, 500) : null,
     },
   });
 
   return {
     success: emailSent || smsSent,
-    message: `Rent reminder sent to ${tenant.name} (${emailSent ? 'Email ✓' : ''} ${smsSent ? 'SMS ✓' : ''})`,
+    message:
+      emailSent || smsSent
+        ? `Rent reminder sent to ${tenant.name} (${emailSent ? 'Email ✓' : ''} ${smsSent ? 'SMS ✓' : ''})`
+        : `Could not send the reminder to ${tenant.name}: ${sendErrors.join(' | ') || 'no valid email on file'}`,
   };
 }
 
