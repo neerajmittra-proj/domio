@@ -1,4 +1,5 @@
-import { formatE164Phone, sendOtpSms } from '@/lib/twilio';
+import { formatE164Phone } from '@/lib/twilio';
+import { sendOtpSms } from '@/lib/sms';
 
 export type MessageDispatchResult = {
   smsSent: boolean;

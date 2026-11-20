@@ -2,7 +2,7 @@ import { randomInt } from 'crypto';
 import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
 import { sendEmail } from '@/lib/email';
-import { sendOtpSms } from '@/lib/twilio';
+import { sendOtpSms } from '@/lib/sms';
 import type { OtpType } from '@prisma/client';
 
 const OTP_TTL_MS = 10 * 60 * 1000; // 10 minutes
@@ -63,7 +63,7 @@ export async function requestUserVerificationOtp({
     return {
       success: true,
       message: smsResult.sent
-        ? `Verification code sent to ${target} via Twilio SMS.`
+        ? `Verification code sent to ${target} by SMS.`
         : `Verification code generated for ${target}.`,
       previewCode: !smsResult.sent ? (smsResult.previewOtp || rawOtp) : undefined,
     };
