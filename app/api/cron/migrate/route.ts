@@ -17,7 +17,7 @@ const STATEMENTS = [
   ...['APARTMENT', 'BUNGALOW', 'INDEPENDENT_HOUSE', 'PG_HOSTEL', 'SHOP_SHOWROOM', 'OFFICE_BUILDING', 'WAREHOUSE', 'LAND'].map(
     (v) => `ALTER TYPE "PropertyType" ADD VALUE IF NOT EXISTS '${v}'`,
   ),
-  ...['FLAT', 'PORTION', 'SHOP', 'PARKING', 'STORAGE'].map(
+  ...['FLAT', 'PORTION', 'SHOP', 'PARKING', 'STORAGE', 'PLOT'].map(
     (v) => `ALTER TYPE "RentableEntityType" ADD VALUE IF NOT EXISTS '${v}'`,
   ),
 ];

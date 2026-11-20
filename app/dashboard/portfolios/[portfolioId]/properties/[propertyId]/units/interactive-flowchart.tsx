@@ -25,6 +25,7 @@ const TYPE_ICONS: Record<string, string> = {
   SHOP: '🏪',
   PARKING: '🅿️',
   STORAGE: '📦',
+  PLOT: '📐',
 };
 
 const TYPE_COLORS: Record<string, { border: string; bg: string; text: string; headerBg: string }> = {
@@ -87,6 +88,12 @@ const TYPE_COLORS: Record<string, { border: string; bg: string; text: string; he
     bg: 'bg-stone-50/50',
     text: 'text-stone-800',
     headerBg: 'bg-gradient-to-r from-stone-600 to-amber-700 text-white',
+  },
+  PLOT: {
+    border: 'border-lime-300 hover:border-lime-500',
+    bg: 'bg-lime-50/50',
+    text: 'text-lime-800',
+    headerBg: 'bg-gradient-to-r from-lime-600 to-green-600 text-white',
   },
 };
 

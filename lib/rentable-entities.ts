@@ -37,6 +37,7 @@ const RENTABLE_ENTITY_TYPES: RentableEntityType[] = [
   'SHOP',
   'PARKING',
   'STORAGE',
+  'PLOT',
 ];
 
 export function isRentableEntityType(v: unknown): v is RentableEntityType {
@@ -54,6 +55,7 @@ export const RENTABLE_ENTITY_TYPE_LABELS: Record<RentableEntityType, string> = {
   SHOP: 'Shop',
   PARKING: 'Parking',
   STORAGE: 'Storage / Godown',
+  PLOT: 'Plot',
 };
 
 // Flexible Hierarchy — Valid Parent -> Child Relationships:
@@ -63,6 +65,7 @@ export const RENTABLE_ENTITY_TYPE_LABELS: Record<RentableEntityType, string> = {
 // - BED: Room or Floor (floor -> bed skips room entirely for dorm/hostel style)
 // - FLAT / PORTION: Property or Floor; a Room can sit inside a Flat or Portion
 // - SHOP / PARKING / STORAGE: Property or Floor, always terminal (like Office)
+// - PLOT: Property only (a plot of land), terminal
 // - PROPERTY: none (top-level portfolio child)
 export const VALID_PARENT_TYPES: Record<RentableEntityType, RentableEntityType[]> = {
   PROPERTY: [],
@@ -75,6 +78,7 @@ export const VALID_PARENT_TYPES: Record<RentableEntityType, RentableEntityType[]
   SHOP: ['PROPERTY', 'FLOOR'],
   PARKING: ['PROPERTY', 'FLOOR'],
   STORAGE: ['PROPERTY', 'FLOOR'],
+  PLOT: ['PROPERTY'],
 };
 
 // Types that legally appear as SOMEONE's valid parent (i.e. can have
@@ -119,7 +123,7 @@ export function parseRentableEntityInput(
   } = (body ?? {}) as Record<string, unknown>;
 
   if (!isRentableEntityType(type)) {
-    return { error: 'A valid unit type (Floor, Flat, Portion, Room, Office, Shop, Bed, Parking or Storage) is required.' };
+    return { error: 'A valid unit type (Floor, Flat, Portion, Room, Office, Shop, Bed, Parking, Storage or Plot) is required.' };
   }
   if (typeof name !== 'string' || !name.trim()) {
     return { error: 'Name is required.' };

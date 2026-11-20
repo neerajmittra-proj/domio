@@ -33,6 +33,7 @@ const TYPE_ICONS: Record<string, string> = {
   SHOP: '🏪',
   PARKING: '🅿️',
   STORAGE: '📦',
+  PLOT: '📐',
   UNIT: '🚪',
 };
 

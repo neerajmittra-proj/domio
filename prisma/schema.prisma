@@ -219,6 +219,7 @@ enum RentableEntityType {
   SHOP     // a shop / showroom unit
   PARKING  // a parking slot / garage
   STORAGE  // storage / godown space
+  PLOT     // a plot within land / an industrial estate
 }
 
 model RentableEntity {

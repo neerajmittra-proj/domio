@@ -56,7 +56,7 @@ export default async function NewUnitPage({
           Add Rental Level / Entity
         </h1>
         <p className="mt-1 mb-6 text-xs text-zinc-500 font-medium">
-          Choose the level you are listing (Whole Property, Floor, Room, or Bed) and optionally nest it under an existing parent entity.
+          Choose what you are renting out — the options match this property's type (e.g. flats for an apartment, portions for a bungalow) — and optionally nest it under an existing unit.
         </p>
 
         <AddRentableEntityForm
@@ -68,7 +68,9 @@ export default async function NewUnitPage({
             id: p.id,
             name: p.name,
             address: `${p.address}, ${p.city}`,
+            type: p.type,
           }))}
+          propertyType={property.type}
           listHref={listHref}
           initialParentId={parentId}
         />

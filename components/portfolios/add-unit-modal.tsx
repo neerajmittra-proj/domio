@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { unitTypesForProperty } from '@/lib/unit-types';
 
 export type AddUnitModalProps = {
   isOpen: boolean;
@@ -10,13 +11,15 @@ export type AddUnitModalProps = {
   parentEntityId?: string;
   parentEntityName?: string;
   parentEntityType?: string;
+  /** The property's type — decides which sub-units are offered (lib/unit-types.ts). */
+  propertyType?: string;
 };
 
 const input = 'w-full rounded-xl border border-zinc-200 bg-zinc-50 px-3.5 py-2.5 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-zinc-900 focus:bg-card focus:ring-2 focus:ring-zinc-900/10';
 const lbl = 'block text-xs font-semibold text-zinc-700 mb-1';
 
 const VALID_CHILD_TYPES: Record<string, string[]> = {
-  PROPERTY: ['FLOOR', 'FLAT', 'PORTION', 'ROOM', 'OFFICE', 'SHOP', 'BED', 'PARKING', 'STORAGE'],
+  PROPERTY: ['FLOOR', 'FLAT', 'PORTION', 'ROOM', 'OFFICE', 'SHOP', 'BED', 'PARKING', 'STORAGE', 'PLOT'],
   FLOOR:    ['FLAT', 'PORTION', 'ROOM', 'OFFICE', 'SHOP', 'BED', 'PARKING', 'STORAGE'],
   FLAT:     ['ROOM'],
   PORTION:  ['ROOM'],
@@ -26,6 +29,7 @@ const VALID_CHILD_TYPES: Record<string, string[]> = {
   SHOP:     [],
   PARKING:  [],
   STORAGE:  [],
+  PLOT:     [],
 };
 
 const TYPE_LABELS: Record<string, string> = {
@@ -39,6 +43,7 @@ const TYPE_LABELS: Record<string, string> = {
   BED:      '🛏️ Bed',
   PARKING:  '🅿️ Parking',
   STORAGE:  '📦 Storage / Godown',
+  PLOT:     '📐 Plot',
 };
 
 const FLAT_UNIT_LABEL = '🏠 Flat Unit (Standard)';
@@ -50,6 +55,7 @@ export default function AddUnitModal({
   parentEntityId,
   parentEntityName,
   parentEntityType,
+  propertyType,
 }: AddUnitModalProps) {
   const router = useRouter();
 
@@ -68,12 +74,17 @@ export default function AddUnitModal({
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  const validChildTypes = parentEntityType ? VALID_CHILD_TYPES[parentEntityType] ?? [] : Object.keys(TYPE_LABELS);
+  // Same parent/child rules as before, narrowed to the types that suit this property.
+  const allowedForProperty: string[] = unitTypesForProperty(propertyType);
+  const fitsProperty = (t: string) => t === 'PROPERTY' || allowedForProperty.includes(t);
+  const firstChildType = (parent?: string) =>
+    (parent ? (VALID_CHILD_TYPES[parent] ?? []) : Object.keys(TYPE_LABELS)).filter(fitsProperty).find((t) => t !== 'PROPERTY') ?? 'ROOM';
+  const validChildTypes = (parentEntityType ? VALID_CHILD_TYPES[parentEntityType] ?? [] : Object.keys(TYPE_LABELS)).filter(fitsProperty);
 
   useEffect(() => {
     if (!isOpen) return;
     setMode(parentEntityId ? 'entity' : 'flat');
-    setEntityType(parentEntityType ? (VALID_CHILD_TYPES[parentEntityType]?.[0] ?? 'ROOM') : 'FLOOR');
+    setEntityType(firstChildType(parentEntityType));
     setName(''); setCode(''); setUnitNumber(''); setFloor('');
     setRentAmount(''); setAreaSqft(''); setNotes('');
     setError(null); setSuccess(false); setPending(false);

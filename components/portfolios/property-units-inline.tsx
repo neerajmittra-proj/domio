@@ -103,6 +103,7 @@ const ENTITY_ICONS: Record<string, string> = {
   SHOP: '🏪',
   PARKING: '🅿️',
   STORAGE: '📦',
+  PLOT: '📐',
 };
 
 const ENTITY_INDENT_PX = 20; // px per depth level
@@ -426,6 +427,7 @@ export default function PropertyUnitsInline({
         parentEntityId={addUnitModal.parentId}
         parentEntityName={addUnitModal.parentName}
         parentEntityType={addUnitModal.parentType}
+        propertyType={type}
       />
 
       <button

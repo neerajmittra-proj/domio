@@ -10,6 +10,7 @@ import {
   type RentableEntityNode,
 } from '@/lib/rentable-entities';
 import { CURRENCIES, DEFAULT_CURRENCY } from '@/lib/currencies';
+import { unitTypesForProperty } from '@/lib/unit-types';
 
 const inputClass =
   'w-full rounded-xl border border-zinc-300 bg-card px-3.5 py-2.5 text-sm text-zinc-900 shadow-xs outline-none transition placeholder:text-zinc-400 focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/10';
@@ -26,6 +27,7 @@ const ENTITY_TYPES: { value: RentableEntityType; label: string; description: str
   { value: 'SHOP', label: 'Shop', description: 'A shop / showroom (under floor or property)', icon: '🏪' },
   { value: 'PARKING', label: 'Parking', description: 'A parking slot or garage', icon: '🅿️' },
   { value: 'STORAGE', label: 'Storage / Godown', description: 'Storage or godown space', icon: '📦' },
+  { value: 'PLOT', label: 'Plot', description: 'A plot of land (directly under the property)', icon: '📐' },
 ];
 
 /** Flatten a RentableEntityNode tree into a list for the parent picker. */
@@ -62,14 +64,17 @@ export default function AddRentableEntityForm({
   properties = [],
   listHref,
   initialParentId,
+  propertyType,
 }: {
   portfolioId?: string;
   propertyId: string;
   propertyName?: string;
   propertyAddress?: string;
-  properties?: { id: string; name: string; address?: string }[];
+  properties?: { id: string; name: string; address?: string; type?: string }[];
   listHref: string;
   initialParentId?: string;
+  /** The property's type (Residential, Bungalow, ...) — decides which sub-units are offered. */
+  propertyType?: string;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -125,12 +130,27 @@ export default function AddRentableEntityForm({
     targetParentNode?.type ?? (targetIsPropertyRoot ? 'PROPERTY' : undefined);
   // "Whole Property" is the building itself and already exists as the root, so
   // it is never offered while adding units — only sub-unit types are clickable.
-  const visibleEntityTypes =
+  // Only offer the sub-units that suit this property's type (lib/unit-types.ts).
+  // The parent/child rules above are unchanged; this just narrows the choices.
+  const selectedPropertyType =
+    properties.find((p) => p.id === selectedPropertyId)?.type ?? propertyType;
+  const allowedForProperty = unitTypesForProperty(selectedPropertyType);
+  const byPropertyType = (et: { value: RentableEntityType }) =>
+    et.value === 'PROPERTY' || allowedForProperty.includes(et.value);
+  const visibleEntityTypes = (
     isAddingSubUnit && targetParentType
       ? ENTITY_TYPES.filter((et) => VALID_PARENT_TYPES[et.value].includes(targetParentType))
       : rootPropertyEntity
         ? ENTITY_TYPES.filter((et) => et.value !== 'PROPERTY')
-        : ENTITY_TYPES;
+        : ENTITY_TYPES
+  ).filter(byPropertyType);
+
+  // Keep the selected type valid when the property (or parent) changes.
+  const visibleKey = visibleEntityTypes.map((et) => et.value).join(',');
+  useEffect(() => {
+    const values = visibleKey ? (visibleKey.split(',') as RentableEntityType[]) : [];
+    if (values.length && !values.includes(entityType)) setEntityType(values[0]);
+  }, [visibleKey, entityType]);
 
   // When existing entities load and a targetParentId was passed, auto-select it and set the appropriate child entityType
   useEffect(() => {
@@ -392,7 +412,7 @@ export default function AddRentableEntityForm({
               type="text"
               required
               autoComplete="off"
-              placeholder={`e.g. "${entityType === 'FLOOR' ? 'Ground Floor' : entityType === 'ROOM' ? 'Room 3A' : entityType === 'OFFICE' ? 'Suite 201' : entityType === 'BED' ? 'Bed B' : entityType === 'FLAT' ? 'Flat 302' : entityType === 'PORTION' ? 'Ground Floor Portion' : entityType === 'SHOP' ? 'Shop 4' : entityType === 'PARKING' ? 'Parking P-12' : entityType === 'STORAGE' ? 'Godown 1' : 'Main Building'}"`}
+              placeholder={`e.g. "${entityType === 'FLOOR' ? 'Ground Floor' : entityType === 'ROOM' ? 'Room 3A' : entityType === 'OFFICE' ? 'Suite 201' : entityType === 'BED' ? 'Bed B' : entityType === 'FLAT' ? 'Flat 302' : entityType === 'PORTION' ? 'Ground Floor Portion' : entityType === 'SHOP' ? 'Shop 4' : entityType === 'PARKING' ? 'Parking P-12' : entityType === 'STORAGE' ? 'Godown 1' : entityType === 'PLOT' ? 'Plot 12' : 'Main Building'}"`}
               className={inputClass}
             />
           </div>
@@ -405,7 +425,7 @@ export default function AddRentableEntityForm({
               name="code"
               type="text"
               autoComplete="off"
-              placeholder={`e.g. "${entityType === 'FLOOR' ? 'GF' : entityType === 'ROOM' ? '101' : entityType === 'OFFICE' ? '201' : entityType === 'BED' ? 'B1' : entityType === 'FLAT' ? '302' : entityType === 'PORTION' ? 'GFP' : entityType === 'SHOP' ? 'S4' : entityType === 'PARKING' ? 'P12' : entityType === 'STORAGE' ? 'G1' : 'MAIN'}"`}
+              placeholder={`e.g. "${entityType === 'FLOOR' ? 'GF' : entityType === 'ROOM' ? '101' : entityType === 'OFFICE' ? '201' : entityType === 'BED' ? 'B1' : entityType === 'FLAT' ? '302' : entityType === 'PORTION' ? 'GFP' : entityType === 'SHOP' ? 'S4' : entityType === 'PARKING' ? 'P12' : entityType === 'STORAGE' ? 'G1' : entityType === 'PLOT' ? 'PL12' : 'MAIN'}"`}
               className={inputClass}
             />
           </div>
@@ -506,6 +526,7 @@ export default function AddRentableEntityForm({
             {entityType === 'SHOP' && 'Property → [Floor or direct Property] → Shop → Direct lease on the shop.'}
             {entityType === 'PARKING' && 'Property → [Floor or direct Property] → Parking → Direct lease on the slot.'}
             {entityType === 'STORAGE' && 'Property → [Floor or direct Property] → Storage → Direct lease on the space.'}
+            {entityType === 'PLOT' && 'Property (land) → Plot → Direct lease on the plot.'}
           </p>
         </div>
 

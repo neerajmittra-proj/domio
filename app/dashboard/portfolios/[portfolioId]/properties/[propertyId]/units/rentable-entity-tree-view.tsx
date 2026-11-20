@@ -28,6 +28,7 @@ const TYPE_ICONS: Record<string, string> = {
   SHOP: '🏪',
   PARKING: '🅿️',
   STORAGE: '📦',
+  PLOT: '📐',
 };
 
 // Icon shown in the "Units" column to indicate what child type can be added
@@ -42,6 +43,7 @@ const CHILD_TYPE_ICONS: Record<string, string> = {
   SHOP: '—',
   PARKING: '—',
   STORAGE: '—',
+  PLOT: '—',
 };
 
 const TYPE_BADGES: Record<string, string> = {
@@ -55,6 +57,7 @@ const TYPE_BADGES: Record<string, string> = {
   SHOP: 'border-fuchsia-200 bg-fuchsia-50 text-fuchsia-700 font-semibold',
   PARKING: 'border-slate-200 bg-slate-50 text-slate-700 font-semibold',
   STORAGE: 'border-stone-300 bg-stone-50 text-stone-700 font-semibold',
+  PLOT: 'border-lime-200 bg-lime-50 text-lime-800 font-semibold',
 };
 
 type RentFilter = 'ALL' | 'HAS_RENT' | 'ZERO_RENT' | 'HIGH' | 'LOW' | 'SORT_HIGH' | 'SORT_LOW';
