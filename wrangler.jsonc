@@ -18,8 +18,7 @@
   "triggers": {
     "crons": ["30 3 * * *"]
   },
-  // Paid plan: allow longer CPU for PDF reports and the reminder sweep.
-  "limits": { "cpu_ms": 60000 },
+  // On Workers Paid, add: "limits": { "cpu_ms": 60000 } (not allowed on the free plan).
   "observability": { "enabled": true },
   // Keep variables set in the Cloudflare dashboard when deploying from git.
   "keep_vars": true,
