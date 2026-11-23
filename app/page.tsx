@@ -258,6 +258,8 @@ export default function HomePage() {
       {/* ── Footer ───────────────────────────────────────────────────────── */}
       <footer className="relative z-10 border-t border-white/10 bg-black/50 py-6 text-center text-xs text-zinc-500">
         © {new Date().getFullYear()} Domio Real Estate Platform. All rights reserved.
+        <span className="mx-2">·</span>
+        <Link href="/privacy" className="font-semibold text-zinc-400 hover:text-white hover:underline">Privacy Policy</Link>
       </footer>
 
       {/* ── Modal: Join As An Agent (Revealed only on click) ──────────────── */}

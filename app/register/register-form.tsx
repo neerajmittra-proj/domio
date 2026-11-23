@@ -337,6 +337,16 @@ export default function RegisterForm() {
         </p>
       )}
 
+      {/* Consent to the Privacy Policy (required) */}
+      <label className="flex items-start gap-2 text-xs text-zinc-600">
+        <input type="checkbox" name="privacyConsent" required className="mt-0.5 h-4 w-4 accent-[#8D3B32]" />
+        <span>
+          I agree to Domio&rsquo;s{' '}
+          <Link href="/privacy" target="_blank" className="font-semibold text-[#8D3B32] underline">Privacy Policy</Link>{' '}
+          and allow Domio to store my data and my tenants&rsquo; data to provide the service.
+        </span>
+      </label>
+
       {/* Submit Button */}
       <button type="submit" disabled={isPending || detectingLocation} className={submitClass}>
         {isPending ? 'Creating Account…' : `Register as ${role === 'BOTH' ? 'Owner & Renter' : role === 'RENTER' ? 'Renter' : 'Owner'}`}

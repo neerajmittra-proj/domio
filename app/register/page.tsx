@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import RegisterForm from './register-form';
 import Logo from '@/components/brand/logo';
+import PrivacyFooter from '@/components/legal/privacy-footer';
 
 export const metadata: Metadata = {
   title: 'Create Account — Domio',
@@ -38,6 +39,7 @@ export default function RegisterPage() {
         <div className="rounded-2xl border border-[#C2D9E0] bg-[#FFFFFF] p-6 sm:p-8 shadow-xl backdrop-blur-sm">
           <RegisterForm />
         </div>
+        <PrivacyFooter />
       </div>
     </div>
   );

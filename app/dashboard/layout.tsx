@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import DomioHeader from './_components/domio-header';
 import DomioChatWidget from './_components/domio-chat-widget';
 import { ThemeProvider, type Theme } from '@/lib/theme-context';
+import PrivacyFooter from '@/components/legal/privacy-footer';
 
 export default async function DashboardLayout({
   children,
@@ -49,6 +50,8 @@ export default async function DashboardLayout({
         <main className="flex-1 min-w-0">
           {children}
         </main>
+
+        <PrivacyFooter />
 
         {/* Floating "Chat with Domi AI Assistant" Widget */}
         <DomioChatWidget />

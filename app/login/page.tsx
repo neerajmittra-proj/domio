@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import LoginForm from './login-form';
 import Logo from '@/components/brand/logo';
 import { PART2_ENABLED } from '@/lib/features';
+import PrivacyFooter from '@/components/legal/privacy-footer';
 
 export default function LoginPage() {
   return (
@@ -67,6 +68,8 @@ export default function LoginPage() {
             <span>🔍 Looking to rent? Search Nearest Empty Properties</span>
           </a>
         </div></>)}
+
+        <PrivacyFooter />
       </div>
     </div>
   );
