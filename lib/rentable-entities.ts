@@ -25,72 +25,20 @@ import { prisma } from '@/lib/prisma';
 import { isSubPropertyStatus } from '@/lib/sub-property-types';
 
 // ── Type helpers ─────────────────────────────────────────────────────────────
-
-const RENTABLE_ENTITY_TYPES: RentableEntityType[] = [
-  'PROPERTY',
-  'FLOOR',
-  'ROOM',
-  'OFFICE',
-  'BED',
-  'FLAT',
-  'PORTION',
-  'SHOP',
-  'PARKING',
-  'STORAGE',
-  'PLOT',
-];
+// The hierarchy rules live in lib/unit-types.ts (client-safe) so the server and
+// every add-unit screen use exactly the same rules. Re-exported here so existing
+// imports keep working.
+import {
+  RENTABLE_ENTITY_TYPES,
+  RENTABLE_ENTITY_TYPE_LABELS,
+  VALID_PARENT_TYPES,
+  canHaveChildren,
+  childTypesOf,
+} from '@/lib/unit-types';
+export { RENTABLE_ENTITY_TYPE_LABELS, VALID_PARENT_TYPES, canHaveChildren, childTypesOf };
 
 export function isRentableEntityType(v: unknown): v is RentableEntityType {
   return typeof v === 'string' && (RENTABLE_ENTITY_TYPES as string[]).includes(v);
-}
-
-export const RENTABLE_ENTITY_TYPE_LABELS: Record<RentableEntityType, string> = {
-  PROPERTY: 'Whole Property',
-  FLOOR: 'Floor',
-  ROOM: 'Room',
-  OFFICE: 'Office',
-  BED: 'Bed',
-  FLAT: 'Flat / Apartment',
-  PORTION: 'Portion',
-  SHOP: 'Shop',
-  PARKING: 'Parking',
-  STORAGE: 'Storage / Godown',
-  PLOT: 'Plot',
-};
-
-// Flexible Hierarchy — Valid Parent -> Child Relationships:
-// - FLOOR: Property only (floors always hang directly off a property)
-// - ROOM: Property or Floor (skip floor -> room hangs directly off property)
-// - OFFICE: Property or Floor (same skip-level flexibility as Room)
-// - BED: Room or Floor (floor -> bed skips room entirely for dorm/hostel style)
-// - FLAT / PORTION: Property or Floor; a Room can sit inside a Flat or Portion
-// - SHOP / PARKING / STORAGE: Property or Floor, always terminal (like Office)
-// - PLOT: Property only (a plot of land), terminal
-// - PROPERTY: none (top-level portfolio child)
-export const VALID_PARENT_TYPES: Record<RentableEntityType, RentableEntityType[]> = {
-  PROPERTY: [],
-  FLOOR: ['PROPERTY'],
-  ROOM: ['PROPERTY', 'FLOOR', 'FLAT', 'PORTION'],
-  OFFICE: ['PROPERTY', 'FLOOR'],
-  BED: ['ROOM', 'FLOOR'],
-  FLAT: ['PROPERTY', 'FLOOR'],
-  PORTION: ['PROPERTY', 'FLOOR'],
-  SHOP: ['PROPERTY', 'FLOOR'],
-  PARKING: ['PROPERTY', 'FLOOR'],
-  STORAGE: ['PROPERTY', 'FLOOR'],
-  PLOT: ['PROPERTY'],
-};
-
-// Types that legally appear as SOMEONE's valid parent (i.e. can have
-// children at all). OFFICE and BED never appear in any list above, so they
-// are always terminal — no sub-unit (including a Bed) may ever be added
-// under an Office, and nothing may be added under a Bed.
-const TYPES_ALLOWED_AS_PARENT = new Set<RentableEntityType>(
-  Object.values(VALID_PARENT_TYPES).flat(),
-);
-
-export function canHaveChildren(type: RentableEntityType): boolean {
-  return TYPES_ALLOWED_AS_PARENT.has(type);
 }
 
 // ── Input parsing ─────────────────────────────────────────────────────────────

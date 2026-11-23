@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import type { SubPropertyStatus } from '@prisma/client';
-import { RENTABLE_ENTITY_TYPE_LABELS } from '@/lib/rentable-entities';
+import { RENTABLE_ENTITY_TYPE_LABELS } from '@/lib/unit-types';
 import { CURRENCIES, DEFAULT_CURRENCY } from '@/lib/currencies';
 import { useScrollLock } from '@/hooks/use-scroll-lock';
 import { useFocusTrap } from '@/hooks/use-focus-trap';

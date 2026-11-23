@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import type { RentableEntityType, SubPropertyStatus } from '@prisma/client';
 import type { RentableEntityNode } from '@/lib/rentable-entities';
-import { RENTABLE_ENTITY_TYPE_LABELS, canHaveChildren } from '@/lib/rentable-entities';
+import { RENTABLE_ENTITY_TYPE_LABELS, canHaveChildren } from '@/lib/unit-types';
 import { formatRent, subPropertyStatusBadgeClass, subPropertyStatusLabel } from '@/lib/sub-property-types';
 import type { VacantUnit } from '@/components/portfolios/assign-tenant-modal';
 import type { SubPropertyListItem } from '@/lib/sub-properties';

@@ -8,6 +8,7 @@ import {
   VALID_PARENT_TYPES,
   RENTABLE_ENTITY_TYPE_LABELS,
   handleMaintenanceStatusCascade,
+  isRentableEntityType,
 } from '@/lib/rentable-entities';
 import { generateRentableEntityId, generateUnitId } from '@/lib/display-ids';
 
@@ -100,6 +101,38 @@ export async function POST(request: Request) {
       { error: 'Property not found or unauthorized' },
       { status: 404 },
     );
+  }
+
+  // No parent chosen for a unit that may sit directly under the property (e.g. a
+  // Floor or Flat added from the units pop-up): attach it to the property's
+  // "Whole Property" root, creating that root if the property has none yet.
+  const requestedType: unknown = body.type;
+  if (
+    (!body.parentId || typeof body.parentId !== 'string') &&
+    isRentableEntityType(requestedType) &&
+    requestedType !== 'PROPERTY' &&
+    VALID_PARENT_TYPES[requestedType].includes('PROPERTY')
+  ) {
+    let root = await prisma.rentableEntity.findFirst({
+      where: { propertyId, ownerId: ds.ownerId, type: 'PROPERTY' },
+      select: { id: true },
+    });
+    if (!root) {
+      root = await prisma.rentableEntity.create({
+        data: {
+          displayId: await generateRentableEntityId().catch(() => null),
+          type: 'PROPERTY',
+          name: property.name,
+          code: property.displayId || 'PROP',
+          rentAmount: 0,
+          status: 'VACANT',
+          propertyId,
+          ownerId: ds.ownerId,
+        },
+        select: { id: true },
+      });
+    }
+    body.parentId = root.id;
   }
 
   const parsed = parseRentableEntityInput(body);

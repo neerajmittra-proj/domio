@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { unitTypesForProperty } from '@/lib/unit-types';
+import { RENTABLE_ENTITY_TYPES, childTypesOf, unitTypesForProperty } from '@/lib/unit-types';
 
 export type AddUnitModalProps = {
   isOpen: boolean;
@@ -18,19 +18,11 @@ export type AddUnitModalProps = {
 const input = 'w-full rounded-xl border border-zinc-200 bg-zinc-50 px-3.5 py-2.5 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-zinc-900 focus:bg-card focus:ring-2 focus:ring-zinc-900/10';
 const lbl = 'block text-xs font-semibold text-zinc-700 mb-1';
 
-const VALID_CHILD_TYPES: Record<string, string[]> = {
-  PROPERTY: ['FLOOR', 'FLAT', 'PORTION', 'ROOM', 'OFFICE', 'SHOP', 'BED', 'PARKING', 'STORAGE', 'PLOT'],
-  FLOOR:    ['FLAT', 'PORTION', 'ROOM', 'OFFICE', 'SHOP', 'BED', 'PARKING', 'STORAGE'],
-  FLAT:     ['ROOM'],
-  PORTION:  ['ROOM'],
-  ROOM:     ['BED'],
-  OFFICE:   [],
-  BED:      [],
-  SHOP:     [],
-  PARKING:  [],
-  STORAGE:  [],
-  PLOT:     [],
-};
+// What may be added inside each type — derived from the shared hierarchy rules
+// (lib/unit-types.ts), so this pop-up, the add-unit page and the server agree.
+const VALID_CHILD_TYPES: Record<string, string[]> = Object.fromEntries(
+  RENTABLE_ENTITY_TYPES.map((t) => [t, childTypesOf(t)]),
+);
 
 const TYPE_LABELS: Record<string, string> = {
   PROPERTY: '🏢 Whole Property',
@@ -78,8 +70,9 @@ export default function AddUnitModal({
   const allowedForProperty: string[] = unitTypesForProperty(propertyType);
   const fitsProperty = (t: string) => t === 'PROPERTY' || allowedForProperty.includes(t);
   const firstChildType = (parent?: string) =>
-    (parent ? (VALID_CHILD_TYPES[parent] ?? []) : Object.keys(TYPE_LABELS)).filter(fitsProperty).find((t) => t !== 'PROPERTY') ?? 'ROOM';
-  const validChildTypes = (parentEntityType ? VALID_CHILD_TYPES[parentEntityType] ?? [] : Object.keys(TYPE_LABELS)).filter(fitsProperty);
+    (VALID_CHILD_TYPES[parent ?? 'PROPERTY'] ?? []).filter(fitsProperty)[0] ?? 'ROOM';
+  // No parent picked → the unit goes straight under the Whole Property (the server attaches it there).
+  const validChildTypes = (VALID_CHILD_TYPES[parentEntityType ?? 'PROPERTY'] ?? []).filter(fitsProperty);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -180,13 +173,13 @@ export default function AddUnitModal({
                 </button>
                 <button type="button" onClick={() => setMode('entity')}
                   className={`flex-1 rounded-xl border py-2.5 text-sm font-semibold transition ${mode === 'entity' ? 'border-blue-600 bg-blue-600 text-white' : 'border-zinc-200 bg-zinc-50 text-zinc-600 hover:border-zinc-300'}`}>
-                  ??? Hierarchy Unit
+                  🧱 Hierarchy Unit
                 </button>
               </div>
               <p className="mt-1.5 text-[11px] text-zinc-400">
                 {mode === 'flat'
                   ? 'Standard unit (apartment, shop, etc.) with a single rent.'
-                  : 'Hierarchical unit (floor ? room ? bed) for complex structures.'}
+                  : 'Hierarchical unit (floor → flat / portion → room → bed) for complex structures.'}
               </p>
             </div>
           )}
@@ -195,10 +188,10 @@ export default function AddUnitModal({
           {mode === 'entity' && (
             <div>
               <label className={lbl}>
-                {parentEntityId ? `Sub-unit Type (under ${parentEntityType})` : 'Hierarchy Level'}
+                {parentEntityId ? `Sub-unit Type (under ${TYPE_LABELS[parentEntityType ?? ''] ?? parentEntityType})` : 'Hierarchy Level (directly under the property)'}
               </label>
               <div className="flex flex-wrap gap-2">
-                {(parentEntityId ? validChildTypes : Object.keys(TYPE_LABELS)).map((t) => (
+                {validChildTypes.map((t) => (
                   <button key={t} type="button" onClick={() => setEntityType(t)}
                     className={`rounded-full border px-3 py-1 text-xs font-semibold transition ${entityType === t ? 'border-blue-600 bg-blue-600 text-white' : 'border-zinc-200 bg-zinc-50 text-zinc-600 hover:border-zinc-300'}`}>
                     {TYPE_LABELS[t] ?? t}

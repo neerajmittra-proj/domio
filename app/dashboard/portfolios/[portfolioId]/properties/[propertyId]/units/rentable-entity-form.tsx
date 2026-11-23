@@ -4,11 +4,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import type { RentableEntityType } from '@prisma/client';
 import { SUB_PROPERTY_STATUSES } from '@/lib/sub-property-types';
-import {
-  RENTABLE_ENTITY_TYPE_LABELS,
-  VALID_PARENT_TYPES,
-  type RentableEntityNode,
-} from '@/lib/rentable-entities';
+import type { RentableEntityNode } from '@/lib/rentable-entities';
+import { RENTABLE_ENTITY_TYPE_LABELS, VALID_PARENT_TYPES, allowedChildTypes } from '@/lib/unit-types';
 import { CURRENCIES, DEFAULT_CURRENCY } from '@/lib/currencies';
 import { unitTypesForProperty } from '@/lib/unit-types';
 
@@ -165,18 +162,11 @@ export default function AddRentableEntityForm({
     if (!parentApplied && effectiveTargetParentId && existingEntities.length > 0) {
       const parentNode = findNode(existingEntities, effectiveTargetParentId);
       if (parentNode) {
-        if (parentNode.type === 'PROPERTY') {
-          setEntityType('ROOM');
-        } else if (parentNode.type === 'FLOOR') {
-          setEntityType('ROOM');
-        } else if (parentNode.type === 'ROOM') {
-          setEntityType('BED');
-        } else if (parentNode.type === 'FLAT' || parentNode.type === 'PORTION') {
-          setEntityType('ROOM');
-        }
-        // Note: OFFICE is intentionally excluded — an Office is always
-        // terminal and can never receive a Bed (or anything else) as a
-        // sub-unit, so there is no valid entityType to auto-select here.
+        // Pre-select the first type allowed inside this parent (shared rules in
+        // lib/unit-types.ts, narrowed to this property's type). Terminal parents
+        // (Office, Shop, Bed, Parking, Storage, Plot) have none.
+        const firstChild = allowedChildTypes(parentNode.type, selectedPropertyType)[0];
+        if (firstChild) setEntityType(firstChild);
         setParentId(effectiveTargetParentId);
         setParentApplied(true);
       }
