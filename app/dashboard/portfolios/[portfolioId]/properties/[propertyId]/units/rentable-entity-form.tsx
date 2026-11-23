@@ -19,12 +19,12 @@ const labelClass = 'text-xs font-bold uppercase tracking-wider text-zinc-700';
 const ENTITY_TYPES: { value: RentableEntityType; label: string; description: string; icon: string }[] = [
   { value: 'PROPERTY', label: 'Whole Property', description: 'Lease the entire building', icon: '🏢' },
   { value: 'FLOOR', label: 'Floor', description: 'A single floor / level', icon: '🏗️' },
-  { value: 'ROOM', label: 'Room', description: 'A room (under floor or property)', icon: '🚪' },
-  { value: 'OFFICE', label: 'Office', description: 'Office space (under floor or property)', icon: '💼' },
-  { value: 'BED', label: 'Bed', description: 'A bed (under room or floor)', icon: '🛏️' },
   { value: 'FLAT', label: 'Flat / Apartment', description: 'A flat (under floor or property); can hold rooms', icon: '🏠' },
   { value: 'PORTION', label: 'Portion', description: 'Part of a bungalow / house; can hold rooms', icon: '🏡' },
+  { value: 'ROOM', label: 'Room', description: 'A room (under floor, flat, portion or property)', icon: '🚪' },
+  { value: 'OFFICE', label: 'Office', description: 'Office space (under floor or property)', icon: '💼' },
   { value: 'SHOP', label: 'Shop', description: 'A shop / showroom (under floor or property)', icon: '🏪' },
+  { value: 'BED', label: 'Bed', description: 'A bed (under room or floor)', icon: '🛏️' },
   { value: 'PARKING', label: 'Parking', description: 'A parking slot or garage', icon: '🅿️' },
   { value: 'STORAGE', label: 'Storage / Godown', description: 'Storage or godown space', icon: '📦' },
   { value: 'PLOT', label: 'Plot', description: 'A plot of land (directly under the property)', icon: '📐' },
@@ -137,13 +137,21 @@ export default function AddRentableEntityForm({
   const allowedForProperty = unitTypesForProperty(selectedPropertyType);
   const byPropertyType = (et: { value: RentableEntityType }) =>
     et.value === 'PROPERTY' || allowedForProperty.includes(et.value);
+  // Only offer a type if something it can sit under already exists in this
+  // property (e.g. no Bed until there is a Room or Floor, no Room-in-Flat until
+  // a Flat exists). Same parent rules as VALID_PARENT_TYPES, just applied up front.
+  const existingTypes = new Set<RentableEntityType>(flattenTree(existingEntities).map((e) => e.type));
+  const hasPlaceToGo = (et: { value: RentableEntityType }) =>
+    et.value === 'PROPERTY' ||
+    existingEntities.length === 0 ||
+    VALID_PARENT_TYPES[et.value].some((p) => existingTypes.has(p));
   const visibleEntityTypes = (
     isAddingSubUnit && targetParentType
       ? ENTITY_TYPES.filter((et) => VALID_PARENT_TYPES[et.value].includes(targetParentType))
       : rootPropertyEntity
         ? ENTITY_TYPES.filter((et) => et.value !== 'PROPERTY')
         : ENTITY_TYPES
-  ).filter(byPropertyType);
+  ).filter((et) => byPropertyType(et) && hasPlaceToGo(et));
 
   // Keep the selected type valid when the property (or parent) changes.
   const visibleKey = visibleEntityTypes.map((et) => et.value).join(',');
@@ -239,7 +247,12 @@ export default function AddRentableEntityForm({
     }
 
     const json = await res.json().catch(() => null);
-    setError(json?.error ?? 'Something went wrong. Please try again.');
+    setError(
+      json?.error ??
+        (res.status === 503
+          ? 'The server was busy (Cloudflare free-plan limit). Please press the button again.'
+          : 'Something went wrong. Please try again.'),
+    );
     setPending(false);
   }
 

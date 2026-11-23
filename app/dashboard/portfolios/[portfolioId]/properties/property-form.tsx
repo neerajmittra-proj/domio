@@ -5,6 +5,10 @@ import { useState } from 'react';
 import type { PropertyType, PropertyStatus } from '@prisma/client';
 import { PROPERTY_TYPES, PROPERTY_STATUSES } from '@/lib/property-types';
 
+// Property photos are switched off for now (no upload / URL field). Existing
+// photos on a property are kept and saved unchanged. Set to true to bring back.
+const SHOW_PROPERTY_PHOTOS = false;
+
 type Initial = {
   id: string;
   name: string;
@@ -202,7 +206,8 @@ export default function PropertyForm({
         </div>
       </div>
 
-      {/* ── Photo Upload Gallery (Up to 5 Photos) ────────────────────────── */}
+      {/* ── Photo Upload Gallery (Up to 5 Photos) — hidden for now ───────── */}
+      {SHOW_PROPERTY_PHOTOS && (
       <div className="flex flex-col gap-2 rounded-2xl border border-zinc-200 bg-zinc-50/60 p-4">
         <div className="flex items-center justify-between">
           <label className={labelClass}>
@@ -282,6 +287,7 @@ export default function PropertyForm({
           </div>
         )}
       </div>
+      )}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className="flex flex-col gap-1.5">

@@ -104,8 +104,10 @@ div:has(> label + div > select:required) > label::after {
   font-weight: 700;
 }
 label:has(.text-red-500)::after,
-label:has(.text-rose-500)::after {
-  content: none;
+label:has(.text-rose-500)::after,
+label:has(.text-red-500) ::after,
+label:has(.text-rose-500) ::after {
+  content: none !important;
 }
 
 /* ── Scrollbar hide utility ─────────────────────────────────────────────── */
