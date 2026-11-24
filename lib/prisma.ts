@@ -44,10 +44,7 @@ const perRequestTx = new WeakMap<object, PrismaClient>();
 function workersTxClient(): PrismaClient {
   // OpenNext keeps the current request's { env, ctx } in AsyncLocalStorage,
   // exposed on this global symbol (what getCloudflareContext() reads).
-  const store = (globalThis as Record<symbol, unknown>)[Symbol.for('__cloudflare-context__')] as
-    | { ctx?: object }
-    | undefined;
-  const key = store?.ctx ?? null;
+  const key = currentRequestKey();
   if (!key) return newPoolClient(); // outside a request: a fresh client still works
   let client = perRequestTx.get(key);
   if (!client) {
@@ -71,6 +68,28 @@ const WS_CLIENT_METHODS = new Set<PropertyKey>([
   '$transaction', '$executeRaw', '$executeRawUnsafe',
 ]);
 
+// Each HTTP query is a separate outgoing request ("subrequest"), and Cloudflare's
+// free plan allows only 50 per incoming request. Heavy pages (the dashboard runs
+// many queries at once) would hit that, so after HTTP_QUERY_BUDGET HTTP reads in
+// one request the rest go over the WebSocket client, which uses one connection.
+const HTTP_QUERY_BUDGET = 20;
+const httpQueriesPerRequest = new WeakMap<object, number>();
+function currentRequestKey(): object | null {
+  const store = (globalThis as Record<symbol, unknown>)[Symbol.for('__cloudflare-context__')] as
+    | { ctx?: object }
+    | undefined;
+  return store?.ctx ?? null;
+}
+/** Count one HTTP read for this request; false once the budget is used up. */
+function takeHttpBudget(): boolean {
+  const key = currentRequestKey();
+  if (!key) return true;
+  const used = httpQueriesPerRequest.get(key) ?? 0;
+  if (used >= HTTP_QUERY_BUDGET) return false;
+  httpQueriesPerRequest.set(key, used + 1);
+  return true;
+}
+
 function bound<T>(target: T, prop: PropertyKey) {
   const value = Reflect.get(target as object, prop, target);
   return typeof value === 'function' ? value.bind(target) : value;
@@ -92,13 +111,17 @@ export const prisma: PrismaClient = new Proxy({} as PrismaClient, {
       // writes → this request's WebSocket client.
       return new Proxy(value as object, {
         get(delegate, method) {
-          if (WRITE_METHODS.has(method)) {
+          const isQuery = typeof method === 'string' && typeof Reflect.get(delegate, method) === 'function';
+          if (WRITE_METHODS.has(method) || (isQuery && !takeHttpBudget())) {
             const ws = workersTxClient() as unknown as Record<string, object>;
             return bound(ws[prop], method);
           }
           return bound(delegate, method);
         },
       });
+    }
+    if (typeof value === 'function' && (prop === '$queryRaw' || prop === '$queryRawUnsafe') && !takeHttpBudget()) {
+      return bound(workersTxClient(), prop);
     }
     return typeof value === 'function' ? value.bind(http) : value;
   },
