@@ -9,11 +9,11 @@ import { PrismaNeon, PrismaNeonHttp } from '@prisma/adapter-neon';
 // - Cloudflare Workers: a socket may NOT be shared between requests
 //   ("Cannot perform I/O on behalf of a different request"), and building a
 //   full Prisma client per request costs a lot of memory and CPU. So:
-//     · ordinary queries go through ONE shared client per isolate that talks to
-//       Neon over plain HTTPS (stateless fetch — safe to share);
-//     · interactive transactions (`prisma.$transaction(async (tx) => …)`, used
+//     · reads go through ONE shared client per isolate that talks to Neon over
+//       plain HTTPS (stateless fetch — safe to share);
+//     · writes, raw executes and transactions (`prisma.$transaction(…)`, used
 //       for payments, tenancies, …) get a short-lived WebSocket client for the
-//       current request only, because HTTP can't hold a transaction open.
+//       current request only, because the HTTP driver can't do transactions.
 // `prisma` below is a proxy, so the ~100 files that `import { prisma }` keep
 // working unchanged on both runtimes.
 
@@ -57,18 +57,49 @@ function workersTxClient(): PrismaClient {
   return client;
 }
 
-function clientFor(prop: PropertyKey): PrismaClient {
-  if (isWorkers) {
-    return prop === '$transaction' ? workersTxClient() : workersHttpClient();
-  }
+// Model methods that write. On Workers these go through the per-request
+// WebSocket client, because Prisma may wrap a write in an implicit transaction
+// and the HTTP driver can't do transactions ("Transactions are not supported in
+// HTTP mode"). Reads stay on the fast shared HTTP client.
+const WRITE_METHODS = new Set<PropertyKey>([
+  'create', 'createMany', 'createManyAndReturn',
+  'update', 'updateMany', 'updateManyAndReturn',
+  'upsert', 'delete', 'deleteMany',
+]);
+// Top-level client methods that need the WebSocket client on Workers.
+const WS_CLIENT_METHODS = new Set<PropertyKey>([
+  '$transaction', '$executeRaw', '$executeRawUnsafe',
+]);
+
+function bound<T>(target: T, prop: PropertyKey) {
+  const value = Reflect.get(target as object, prop, target);
+  return typeof value === 'function' ? value.bind(target) : value;
+}
+
+function nodeClient(): PrismaClient {
   if (!globalForPrisma.prisma) globalForPrisma.prisma = newPoolClient();
   return globalForPrisma.prisma;
 }
 
 export const prisma: PrismaClient = new Proxy({} as PrismaClient, {
   get(_target, prop) {
-    const client = clientFor(prop);
-    const value = Reflect.get(client, prop, client);
-    return typeof value === 'function' ? value.bind(client) : value;
+    if (!isWorkers) return bound(nodeClient(), prop);
+    if (WS_CLIENT_METHODS.has(prop)) return bound(workersTxClient(), prop);
+    const http = workersHttpClient();
+    const value = Reflect.get(http, prop, http);
+    if (typeof prop === 'string' && !prop.startsWith('$') && value && typeof value === 'object') {
+      // A model delegate (prisma.rentLedger, prisma.tenant, …): reads → HTTP,
+      // writes → this request's WebSocket client.
+      return new Proxy(value as object, {
+        get(delegate, method) {
+          if (WRITE_METHODS.has(method)) {
+            const ws = workersTxClient() as unknown as Record<string, object>;
+            return bound(ws[prop], method);
+          }
+          return bound(delegate, method);
+        },
+      });
+    }
+    return typeof value === 'function' ? value.bind(http) : value;
   },
 });
