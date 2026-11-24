@@ -38,8 +38,10 @@ export default function DomioHeader({
 
   const initials = getInitials(name ?? '', email);
 
-  // Poll incoming privacy requests count
+  // Poll incoming privacy requests count (Part 2 feature — skipped while it's
+  // hidden, so every page isn't spending server time on a 30-second poll).
   useEffect(() => {
+    if (!PART2_ENABLED) return;
     async function fetchPending() {
       try {
         const res = await fetch('/api/privacy-requests');

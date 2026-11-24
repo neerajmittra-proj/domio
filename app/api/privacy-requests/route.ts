@@ -2,8 +2,11 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import type { PrivacyRequestType } from '@prisma/client';
+import { part2Guard } from '@/lib/features';
 
 export async function POST(req: Request) {
+  const disabled = part2Guard();
+  if (disabled) return disabled;
   try {
     const session = await auth();
     if (!session?.user?.id) {
@@ -140,6 +143,8 @@ export async function POST(req: Request) {
 }
 
 export async function GET() {
+  const disabled = part2Guard();
+  if (disabled) return disabled;
   try {
     const session = await auth();
     if (!session?.user?.id) {
